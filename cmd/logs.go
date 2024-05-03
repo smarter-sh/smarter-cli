@@ -20,7 +20,14 @@ smarter get logs --name --json --yaml --csv --xml -n 10 --asc --desc
 The Smarter API will return a list of Log files in the specified format,
 or a manifest for a specific Log file.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("logs called")
+
+		body, err := GetAPIResponse("logs")
+		if err != nil {
+			fmt.Println("Error:", err)
+		} else {
+			fmt.Println("Response:", string(body))
+		}
+
 	},
 }
 

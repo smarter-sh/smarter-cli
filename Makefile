@@ -8,10 +8,13 @@ else
     $(shell cp ./doc/example-dot-env .env)
 endif
 
-.PHONY: init pre-commit-init pre-commit-run help
+.PHONY: analyze init pre-commit-init pre-commit-run help
 
 # Default target executed when no arguments are given to make.
 all: help
+
+analyze:
+	cloc . --exclude-ext=svg,json,zip --fullpath --not-match-d=smarter/smarter/static/assets/ --vcs=git
 
 # initialize local development environment.
 # takes around 5 minutes to complete
@@ -30,6 +33,8 @@ pre-commit-init:
 pre-commit-run:
 	pre-commit run --all-files
 
+lint:
+	golangci-lint run
 
 ######################
 # Go lang
