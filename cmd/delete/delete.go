@@ -4,8 +4,6 @@ Copyright © 2024 Lawrence McDaniel <lawrence@querium.com>
 package delete
 
 import (
-	"fmt"
-
 	"github.com/QueriumCorp/smarter-cli/cmd"
 
 	"github.com/spf13/cobra"
@@ -20,9 +18,6 @@ var DeleteCmd = &cobra.Command{
 smarter delete <kind> --dry-run
 
 The Smarter API will permanently delete the resource.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("delete called")
-	},
 }
 
 func init() {

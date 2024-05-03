@@ -4,8 +4,6 @@ Copyright © 2024 Lawrence McDaniel <lawrence@querium.com>
 package get
 
 import (
-	"fmt"
-
 	"github.com/QueriumCorp/smarter-cli/cmd"
 
 	"github.com/spf13/cobra"
@@ -21,9 +19,6 @@ smarter get <kind> --name --json --yaml --csv --xml -n 10 --asc --desc
 
 The Smarter API will return a list of resources in the specified format,
 or a manifest for a specific resource.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("get called")
-	},
 }
 
 func init() {

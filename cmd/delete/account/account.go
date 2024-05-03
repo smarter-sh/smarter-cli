@@ -4,8 +4,6 @@ Copyright © 2024 Lawrence McDaniel <lawrence@querium.com>
 package account
 
 import (
-	"fmt"
-
 	"github.com/QueriumCorp/smarter-cli/cmd/delete"
 
 	"github.com/spf13/cobra"
@@ -21,9 +19,6 @@ smarter account <subcommand>
 
 Subcommands:
   user: Delete a user from your account`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("delete called")
-	},
 }
 
 func init() {

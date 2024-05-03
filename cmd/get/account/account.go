@@ -4,8 +4,6 @@ Copyright © 2024 Lawrence McDaniel <lawrence@querium.com>
 package account
 
 import (
-	"fmt"
-
 	"github.com/QueriumCorp/smarter-cli/cmd/get"
 
 	"github.com/spf13/cobra"
@@ -20,9 +18,6 @@ var accountCmd = &cobra.Command{
 smarter account --json --yaml
 
 The Smarter API will return your Account manifest in the specified format.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("account called")
-	},
 }
 
 func init() {
