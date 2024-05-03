@@ -19,7 +19,14 @@ smarter deploy <kind>
 
 The Smarter API will deploy the resource.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("deploy called")
+
+		body, err := GetAPIResponse("deploy/chatbot/test")
+		if err != nil {
+			fmt.Println("Error:", err)
+		} else {
+			fmt.Println("Response:", string(body))
+		}
+
 	},
 }
 
