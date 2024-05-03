@@ -22,7 +22,14 @@ migrating the resource to the new state. The --json and --yaml
 flags will output the manifest in the specified format. The
 --dry-run flag will simulate the apply without making any changes.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("apply called")
+
+		body, err := GetAPIResponse("apply")
+		if err != nil {
+			fmt.Println("Error:", err)
+		} else {
+			fmt.Println("Response:", string(body))
+		}
+
 	},
 }
 

@@ -9,6 +9,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
+func GetAPI(slug string) (string, error) {
+
+	return cmd.GetAPIResponse(slug)
+
+}
+
 // GetCmd represents the get command
 var GetCmd = &cobra.Command{
 	Use:   "get",

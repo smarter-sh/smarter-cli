@@ -20,7 +20,14 @@ smarter delete plugin -name --dry-run
 The Smarter API will permanently delete the Plugin with the specified name,
 and dissassociate it from any ChatBots.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("plugin called")
+
+		body, err := GetAPI("plugin")
+		if err != nil {
+			fmt.Println("Error:", err)
+		} else {
+			fmt.Println("Response:", string(body))
+		}
+
 	},
 }
 

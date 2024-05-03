@@ -20,7 +20,14 @@ smarter delete chatbot -name --dry-run
 The Smarter API will permanently delete the ChatBot with the specified name,
 and all related chat history.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("chatbot called")
+
+		body, err := GetAPI("chatbot")
+		if err != nil {
+			fmt.Println("Error:", err)
+		} else {
+			fmt.Println("Response:", string(body))
+		}
+
 	},
 }
 

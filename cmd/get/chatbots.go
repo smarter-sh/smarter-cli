@@ -20,7 +20,14 @@ smarter get chatbots --name --json --yaml
 The Smarter API will return a list of ChatBots in the specified format,
 or a manifest for a specific ChatBot.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("chatbots called")
+
+		body, err := GetAPI("chatbots")
+		if err != nil {
+			fmt.Println("Error:", err)
+		} else {
+			fmt.Println("Response:", string(body))
+		}
+
 	},
 }
 

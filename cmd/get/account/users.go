@@ -20,7 +20,13 @@ smarter get users --name --json --yaml --csv --xml -n 10 --asc --desc
 The Smarter API will return a list of Users in the specified format,
 or a manifest for a specific User.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("users called")
+
+		body, err := GetAPI("users")
+		if err != nil {
+			fmt.Println("Error:", err)
+		} else {
+			fmt.Println("Response:", string(body))
+		}
 	},
 }
 

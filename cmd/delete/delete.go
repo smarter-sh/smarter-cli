@@ -9,6 +9,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
+func GetAPI(slug string) (string, error) {
+
+	return cmd.GetAPIResponse(slug)
+
+}
+
 // DeleteCmd represents the delete command
 var DeleteCmd = &cobra.Command{
 	Use:   "delete",

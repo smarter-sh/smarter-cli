@@ -22,7 +22,14 @@ smarter get plugins --name --json --yaml --csv --xml -n 10 --asc --desc
 The Smarter API will return a list of Plugins in the specified format,
 or a manifest for a specific Plugin.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("plugins called")
+
+		body, err := GetAPI("apply")
+		if err != nil {
+			fmt.Println("Error:", err)
+		} else {
+			fmt.Println("Response:", string(body))
+		}
+
 	},
 }
 

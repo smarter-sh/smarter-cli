@@ -19,7 +19,14 @@ smarter delete chat -id
 
 The Smarter API will permanently delete the chat history with the specified identifier.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("chat called")
+
+		body, err := GetAPI("chat")
+		if err != nil {
+			fmt.Println("Error:", err)
+		} else {
+			fmt.Println("Response:", string(body))
+		}
+
 	},
 }
 

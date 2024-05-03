@@ -21,7 +21,14 @@ The Smarter API will permanently delete the user with the specified name,
 and dissassociate it from any Smarter resources. Your Smarter admin account
 will replace the deleted user.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("user called")
+
+		body, err := GetAPI("user")
+		if err != nil {
+			fmt.Println("Error:", err)
+		} else {
+			fmt.Println("Response:", string(body))
+		}
+
 	},
 }
 

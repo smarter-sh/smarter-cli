@@ -20,7 +20,14 @@ smarter get chats --id --chatbot --json --yaml --csv --xml -n 10 --asc --desc --
 The Smarter API will return a list of Chats in the specified format,
 or a manifest for a specific Chat history.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("chats called")
+
+		body, err := GetAPI("chats")
+		if err != nil {
+			fmt.Println("Error:", err)
+		} else {
+			fmt.Println("Response:", string(body))
+		}
+
 	},
 }
 
