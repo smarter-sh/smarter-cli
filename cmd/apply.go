@@ -17,7 +17,7 @@ var applyCmd = &cobra.Command{
 
 smarter apply -f <manifest.yaml> --json --yaml --dry-run
 
-The Smarter API will apply the manifest to the Smarter account, 
+The Smarter API will apply the manifest to the Smarter account,
 migrating the resource to the new state. The --json and --yaml
 flags will output the manifest in the specified format. The
 --dry-run flag will simulate the apply without making any changes.`,

@@ -13,7 +13,7 @@ import (
 var pluginsCmd = &cobra.Command{
 	Use:   "plugins",
 	Short: "Retrieve a list of Plugins or a manifest for a specific Plugin by name",
-	Long: `Retrieve a list of Plugins, 
+	Long: `Retrieve a list of Plugins,
 	or a manifest for a specific Plugin:
 
 smarter get plugins --name --json --yaml --csv --xml -n 10 --asc --desc

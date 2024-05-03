@@ -18,7 +18,7 @@ var rootCmd = &cobra.Command{
 	Use:   "smarter",
 	Short: "A command-line interface for working with Smarter resources",
 	Long: `A command-line interface for working with Smarter resources.
-Using the smarter cli, you can create Smarter plugins, add these to a ChatBot, 
+Using the smarter cli, you can create Smarter plugins, add these to a ChatBot,
 and deploy the ChatBot to a custom URL. You can interact with the ChatBot
 on the command line, view chat log data, and manage your Smarter account.`,
 	// Uncomment the following line if your bare application

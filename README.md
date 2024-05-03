@@ -12,7 +12,7 @@ Apply a Smarter API resource manifest. See this [example](./data/manifests/examp
 smarter apply <./file/path/manifest.yaml>
 ```
 
-### Get 
+### Get
 
 ```console
 smarter get plugins --name --yaml --json

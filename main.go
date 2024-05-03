@@ -1,6 +1,5 @@
 /*
 Copyright © 2024 Lawrence McDaniel lawrence@querium.com
-
 */
 package main
 
