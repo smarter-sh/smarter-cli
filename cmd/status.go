@@ -25,7 +25,7 @@ including the status of all services and resources by region.`,
 }
 
 func init() {
-	rootCmd.AddCommand(statusCmd)
+	RootCmd.AddCommand(statusCmd)
 
 	// Here you will define your flags and configuration settings.
 

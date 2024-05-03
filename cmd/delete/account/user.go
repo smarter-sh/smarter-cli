@@ -1,7 +1,7 @@
 /*
 Copyright © 2024 NAME HERE <EMAIL ADDRESS>
 */
-package cmd
+package account
 
 import (
 	"fmt"
@@ -26,7 +26,7 @@ will replace the deleted user.`,
 }
 
 func init() {
-	deleteCmd.AddCommand(userCmd)
+	accountCmd.AddCommand(userCmd)
 
 	// Here you will define your flags and configuration settings.
 

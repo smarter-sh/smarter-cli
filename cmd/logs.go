@@ -25,7 +25,7 @@ or a manifest for a specific Log file.`,
 }
 
 func init() {
-	rootCmd.AddCommand(logsCmd)
+	RootCmd.AddCommand(logsCmd)
 
 	// Here you will define your flags and configuration settings.
 

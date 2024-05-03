@@ -1,7 +1,7 @@
 /*
 Copyright © 2024 NAME HERE <EMAIL ADDRESS>
 */
-package cmd
+package delete
 
 import (
 	"fmt"
@@ -24,7 +24,7 @@ The Smarter API will permanently delete the chat history with the specified iden
 }
 
 func init() {
-	deleteCmd.AddCommand(chatCmd)
+	DeleteCmd.AddCommand(chatCmd)
 
 	// Here you will define your flags and configuration settings.
 

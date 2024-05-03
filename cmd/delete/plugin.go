@@ -1,7 +1,7 @@
 /*
 Copyright © 2024 NAME HERE <EMAIL ADDRESS>
 */
-package cmd
+package delete
 
 import (
 	"fmt"
@@ -25,7 +25,7 @@ and dissassociate it from any ChatBots.`,
 }
 
 func init() {
-	deleteCmd.AddCommand(pluginCmd)
+	DeleteCmd.AddCommand(pluginCmd)
 
 	// Here you will define your flags and configuration settings.
 

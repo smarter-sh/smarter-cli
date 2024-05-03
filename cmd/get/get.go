@@ -1,10 +1,12 @@
 /*
 Copyright © 2024 NAME HERE <EMAIL ADDRESS>
 */
-package cmd
+package get
 
 import (
 	"fmt"
+
+	"github.com/QueriumCorp/smarter-cli/cmd"
 
 	"github.com/spf13/cobra"
 )
@@ -25,7 +27,7 @@ or a manifest for a specific resource.`,
 }
 
 func init() {
-	rootCmd.AddCommand(getCmd)
+	cmd.RootCmd.AddCommand(getCmd)
 
 	// Here you will define your flags and configuration settings.
 

@@ -24,7 +24,7 @@ The Smarter API will deploy the resource.`,
 }
 
 func init() {
-	rootCmd.AddCommand(deployCmd)
+	RootCmd.AddCommand(deployCmd)
 
 	// Here you will define your flags and configuration settings.
 

@@ -1,7 +1,7 @@
 /*
 Copyright © 2024 NAME HERE <EMAIL ADDRESS>
 */
-package cmd
+package delete
 
 import (
 	"fmt"
@@ -25,7 +25,7 @@ and all related chat history.`,
 }
 
 func init() {
-	deleteCmd.AddCommand(chatbotCmd)
+	DeleteCmd.AddCommand(chatbotCmd)
 
 	// Here you will define your flags and configuration settings.
 

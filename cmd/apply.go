@@ -27,7 +27,7 @@ flags will output the manifest in the specified format. The
 }
 
 func init() {
-	rootCmd.AddCommand(applyCmd)
+	RootCmd.AddCommand(applyCmd)
 
 	// Here you will define your flags and configuration settings.
 
