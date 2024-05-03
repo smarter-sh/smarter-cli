@@ -20,7 +20,13 @@ smarter get status --json --yaml
 The Smarter API will return the current status of the Smarter Platform,
 including the status of all services and resources by region.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("status called")
+
+		body, err := GetAPIResponse("status")
+		if err != nil {
+			fmt.Println("Error:", err)
+		} else {
+			fmt.Println("Response:", string(body))
+		}
 	},
 }
 
