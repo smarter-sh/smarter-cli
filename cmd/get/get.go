@@ -1,5 +1,5 @@
 /*
-Copyright © 2024 NAME HERE <EMAIL ADDRESS>
+Copyright © 2024 Lawrence McDaniel <lawrence@querium.com>
 */
 package get
 
@@ -11,8 +11,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// getCmd represents the get command
-var getCmd = &cobra.Command{
+// GetCmd represents the get command
+var GetCmd = &cobra.Command{
 	Use:   "get",
 	Short: "Generate a list of Smarter resources or a manifest for a specific resource",
 	Long: `Generate a list of Smarter resources or a manifest for a specific resource:
@@ -27,15 +27,15 @@ or a manifest for a specific resource.`,
 }
 
 func init() {
-	cmd.RootCmd.AddCommand(getCmd)
+	cmd.RootCmd.AddCommand(GetCmd)
 
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	// getCmd.PersistentFlags().String("foo", "", "A help for foo")
+	// GetCmd.PersistentFlags().String("foo", "", "A help for foo")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// getCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	// GetCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

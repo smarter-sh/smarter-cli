@@ -1,7 +1,7 @@
 /*
-Copyright © 2024 NAME HERE <EMAIL ADDRESS>
+Copyright © 2024 Lawrence McDaniel <lawrence@querium.com>
 */
-package get
+package account
 
 import (
 	"fmt"

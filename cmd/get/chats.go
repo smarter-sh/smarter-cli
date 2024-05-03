@@ -1,5 +1,5 @@
 /*
-Copyright © 2024 NAME HERE <EMAIL ADDRESS>
+Copyright © 2024 Lawrence McDaniel <lawrence@querium.com>
 */
 package get
 
@@ -25,7 +25,7 @@ or a manifest for a specific Chat history.`,
 }
 
 func init() {
-	getCmd.AddCommand(chatsCmd)
+	GetCmd.AddCommand(chatsCmd)
 
 	// Here you will define your flags and configuration settings.
 

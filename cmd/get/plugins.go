@@ -1,5 +1,5 @@
 /*
-Copyright © 2024 NAME HERE <EMAIL ADDRESS>
+Copyright © 2024 Lawrence McDaniel <lawrence@querium.com>
 */
 package get
 
@@ -27,7 +27,7 @@ or a manifest for a specific Plugin.`,
 }
 
 func init() {
-	getCmd.AddCommand(pluginsCmd)
+	GetCmd.AddCommand(pluginsCmd)
 
 	// Here you will define your flags and configuration settings.
 

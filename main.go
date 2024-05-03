@@ -8,6 +8,7 @@ import (
 	_ "github.com/QueriumCorp/smarter-cli/cmd/delete"
 	_ "github.com/QueriumCorp/smarter-cli/cmd/delete/account"
 	_ "github.com/QueriumCorp/smarter-cli/cmd/get"
+	_ "github.com/QueriumCorp/smarter-cli/cmd/get/account"
 )
 
 func main() {

@@ -1,10 +1,12 @@
 /*
-Copyright © 2024 NAME HERE <EMAIL ADDRESS>
+Copyright © 2024 Lawrence McDaniel <lawrence@querium.com>
 */
-package get
+package account
 
 import (
 	"fmt"
+
+	"github.com/QueriumCorp/smarter-cli/cmd/get"
 
 	"github.com/spf13/cobra"
 )
@@ -24,7 +26,7 @@ The Smarter API will return your Account manifest in the specified format.`,
 }
 
 func init() {
-	getCmd.AddCommand(accountCmd)
+	get.GetCmd.AddCommand(accountCmd)
 
 	// Here you will define your flags and configuration settings.
 

@@ -53,7 +53,7 @@ scaffolding example
 
 ```console
 cobra-cli add get
-cobra-cli add plugins -p 'getCmd'
+cobra-cli add plugins -p 'GetCmd'
 ```
 
 ## Project Startup
