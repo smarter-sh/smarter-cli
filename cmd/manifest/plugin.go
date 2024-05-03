@@ -1,7 +1,7 @@
 /*
 Copyright © 2024 Lawrence McDaniel <lawrence@querium.com>
 */
-package cmd
+package manifest
 
 import (
 	"fmt"
@@ -10,21 +10,26 @@ import (
 )
 
 // manifestCmd represents the manifest command
-var manifestCmd = &cobra.Command{
-	Use:   "manifest",
-	Short: "Generate an example manifest for the resource kind",
-	Long: `Generate an example manifest for the resource kind. For example:
+var pluginCmd = &cobra.Command{
+	Use:   "plugin",
+	Short: "Generate an example Plugin manifest",
+	Long: `Generate an example Plugin manifest. For example:
 
 	smarter manifest plugin > my-plugin.yaml
 
 This will generate an example manifest for a plugin resource and write it to my-plugin.yaml in the current working directory.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("manifest called")
+		contents, err := getYamlFileContents("plugin")
+		if err != nil {
+			fmt.Println("Error reading file:", err)
+		} else {
+			fmt.Println(contents)
+		}
 	},
 }
 
 func init() {
-	RootCmd.AddCommand(manifestCmd)
+	manifestCmd.AddCommand(pluginCmd)
 
 	// Here you will define your flags and configuration settings.
 
