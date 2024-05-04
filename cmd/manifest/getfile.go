@@ -13,7 +13,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-func getYamlFileContents(kind string) (string, error) {
+func getLocalFileContents(kind string) (string, error) {
 	filePath := fmt.Sprintf("./data/manifests/%s.yaml", kind)
 	contents, err := os.ReadFile(filePath)
 	if err != nil {
@@ -30,15 +30,22 @@ func GetAndPrintYAMLResponse(url string, kind string) (string, error) {
 		environment = "prod"
 	}
 
+	// If we are in a local environment, we can just read the file from the
+	// repository
 	if environment == "local" {
-		return getYamlFileContents(kind)
+		return getLocalFileContents(kind)
 	}
 
+	// Otherwise, we need to make an HTTP request to the environment
+	// cdn to get the deployed file contents. This is a 2-step process:
+	// 1. Get the URL of the file from the smarter API
+	// 2. Get the contents of the file from the environment CDN
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		panic(err)
 	}
 
+	// example url: https://cdn.platform.smarter.sh/cli/example-manifests/plugin.yaml
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
