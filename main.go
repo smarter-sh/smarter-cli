@@ -14,11 +14,17 @@ import (
 	_ "github.com/QueriumCorp/smarter-cli/cmd/manifest"
 	"github.com/joho/godotenv"
 	"github.com/spf13/pflag"
+	"github.com/spf13/viper"
 )
 
 func main() {
 	pflag.String("environment", "prod", "API environment: local, alpha, beta, next, prod")
 	pflag.Parse()
+
+	// Bind the environment flag to the viper configuration
+	if err := viper.BindPFlag("environment", pflag.Lookup("environment")); err != nil {
+		log.Fatalf("Error binding flag: %v", err)
+	}
 
 	err := godotenv.Load()
 	if err != nil {
