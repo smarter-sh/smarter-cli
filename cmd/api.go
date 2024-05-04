@@ -16,9 +16,11 @@ const (
 )
 
 func getAPIHost() string {
-	environment := viper.GetString("config.environment")
+	var environment string
 	if viper.IsSet("environment") {
 		environment = viper.GetString("environment")
+	} else {
+		environment = "prod"
 	}
 
 	baseURL := fmt.Sprintf("https://%%s.%s", RootDomain)

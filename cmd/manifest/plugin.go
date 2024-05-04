@@ -19,11 +19,23 @@ var pluginCmd = &cobra.Command{
 
 This will generate an example manifest for a plugin resource and write it to my-plugin.yaml in the current working directory.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		contents, err := getYamlFileContents("plugin")
+
+		body, err := GetAPI("manifest/plugin")
 		if err != nil {
-			fmt.Println("Error reading file:", err)
+			fmt.Println("Error:", err)
 		} else {
-			fmt.Println(contents)
+			if filepath, ok := body["filepath"].(string); ok {
+				url := filepath
+				fmt.Println("URL:", url)
+				contents, err := GetAndPrintYAMLResponse(url, "plugin")
+				if err != nil {
+					fmt.Println("Error reading file:", err)
+				} else {
+					fmt.Println(contents)
+				}
+			} else {
+				fmt.Println("Error: filepath not found or not a string")
+			}
 		}
 	},
 }

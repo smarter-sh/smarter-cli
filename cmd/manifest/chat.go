@@ -19,12 +19,25 @@ var chatCmd = &cobra.Command{
 
 This will generate an example manifest for your Chat and write it to my-chat.yaml in the current working directory.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		contents, err := getYamlFileContents("chat")
+
+		body, err := GetAPI("manifest/chat")
 		if err != nil {
-			fmt.Println("Error reading file:", err)
+			fmt.Println("Error:", err)
 		} else {
-			fmt.Println(contents)
+			if filepath, ok := body["filepath"].(string); ok {
+				url := filepath
+				fmt.Println("URL:", url)
+				contents, err := GetAndPrintYAMLResponse(url, "chat")
+				if err != nil {
+					fmt.Println("Error reading file:", err)
+				} else {
+					fmt.Println(contents)
+				}
+			} else {
+				fmt.Println("Error: filepath not found or not a string")
+			}
 		}
+
 	},
 }
 

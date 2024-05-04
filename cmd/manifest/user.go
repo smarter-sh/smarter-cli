@@ -19,12 +19,25 @@ var userCmd = &cobra.Command{
 
 This will generate an example manifest for a User resource and write it to my-user.yaml in the current working directory.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		contents, err := getYamlFileContents("user")
+
+		body, err := GetAPI("manifest/user")
 		if err != nil {
-			fmt.Println("Error reading file:", err)
+			fmt.Println("Error:", err)
 		} else {
-			fmt.Println(contents)
+			if filepath, ok := body["filepath"].(string); ok {
+				url := filepath
+				fmt.Println("URL:", url)
+				contents, err := GetAndPrintYAMLResponse(url, "user")
+				if err != nil {
+					fmt.Println("Error reading file:", err)
+				} else {
+					fmt.Println(contents)
+				}
+			} else {
+				fmt.Println("Error: filepath not found or not a string")
+			}
 		}
+
 	},
 }
 

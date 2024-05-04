@@ -5,7 +5,6 @@ package manifest
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/spf13/cobra"
 )
@@ -21,15 +20,6 @@ var accountCmd = &cobra.Command{
 This will generate an example manifest for your Account and write it to my-account.yaml in the current working directory.`,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		// if environment == "local" {
-		// 	contents, err := getYamlFileContents("account")
-		// 	if err != nil {
-		// 		fmt.Println("Error reading file:", err)
-		// 	} else {
-		// 		fmt.Println(contents)
-		// 	}
-		// }
-
 		body, err := GetAPI("manifest/account")
 		if err != nil {
 			fmt.Println("Error:", err)
@@ -37,9 +27,11 @@ This will generate an example manifest for your Account and write it to my-accou
 			if filepath, ok := body["filepath"].(string); ok {
 				url := filepath
 				fmt.Println("URL:", url)
-				err := GetAndPrintYAMLResponse(url)
+				contents, err := GetAndPrintYAMLResponse(url, "account")
 				if err != nil {
-					log.Fatal(err)
+					fmt.Println("Error reading file:", err)
+				} else {
+					fmt.Println(contents)
 				}
 			} else {
 				fmt.Println("Error: filepath not found or not a string")

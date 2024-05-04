@@ -4,11 +4,6 @@ Copyright © 2024 Lawrence McDaniel <lawrence@querium.com>
 package manifest
 
 import (
-	"fmt"
-	"io"
-	"log"
-	"net/http"
-
 	"github.com/QueriumCorp/smarter-cli/cmd"
 
 	"github.com/spf13/cobra"
@@ -17,31 +12,6 @@ import (
 func GetAPI(slug string) (map[string]interface{}, error) {
 
 	return cmd.GetAPIResponse(slug)
-
-}
-
-func GetAndPrintYAMLResponse(url string) error {
-
-	req, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		panic(err)
-	}
-
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-
-	bodyBytes, err := io.ReadAll(resp.Body)
-	if err != nil {
-		log.Fatalf("Error reading response body: %v", err)
-	}
-	bodyString := string(bodyBytes)
-	fmt.Println(bodyString)
-
-	return nil
 
 }
 
