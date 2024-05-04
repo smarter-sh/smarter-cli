@@ -4,8 +4,7 @@ Copyright © 2024 Lawrence McDaniel lawrence@querium.com
 package main
 
 import (
-	"fmt"
-	"os"
+	"log"
 
 	"github.com/QueriumCorp/smarter-cli/cmd"
 	_ "github.com/QueriumCorp/smarter-cli/cmd/delete"
@@ -19,9 +18,8 @@ import (
 func main() {
 
 	err := godotenv.Load()
-	if err == nil {
-		fmt.Fprintln(os.Stderr, "Found and loaded .env file")
+	if err != nil {
+		log.Fatal("Error loading .env file")
 	}
-
 	cmd.Execute()
 }

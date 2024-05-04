@@ -40,7 +40,7 @@ func Execute() {
 }
 
 var environment string
-var validEnvironments = []string{"local", "alpha", "beta", "next", "prod"}
+var validEnvironments = []string{"", "local", "alpha", "beta", "next", "prod"}
 
 func init() {
 	cobra.OnInitialize(initConfig)
@@ -99,7 +99,7 @@ func initConfig() {
 			"username":       "",
 			"api_key":        "",
 			"environment":    "",
-			"output":         "json",
+			"output_format":  "json",
 		}
 		viper.SetDefault("config", defaultConfig)
 
@@ -117,7 +117,5 @@ func initConfig() {
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "Failed to write default config file:", err)
 		}
-	} else {
-		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
 	}
 }

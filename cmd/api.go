@@ -5,12 +5,43 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"os"
+
+	"github.com/spf13/viper"
 )
 
+const (
+	RootDomain  = "platform.smarter.sh"
+	ApiBasePath = "/api/v0/cli"
+)
+
+func getAPIHost() string {
+	environment := viper.GetString("config.environment")
+	if viper.IsSet("environment") {
+		environment = viper.GetString("environment")
+	}
+
+	baseURL := fmt.Sprintf("https://%%s.%s", RootDomain)
+
+	switch environment {
+	case "local":
+		return "http://localhost:8000"
+	case "alpha":
+		return fmt.Sprintf(baseURL, "alpha")
+	case "beta":
+		return fmt.Sprintf(baseURL, "beta")
+	case "next":
+		return fmt.Sprintf(baseURL, "next")
+	case "prod":
+		return fmt.Sprintf("https://%s", RootDomain)
+	default:
+		panic(fmt.Sprintf("invalid environment: %s", environment))
+	}
+}
+
 func GetAPIResponse(slug string) (string, error) {
-	apiHost := os.Getenv("API_HOST")
-	root_url := apiHost + "/api/v0/cli"
+
+	apiHost := getAPIHost()
+	root_url := apiHost + ApiBasePath
 	url := fmt.Sprintf("%s/%s/", root_url, slug)
 	jsonData := []byte(`{}`)
 
