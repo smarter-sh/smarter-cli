@@ -26,7 +26,6 @@ This will generate an example manifest for a User resource and write it to my-us
 		} else {
 			if filepath, ok := body["filepath"].(string); ok {
 				url := filepath
-				fmt.Println("URL:", url)
 				contents, err := GetAndPrintYAMLResponse(url, "user")
 				if err != nil {
 					fmt.Println("Error reading file:", err)

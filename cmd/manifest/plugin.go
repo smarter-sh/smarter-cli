@@ -26,7 +26,6 @@ This will generate an example manifest for a plugin resource and write it to my-
 		} else {
 			if filepath, ok := body["filepath"].(string); ok {
 				url := filepath
-				fmt.Println("URL:", url)
 				contents, err := GetAndPrintYAMLResponse(url, "plugin")
 				if err != nil {
 					fmt.Println("Error reading file:", err)

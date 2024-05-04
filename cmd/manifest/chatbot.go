@@ -26,7 +26,6 @@ This will generate an example manifest for your ChatBot and write it to my-chatb
 		} else {
 			if filepath, ok := body["filepath"].(string); ok {
 				url := filepath
-				fmt.Println("URL:", url)
 				contents, err := GetAndPrintYAMLResponse(url, "chatbot")
 				if err != nil {
 					fmt.Println("Error reading file:", err)

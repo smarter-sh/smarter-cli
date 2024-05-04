@@ -26,7 +26,6 @@ This will generate an example manifest for your Account and write it to my-accou
 		} else {
 			if filepath, ok := body["filepath"].(string); ok {
 				url := filepath
-				fmt.Println("URL:", url)
 				contents, err := GetAndPrintYAMLResponse(url, "account")
 				if err != nil {
 					fmt.Println("Error reading file:", err)

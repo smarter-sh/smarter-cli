@@ -26,7 +26,6 @@ This will generate an example manifest for your Chat and write it to my-chat.yam
 		} else {
 			if filepath, ok := body["filepath"].(string); ok {
 				url := filepath
-				fmt.Println("URL:", url)
 				contents, err := GetAndPrintYAMLResponse(url, "chat")
 				if err != nil {
 					fmt.Println("Error reading file:", err)
