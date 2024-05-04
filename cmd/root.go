@@ -95,9 +95,11 @@ func initConfig() {
 	// create a default config file.
 	if err := viper.ReadInConfig(); err != nil {
 		defaultConfig := map[string]interface{}{
-			"api_key":     "",
-			"environment": "",
-			"output":      "json",
+			"account_number": "",
+			"username":       "",
+			"api_key":        "",
+			"environment":    "",
+			"output":         "json",
 		}
 		viper.SetDefault("config", defaultConfig)
 
