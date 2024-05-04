@@ -292,9 +292,9 @@ Set your account_number, username, api_key and application options.`,
 func init() {
 	RootCmd.AddCommand(configureCmd)
 
-	// Persistent Flags
-	configureCmd.PersistentFlags().StringP("account_number", "a", "", "Smarter account number")
-	configureCmd.PersistentFlags().StringP("api_key", "k", "", "Smarter cli secret key (64-character hash)")
-	configureCmd.PersistentFlags().StringP("username", "u", "", "username (how you login to the Smarter web console)")
-	configureCmd.PersistentFlags().StringP("output_format", "o", "", "Output format (json, yaml)")
+	// Flags
+	configureCmd.Flags().StringP("account_number", "a", "", "Smarter account number")
+	configureCmd.Flags().StringP("api_key", "k", "", "Smarter cli secret key (64-character hash)")
+	configureCmd.Flags().StringP("username", "u", "", "username (how you login to the Smarter web console)")
+	configureCmd.Flags().StringP("output_format", "o", "", "Output format (json, yaml)")
 }
