@@ -4,6 +4,7 @@ Copyright © 2024 Lawrence McDaniel <lawrence@querium.com>
 package account
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/spf13/cobra"
@@ -26,7 +27,12 @@ will replace the deleted user.`,
 		if err != nil {
 			fmt.Println("Error:", err)
 		} else {
-			fmt.Println("Response:", string(body))
+			bodyStr, err := json.Marshal(body)
+			if err != nil {
+				fmt.Println("Error:", err)
+			} else {
+				fmt.Println("Response:", string(bodyStr))
+			}
 		}
 
 	},

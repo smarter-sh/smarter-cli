@@ -4,6 +4,7 @@ Copyright © 2024 Lawrence McDaniel <lawrence@querium.com>
 package manifest
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/spf13/cobra"
@@ -19,12 +20,28 @@ var accountCmd = &cobra.Command{
 
 This will generate an example manifest for your Account and write it to my-account.yaml in the current working directory.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		contents, err := getYamlFileContents("account")
+
+		// if environment == "local" {
+		// 	contents, err := getYamlFileContents("account")
+		// 	if err != nil {
+		// 		fmt.Println("Error reading file:", err)
+		// 	} else {
+		// 		fmt.Println(contents)
+		// 	}
+		// }
+
+		body, err := GetAPI("manifest/account")
 		if err != nil {
-			fmt.Println("Error reading file:", err)
+			fmt.Println("Error:", err)
 		} else {
-			fmt.Println(contents)
+			bodyStr, err := json.Marshal(body)
+			if err != nil {
+				fmt.Println("Error:", err)
+			} else {
+				fmt.Println("Response:", string(bodyStr))
+			}
 		}
+
 	},
 }
 

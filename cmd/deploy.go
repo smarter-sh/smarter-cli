@@ -4,6 +4,7 @@ Copyright © 2024 Lawrence McDaniel <lawrence@querium.com>
 package cmd
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/spf13/cobra"
@@ -24,7 +25,12 @@ The Smarter API will deploy the resource.`,
 		if err != nil {
 			fmt.Println("Error:", err)
 		} else {
-			fmt.Println("Response:", string(body))
+			bodyStr, err := json.Marshal(body)
+			if err != nil {
+				fmt.Println("Error:", err)
+			} else {
+				fmt.Println("Response:", string(bodyStr))
+			}
 		}
 
 	},

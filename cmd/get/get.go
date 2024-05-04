@@ -9,7 +9,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func GetAPI(slug string) (string, error) {
+func GetAPI(slug string) (map[string]interface{}, error) {
 
 	return cmd.GetAPIResponse(slug)
 

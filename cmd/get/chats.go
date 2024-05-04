@@ -4,6 +4,7 @@ Copyright © 2024 Lawrence McDaniel <lawrence@querium.com>
 package get
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/spf13/cobra"
@@ -25,7 +26,12 @@ or a manifest for a specific Chat history.`,
 		if err != nil {
 			fmt.Println("Error:", err)
 		} else {
-			fmt.Println("Response:", string(body))
+			bodyStr, err := json.Marshal(body)
+			if err != nil {
+				fmt.Println("Error:", err)
+			} else {
+				fmt.Println("Response:", string(bodyStr))
+			}
 		}
 
 	},

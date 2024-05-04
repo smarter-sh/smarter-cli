@@ -2,8 +2,9 @@ package cmd
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
-	"io"
+	"log"
 	"net/http"
 
 	"github.com/spf13/viper"
@@ -38,7 +39,7 @@ func getAPIHost() string {
 	}
 }
 
-func GetAPIResponse(slug string) (string, error) {
+func GetAPIResponse(slug string) (map[string]interface{}, error) {
 
 	apiHost := getAPIHost()
 	root_url := apiHost + ApiBasePath
@@ -54,14 +55,15 @@ func GetAPIResponse(slug string) (string, error) {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return "", err
+		return map[string]interface{}{}, err
 	}
 	defer resp.Body.Close()
 
-	body, err := io.ReadAll(resp.Body)
+	var result map[string]interface{}
+	err = json.NewDecoder(resp.Body).Decode(&result)
 	if err != nil {
-		return "", err
+		log.Fatalf("Error decoding JSON: %v", err)
 	}
 
-	return string(body), nil
+	return result, nil
 }

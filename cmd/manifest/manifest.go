@@ -9,6 +9,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
+func GetAPI(slug string) (map[string]interface{}, error) {
+
+	return cmd.GetAPIResponse(slug)
+
+}
+
 // manifestCmd represents the manifest command
 var manifestCmd = &cobra.Command{
 	Use:   "manifest",

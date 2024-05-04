@@ -4,6 +4,7 @@ Copyright © 2024 Lawrence McDaniel <lawrence@querium.com>
 package get
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/spf13/cobra"
@@ -23,11 +24,16 @@ The Smarter API will return a list of Plugins in the specified format,
 or a manifest for a specific Plugin.`,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		body, err := GetAPI("apply")
+		body, err := GetAPI("plugins")
 		if err != nil {
 			fmt.Println("Error:", err)
 		} else {
-			fmt.Println("Response:", string(body))
+			bodyStr, err := json.Marshal(body)
+			if err != nil {
+				fmt.Println("Error:", err)
+			} else {
+				fmt.Println("Response:", string(bodyStr))
+			}
 		}
 
 	},
