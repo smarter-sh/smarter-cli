@@ -26,11 +26,11 @@ or a manifest for a specific ChatBot.`,
 		if err != nil {
 			fmt.Println("Error:", err)
 		} else {
-			bodyStr, err := json.Marshal(body)
+			bodyJson, err := json.Marshal(body)
 			if err != nil {
 				fmt.Println("Error:", err)
 			} else {
-				fmt.Println("Response:", string(bodyStr))
+				fmt.Println("Response:", string(bodyJson))
 			}
 		}
 

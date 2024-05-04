@@ -28,11 +28,11 @@ flags will output the manifest in the specified format. The
 		if err != nil {
 			fmt.Println("Error:", err)
 		} else {
-			bodyStr, err := json.Marshal(body)
+			bodyJson, err := json.Marshal(body)
 			if err != nil {
 				fmt.Println("Error:", err)
 			} else {
-				fmt.Println("Response:", string(bodyStr))
+				fmt.Println("Response:", string(bodyJson))
 			}
 		}
 

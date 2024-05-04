@@ -4,8 +4,8 @@ Copyright © 2024 Lawrence McDaniel <lawrence@querium.com>
 package manifest
 
 import (
-	"encoding/json"
 	"fmt"
+	"log"
 
 	"github.com/spf13/cobra"
 )
@@ -34,11 +34,15 @@ This will generate an example manifest for your Account and write it to my-accou
 		if err != nil {
 			fmt.Println("Error:", err)
 		} else {
-			bodyStr, err := json.Marshal(body)
-			if err != nil {
-				fmt.Println("Error:", err)
+			if filepath, ok := body["filepath"].(string); ok {
+				url := filepath
+				fmt.Println("URL:", url)
+				err := GetAndPrintYAMLResponse(url)
+				if err != nil {
+					log.Fatal(err)
+				}
 			} else {
-				fmt.Println("Response:", string(bodyStr))
+				fmt.Println("Error: filepath not found or not a string")
 			}
 		}
 
