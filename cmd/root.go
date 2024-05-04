@@ -4,8 +4,12 @@ Copyright © 2024 Lawrence McDaniel lawrence@querium.com
 package cmd
 
 import (
+	"errors"
 	"fmt"
+	"log"
 	"os"
+	"path/filepath"
+	"strings"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -35,8 +39,12 @@ func Execute() {
 	}
 }
 
+var environment string
+var validEnvironments = []string{"local", "alpha", "beta", "next", "prod"}
+
 func init() {
 	cobra.OnInitialize(initConfig)
+	initConfig()
 
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
@@ -44,31 +52,70 @@ func init() {
 
 	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.smarter.yaml)")
 
+	// Add the --environment flag
+	RootCmd.PersistentFlags().StringVar(&environment, "environment", "", "environment to use: local, alpha, beta, next, prod. Default is prod")
+	RootCmd.PersistentPreRunE = validateEnvironmentFlag
+
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	RootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
+// Add this function to validate the environment flag
+func validateEnvironmentFlag(cmd *cobra.Command, args []string) error {
+	for _, validEnvironment := range validEnvironments {
+		if environment == validEnvironment {
+			return nil
+		}
+	}
+	return errors.New("invalid environment. Valid environments are development, staging, production")
+}
+
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
+
+	home, err := os.UserHomeDir()
+	cobra.CheckErr(err)
+	configDir := filepath.Join(home, ".smarter")
+	configFile := filepath.Join(configDir, "config.yaml")
+
 	if cfgFile != "" {
 		// Use config file from the flag.
 		viper.SetConfigFile(cfgFile)
 	} else {
-		// Find home directory.
-		home, err := os.UserHomeDir()
-		cobra.CheckErr(err)
-
-		// Search config in home directory with name ".smarter" (without extension).
-		viper.AddConfigPath(home)
+		// Search config in .smarter directory in home directory with name "config" (without extension).
+		viper.AddConfigPath(configDir)
 		viper.SetConfigType("yaml")
-		viper.SetConfigName(".smarter")
+		viper.SetConfigName("config")
 	}
 
 	viper.AutomaticEnv() // read in environment variables that match
 
-	// If a config file is found, read it in.
-	if err := viper.ReadInConfig(); err == nil {
+	// If a config file is found, read it in. Otherwise,
+	// create a default config file.
+	if err := viper.ReadInConfig(); err != nil {
+		defaultConfig := map[string]interface{}{
+			"api_key":     "",
+			"environment": "",
+			"output":      "json",
+		}
+		viper.SetDefault("config", defaultConfig)
+
+		if _, err := os.Stat(configDir); os.IsNotExist(err) {
+			if err := os.Mkdir(configDir, 0755); err != nil {
+				log.Fatal(err)
+			}
+			fmt.Fprintln(os.Stderr, strings.Repeat("*", 80))
+			fmt.Fprintln(os.Stderr, "Welcome to the Smarter CLI!")
+			fmt.Fprintln(os.Stderr, "Please note your smarter configuration path:", configDir)
+			fmt.Fprintln(os.Stderr, strings.Repeat("*", 80))
+		}
+
+		err := viper.SafeWriteConfigAs(configFile)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "Failed to write default config file:", err)
+		}
+	} else {
 		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
 	}
 }
