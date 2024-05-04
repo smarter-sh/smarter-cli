@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )
 
@@ -24,6 +25,12 @@ func getLocalFileContents(kind string) (string, error) {
 
 func GetAndPrintYAMLResponse(url string, kind string) (string, error) {
 	var environment string
+
+	// Bind the environment flag to the viper configuration
+	if err := viper.BindPFlag("environment", pflag.Lookup("environment")); err != nil {
+		log.Fatalf("Error binding flag: %v", err)
+	}
+
 	if viper.IsSet("environment") {
 		environment = viper.GetString("environment")
 	} else {

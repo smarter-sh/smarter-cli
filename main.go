@@ -13,9 +13,12 @@ import (
 	_ "github.com/QueriumCorp/smarter-cli/cmd/get/account"
 	_ "github.com/QueriumCorp/smarter-cli/cmd/manifest"
 	"github.com/joho/godotenv"
+	"github.com/spf13/pflag"
 )
 
 func main() {
+	pflag.String("environment", "prod", "API environment: local, alpha, beta, next, prod")
+	pflag.Parse()
 
 	err := godotenv.Load()
 	if err != nil {
