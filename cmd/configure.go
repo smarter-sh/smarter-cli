@@ -15,6 +15,9 @@ import (
 	"github.com/spf13/viper"
 )
 
+// Account Number
+//
+// This section contains code related to account_number configuration.
 func validateAccountNumber(accountNumber string) error {
 	regex, err := regexp.Compile(`^\d{4}-\d{4}-\d{4}$`)
 	if err != nil {
@@ -59,6 +62,21 @@ func getAccountNumber() string {
 	return accountNumber
 }
 
+func setAccountNumber(accountNumber string) {
+	if accountNumber != "" {
+		err := validateAccountNumber(accountNumber)
+		if err != nil {
+			fmt.Println(err)
+		} else {
+			viper.Set("config.account_number", accountNumber)
+			fmt.Println("Account number set to", accountNumber)
+		}
+	}
+}
+
+// Api Key
+//
+// This section contains code related to api_key configuration.
 func validateApiKey(apiKey string) error {
 	regex, err := regexp.Compile(`^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-4[a-fA-F0-9]{3}-[89aAbB][a-fA-F0-9]{3}-[a-fA-F0-9]{12}$`)
 	if err != nil {
@@ -103,6 +121,21 @@ func getApiKey() string {
 	return apiKey
 }
 
+func setApiKey(apiKey string) {
+	if apiKey != "" {
+		err := validateApiKey(apiKey)
+		if err != nil {
+			fmt.Println(err)
+		} else {
+			viper.Set("config.api_key", apiKey)
+			fmt.Println("API key set to", apiKey)
+		}
+	}
+}
+
+// Username
+//
+// This section contains code related to username configuration.
 func validateUsername(username string) error {
 	regex, err := regexp.Compile(`^[a-zA-Z0-9_]+$`)
 	if err != nil {
@@ -142,6 +175,19 @@ func getUsername() string {
 	return username
 }
 
+func setUsername(username string) {
+	err := validateUsername(username)
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		viper.Set("config.username", username)
+		fmt.Println("Username set to", username)
+	}
+}
+
+// Output Format
+//
+// This section contains code related to output_format configuration.
 func validateOutputFormat(format string) error {
 	lowerFormat := strings.ToLower(format)
 
@@ -183,6 +229,16 @@ func getOutputFormat() string {
 	return outputFormat
 }
 
+func setOutputFormat(outputFormat string) {
+	err := validateOutputFormat(outputFormat)
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		viper.Set("config.output_format", outputFormat)
+		fmt.Println("Output format set to", outputFormat)
+	}
+}
+
 // applyCmd represents the apply command
 var configureCmd = &cobra.Command{
 	Use:   "configure",
@@ -200,40 +256,16 @@ Set your account_number, username, api_key and application options.`,
 
 		if cmd.Flags().NFlag() > 0 {
 			if accountNumber != "" {
-				err := validateAccountNumber(accountNumber)
-				if err != nil {
-					fmt.Println(err)
-				} else {
-					viper.Set("config.account_number", accountNumber)
-					fmt.Println("Account number set to", accountNumber)
-				}
+				setAccountNumber(accountNumber)
 			}
 			if apiKey != "" {
-				err := validateApiKey(apiKey)
-				if err != nil {
-					fmt.Println(err)
-				} else {
-					viper.Set("config.api_key", apiKey)
-					fmt.Println("API key set to", apiKey)
-				}
+				setApiKey(apiKey)
 			}
 			if username != "" {
-				err := validateUsername(username)
-				if err != nil {
-					fmt.Println(err)
-				} else {
-					viper.Set("config.username", username)
-					fmt.Println("Username set to", username)
-				}
+				setUsername(username)
 			}
 			if outputFormat != "" {
-				err := validateOutputFormat(outputFormat)
-				if err != nil {
-					fmt.Println(err)
-				} else {
-					viper.Set("config.output_format", outputFormat)
-					fmt.Println("Output format set to", outputFormat)
-				}
+				setOutputFormat(outputFormat)
 			}
 		} else {
 			if accountNumber == "" {
