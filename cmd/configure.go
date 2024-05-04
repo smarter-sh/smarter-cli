@@ -103,6 +103,19 @@ func getApiKey() string {
 	return apiKey
 }
 
+func validateUsername(username string) error {
+	regex, err := regexp.Compile(`^[a-zA-Z0-9_]+$`)
+	if err != nil {
+		return err
+	}
+
+	if !regex.MatchString(username) {
+		return fmt.Errorf("invalid username. Usernames should only contain alphanumeric characters and underscores")
+	}
+
+	return nil
+}
+
 func getUsername() string {
 	fmt.Println("getUsername()")
 	username := viper.Get("username").(string)
@@ -115,6 +128,11 @@ func getUsername() string {
 	input, _ := reader.ReadString('\n')
 	input = strings.TrimSpace(input)
 	if input != "" {
+		err := validateUsername(input)
+		if err != nil {
+			fmt.Println("Invalid username. Please input your username for the Smarter web console https://platform.smarter.sh. Please try again.")
+			return getUsername()
+		}
 		if username != input {
 			username = input
 			viper.Set("config.username", username)
@@ -200,7 +218,13 @@ Set your account_number, username, api_key and application options.`,
 				}
 			}
 			if username != "" {
-				viper.Set("config.username", username)
+				err := validateUsername(username)
+				if err != nil {
+					fmt.Println(err)
+				} else {
+					viper.Set("config.username", username)
+					fmt.Println("Username set to", username)
+				}
 			}
 			if outputFormat != "" {
 				err := validateOutputFormat(outputFormat)
