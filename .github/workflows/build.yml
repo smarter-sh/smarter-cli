@@ -38,6 +38,10 @@ jobs:
         go: ['1.22']
 
     steps:
+    - name: Install Git Bash (Windows)
+      if: runner.os == 'Windows'
+      run: choco install git -params '"/GitAndUnixToolsOnPath"'
+
     - name: Set up Go
       uses: actions/setup-go@v5
       with:
