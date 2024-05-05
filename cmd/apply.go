@@ -4,10 +4,11 @@ Copyright © 2024 Lawrence McDaniel <lawrence@querium.com>
 package cmd
 
 import (
-	"encoding/json"
 	"fmt"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+	"sigs.k8s.io/yaml"
 )
 
 // applyCmd represents the apply command
@@ -24,15 +25,25 @@ flags will output the manifest in the specified format. The
 --dry-run flag will simulate the apply without making any changes.`,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		body, err := GetAPIResponse("apply")
+		jsonFlagValue := viper.GetBool("json")
+		yamlFlagValue := viper.GetBool("yaml")
+
+		bodyJson, err := GetAPIResponse("apply")
 		if err != nil {
-			fmt.Println("Error:", err)
+			panic(err)
 		} else {
-			bodyJson, err := json.Marshal(body)
-			if err != nil {
-				fmt.Println("Error:", err)
-			} else {
-				fmt.Println("Response:", string(bodyJson))
+			switch {
+			case jsonFlagValue:
+				fmt.Println(string(bodyJson))
+			case yamlFlagValue:
+				bodyYaml, err := yaml.JSONToYAML(bodyJson)
+				if err != nil {
+					panic(err)
+				} else {
+					fmt.Println(string(bodyYaml))
+				}
+			default:
+				fmt.Println(string(bodyJson))
 			}
 		}
 

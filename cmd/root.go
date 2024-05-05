@@ -89,11 +89,20 @@ func init() {
 func validateOutputToggles() error {
 	jsonOutput := viper.GetBool("json")
 	yamlOutput := viper.GetBool("yaml")
+	output_format := viper.GetString("config.output_format")
+
 	if jsonOutput && yamlOutput {
 		return errors.New("cannot specify both --json and --yaml")
 	}
 	if !jsonOutput && !yamlOutput {
-		viper.Set("json", true)
+		// check the config file
+		if output_format == "json" {
+			viper.Set("json", true)
+		} else {
+			if output_format != "yaml" {
+				viper.Set("yaml", true)
+			}
+		}
 	}
 	return nil
 

@@ -20,20 +20,16 @@ var accountCmd = &cobra.Command{
 This will generate an example manifest for your Account and write it to my-account.yaml in the current working directory.`,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		body, err := GetAPI("manifest/account")
+		manifest := "account"
+		filepath, err := getFilePath("manifest/" + manifest)
 		if err != nil {
 			fmt.Println("Error:", err)
 		} else {
-			if filepath, ok := body["filepath"].(string); ok {
-				url := filepath
-				contents, err := GetAndPrintYAMLResponse(url, "account")
-				if err != nil {
-					fmt.Println("Error reading file:", err)
-				} else {
-					fmt.Println(contents)
-				}
+			contents, err := GetAndPrintManifest(filepath, manifest)
+			if err != nil {
+				fmt.Println("Error reading file:", err)
 			} else {
-				fmt.Println("Error: filepath not found or not a string")
+				fmt.Println(contents)
 			}
 		}
 

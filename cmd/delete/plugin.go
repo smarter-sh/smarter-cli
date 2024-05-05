@@ -4,10 +4,11 @@ Copyright © 2024 Lawrence McDaniel <lawrence@querium.com>
 package delete
 
 import (
-	"encoding/json"
 	"fmt"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+	"sigs.k8s.io/yaml"
 )
 
 // pluginCmd represents the plugin command
@@ -21,16 +22,25 @@ smarter delete plugin -name --dry-run
 The Smarter API will permanently delete the Plugin with the specified name,
 and dissassociate it from any ChatBots.`,
 	Run: func(cmd *cobra.Command, args []string) {
+		jsonFlagValue := viper.GetBool("json")
+		yamlFlagValue := viper.GetBool("yaml")
 
-		body, err := GetAPI("plugin")
+		bodyJson, err := GetAPI("plugin")
 		if err != nil {
-			fmt.Println("Error:", err)
+			panic(err)
 		} else {
-			bodyJson, err := json.Marshal(body)
-			if err != nil {
-				fmt.Println("Error:", err)
-			} else {
-				fmt.Println("Response:", string(bodyJson))
+			switch {
+			case jsonFlagValue:
+				fmt.Println(string(bodyJson))
+			case yamlFlagValue:
+				bodyYaml, err := yaml.JSONToYAML(bodyJson)
+				if err != nil {
+					panic(err)
+				} else {
+					fmt.Println(string(bodyYaml))
+				}
+			default:
+				fmt.Println(string(bodyJson))
 			}
 		}
 

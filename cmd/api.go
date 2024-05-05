@@ -35,7 +35,7 @@ func getAPIHost() string {
 	}
 }
 
-func GetAPIResponse(slug string) (map[string]interface{}, error) {
+func GetAPIResponse(slug string) ([]byte, error) {
 
 	apiHost := getAPIHost()
 	root_url := apiHost + ApiBasePath
@@ -51,7 +51,7 @@ func GetAPIResponse(slug string) (map[string]interface{}, error) {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return map[string]interface{}{}, err
+		return []byte{}, err
 	}
 	defer resp.Body.Close()
 
@@ -61,5 +61,5 @@ func GetAPIResponse(slug string) (map[string]interface{}, error) {
 		log.Fatalf("Error decoding JSON: %v", err)
 	}
 
-	return result, nil
+	return json.Marshal(result)
 }

@@ -4,14 +4,31 @@ Copyright © 2024 Lawrence McDaniel <lawrence@querium.com>
 package manifest
 
 import (
+	"encoding/json"
+
 	"github.com/QueriumCorp/smarter-cli/cmd"
 
 	"github.com/spf13/cobra"
 )
 
-func GetAPI(slug string) (map[string]interface{}, error) {
+func getFilePath(slug string) (string, error) {
 
-	return cmd.GetAPIResponse(slug)
+	bodyBytes, err := cmd.GetAPIResponse(slug)
+	if err != nil {
+		return "", err
+	} else {
+		var body map[string]interface{}
+		err = json.Unmarshal(bodyBytes, &body)
+		if err != nil {
+			return "", err
+		}
+
+		if filepath, ok := body["filepath"].(string); ok {
+			return filepath, nil
+		} else {
+			panic("filepath not found or not a string")
+		}
+	}
 
 }
 

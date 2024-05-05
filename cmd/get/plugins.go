@@ -4,10 +4,11 @@ Copyright © 2024 Lawrence McDaniel <lawrence@querium.com>
 package get
 
 import (
-	"encoding/json"
 	"fmt"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+	"sigs.k8s.io/yaml"
 )
 
 // pluginsCmd represents the plugins command
@@ -24,15 +25,25 @@ The Smarter API will return a list of Plugins in the specified format,
 or a manifest for a specific Plugin.`,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		body, err := GetAPI("plugins")
+		jsonFlagValue := viper.GetBool("json")
+		yamlFlagValue := viper.GetBool("yaml")
+
+		bodyJson, err := GetAPI("plugins")
 		if err != nil {
-			fmt.Println("Error:", err)
+			panic(err)
 		} else {
-			bodyJson, err := json.Marshal(body)
-			if err != nil {
-				fmt.Println("Error:", err)
-			} else {
-				fmt.Println("Response:", string(bodyJson))
+			switch {
+			case jsonFlagValue:
+				fmt.Println(string(bodyJson))
+			case yamlFlagValue:
+				bodyYaml, err := yaml.JSONToYAML(bodyJson)
+				if err != nil {
+					panic(err)
+				} else {
+					fmt.Println(string(bodyYaml))
+				}
+			default:
+				fmt.Println(string(bodyJson))
 			}
 		}
 

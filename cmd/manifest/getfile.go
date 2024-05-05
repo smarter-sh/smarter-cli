@@ -11,6 +11,7 @@ import (
 	"os"
 
 	"github.com/spf13/viper"
+	"sigs.k8s.io/yaml"
 )
 
 func getLocalFileContents(kind string) (string, error) {
@@ -22,13 +23,49 @@ func getLocalFileContents(kind string) (string, error) {
 	return string(contents), nil
 }
 
-func GetAndPrintYAMLResponse(url string, kind string) (string, error) {
+func formatOutput(contents string) (string, error) {
+	jsonFlagValue := viper.GetBool("json")
+	yamlFlagValue := viper.GetBool("yaml")
+	outputFormat := viper.GetString("config.output_format")
+
+	// if neither flag is set, then first check output_format.
+	// if output_format is set, then use that. it is either "json" or "yaml"
+	// otherwise, default to yaml
+	if !jsonFlagValue && !yamlFlagValue {
+		if outputFormat == "json" {
+			jsonFlagValue = true
+		} else {
+			yamlFlagValue = true
+		}
+	}
+	if yamlFlagValue {
+		return contents, nil
+	}
+
+	// IF jsonFlagValue is true, we need to convert the YAML to JSON
+	if jsonFlagValue {
+		bodyYaml := []byte(contents)
+		bodyJson, err := yaml.YAMLToJSON(bodyYaml)
+		if err != nil {
+			return "", err
+		} else {
+			return string(bodyJson), nil
+		}
+	}
+	return "", nil
+}
+
+func GetAndPrintManifest(url string, kind string) (string, error) {
 	environment := viper.GetString("environment")
 
 	// If we are in a local environment, we can just read the file from the
 	// repository
 	if environment == "local" {
-		return getLocalFileContents(kind)
+		localContents, err := getLocalFileContents(kind)
+		if err != nil {
+			return "", err
+		}
+		return formatOutput(localContents)
 	}
 
 	// Otherwise, we need to make an HTTP request to the environment
@@ -52,6 +89,7 @@ func GetAndPrintYAMLResponse(url string, kind string) (string, error) {
 	if err != nil {
 		log.Fatalf("Error reading response body: %v", err)
 	}
-	return string(bodyBytes), nil
+	remoteContents := string(bodyBytes)
+	return formatOutput(remoteContents)
 
 }
