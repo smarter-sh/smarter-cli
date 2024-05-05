@@ -19,9 +19,6 @@ jobs:
       with:
         go-version: '1.22'
 
-    - name: Install jq (Windows)
-      run: choco install jq
-
     - name: Get dependencies
       run: go get -v -t -d ./...
 
@@ -96,17 +93,13 @@ jobs:
       id: get_upload_url
       shell: bash
       run: |
-        $headers = @{
-          "Authorization" = "Bearer $env:GITHUB_TOKEN"
-        }
-        $url = "https://api.github.com/repos/$env:GITHUB_REPOSITORY/releases/tags/$env:VERSION"
-        $response = Invoke-RestMethod -Uri $url -Headers $headers
-        if ($null -eq $response.upload_url) {
-          Write-Output "Failed to get upload URL"
+        response=$(curl -s -H "Authorization: token $GITHUB_TOKEN" "https://api.github.com/repos/$GITHUB_REPOSITORY/releases/tags/$VERSION")
+        upload_url=$(echo "$response" | jq -r .upload_url)
+        if [ -z "$upload_url" ]; then
+          echo "Failed to get upload URL"
           exit 1
-        }
-        Write-Output "UPLOAD_URL=$($response.upload_url)"
-        Write-Output "UPLOAD_URL=$($response.upload_url)" | Out-File -FilePath $env:GITHUB_ENV -Append
+        fi
+        echo "UPLOAD_URL=$upload_url" >> $GITHUB_ENV
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GITHUB_REPOSITORY: ${{ github.repository }}
