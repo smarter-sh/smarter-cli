@@ -7,7 +7,9 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/ghodss/yaml"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 // whoamiCmd represents the status command
@@ -21,6 +23,8 @@ smarter whoami --json --yaml
 Returns informtation about the Smarter user account that owns the
 configured api_key.`,
 	Run: func(cmd *cobra.Command, args []string) {
+		jsonFlagValue := viper.GetBool("json")
+		yamlFlagValue := viper.GetBool("yaml")
 
 		body, err := GetAPIResponse("whoami")
 		if err != nil {
@@ -28,9 +32,20 @@ configured api_key.`,
 		} else {
 			bodyJson, err := json.Marshal(body)
 			if err != nil {
-				fmt.Println("Error:", err)
+				panic(err)
 			} else {
-				fmt.Println("Response:", string(bodyJson))
+				if jsonFlagValue {
+					fmt.Println("Response:", string(bodyJson))
+				} else if yamlFlagValue {
+					bodyYaml, err := yaml.JSONToYAML(bodyJson)
+					if err != nil {
+						panic(err)
+					} else {
+						fmt.Println("Response:", string(bodyYaml))
+					}
+				} else {
+					fmt.Println("Response:", string(bodyJson))
+				}
 			}
 		}
 	},

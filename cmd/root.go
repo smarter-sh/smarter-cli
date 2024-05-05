@@ -62,14 +62,14 @@ func init() {
 	}
 
 	// Add the --json toggle
-	RootCmd.Flags().BoolP("json", "j", false, "output in JSON format (default)")
-	if err := viper.BindPFlag("json", RootCmd.Flags().Lookup("json")); err != nil {
+	RootCmd.PersistentFlags().BoolP("json", "j", false, "output in JSON format (default)")
+	if err := viper.BindPFlag("json", RootCmd.PersistentFlags().Lookup("json")); err != nil {
 		log.Fatalf("Error binding toggle: %v", err)
 	}
 
 	// Add the --yaml toggle
-	RootCmd.Flags().BoolP("yaml", "y", false, "output in YAML format")
-	if err := viper.BindPFlag("yaml", RootCmd.Flags().Lookup("yaml")); err != nil {
+	RootCmd.PersistentFlags().BoolP("yaml", "y", false, "output in YAML format")
+	if err := viper.BindPFlag("yaml", RootCmd.PersistentFlags().Lookup("yaml")); err != nil {
 		log.Fatalf("Error binding toggle: %v", err)
 	}
 
