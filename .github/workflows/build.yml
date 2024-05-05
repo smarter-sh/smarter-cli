@@ -48,6 +48,17 @@ jobs:
         draft: false
         prerelease: false
 
+    - name: Upload Release Asset
+      id: upload-release-asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./${{ env.app_name }}-windows-${{ steps.vars.outputs.version }}
+        asset_name: ${{ env.app_name }}-windows-${{ steps.vars.outputs.version }}
+        asset_content_type: application/octet-stream
+
   build:
     name: Build macOS and Linux
     runs-on: ${{ matrix.os }}
