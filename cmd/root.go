@@ -42,8 +42,7 @@ func Execute(version string) {
 }
 
 var environment string
-var validEnvironments = []string{"", "local", "alpha", "beta", "next", "prod"}
-var validOutputFormats = []string{"", "json", "yaml"}
+var validEnvironments = []string{"local", "alpha", "beta", "next", "prod"}
 
 func init() {
 	cobra.OnInitialize(initConfig)
@@ -56,44 +55,44 @@ func init() {
 	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.smarter.yaml)")
 
 	// Add the --environment flag
+	// Set up a global --environment flag and bind this to viper.
 	RootCmd.PersistentFlags().StringVar(&environment, "environment", "", "environment to use: local, alpha, beta, next, prod. Default is prod")
+	if err := viper.BindPFlag("environment", RootCmd.PersistentFlags().Lookup("environment")); err != nil {
+		log.Fatalf("Error binding flag: %v", err)
+	}
 
-	// Add the --output_format flag
-	RootCmd.PersistentFlags().StringP("output_format", "o", "json", "output format: json, yaml")
+	// Add the --json toggle
+	RootCmd.Flags().BoolP("json", "j", false, "output in JSON format")
+	if err := viper.BindPFlag("json", RootCmd.Flags().Lookup("json")); err != nil {
+		log.Fatalf("Error binding flag: %v", err)
+	}
+
+	// Add the --yaml toggle
+	RootCmd.Flags().BoolP("yaml", "y", false, "output in YAML format")
+	if err := viper.BindPFlag("yaml", RootCmd.Flags().Lookup("yaml")); err != nil {
+		log.Fatalf("Error binding flag: %v", err)
+	}
 
 	// Bind the flag value validators
 	RootCmd.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
 		if err := validateEnvironmentFlag(); err != nil {
 			return err
 		}
-		if err := validateOutputFormatFlag(); err != nil {
-			return err
-		}
 		return nil
 	}
 
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-	RootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
-// Add this function to validate the environment flag
 func validateEnvironmentFlag() error {
+	if environment == "" {
+		return nil
+	}
 	for _, validEnvironment := range validEnvironments {
 		if environment == validEnvironment {
 			return nil
 		}
 	}
 	return errors.New("invalid environment. Valid values: " + strings.Join(validEnvironments, ", "))
-}
-func validateOutputFormatFlag() error {
-	outputFormat := viper.GetString("output_format")
-	for _, validOutputFormat := range validOutputFormats {
-		if outputFormat == validOutputFormat {
-			return nil
-		}
-	}
-	return errors.New("invalid output_format. Valid values: " + strings.Join(validOutputFormats, ", "))
 }
 
 // initConfig reads in config file and ENV variables if set.
