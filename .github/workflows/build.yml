@@ -7,7 +7,7 @@ env:
     app_name: smarter
 
 jobs:
-  create_release:
+  build_windows_release:
     name: Build windows and create release
     runs-on: windows-latest
     steps:
@@ -33,9 +33,7 @@ jobs:
       id: build
       shell: pwsh
       run: |
-        go build -v \
-        -ldflags "-X main.version=${{ steps.vars.outputs.version }}" \
-        -o ./${{ env.app_name }}-${{ matrix.os }}-${{ steps.vars.outputs.version }}
+        go build -v -ldflags "-X main.version=${{ steps.vars.outputs.version }}" -o "./${{ env.app_name }}-windows-${{ steps.vars.outputs.version }}"
 
     - name: Create Release
       id: create_release
@@ -59,8 +57,9 @@ jobs:
         asset_name: ${{ env.app_name }}-windows-${{ steps.vars.outputs.version }}
         asset_content_type: application/octet-stream
 
-  build:
+  build_macos_linux_release:
     name: Build macOS and Linux
+    needs: build_windows_release
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
