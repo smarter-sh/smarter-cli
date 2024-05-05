@@ -7,54 +7,15 @@ env:
     app_name: smarter
 
 jobs:
-
-  build:
-    name: Build
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [windows-latest, macos-latest, ubuntu-latest]
-        go: ['1.22']
-
+  create_release:
+    name: Create Release
+    runs-on: ubuntu-latest
     steps:
-
-    - name: Set up Go
-      uses: actions/setup-go@v5
-      with:
-        go-version: ${{ matrix.go }}
-
-    - name: Check out code into the Go module directory
-      uses: actions/checkout@v4
-
     - name: Get version
       id: vars
       run: echo ::set-output name=version::$(cat VERSION)
 
-    - name: Get dependencies
-      run: go get -v -t -d ./...
-
-    - name: Build
-      id: build
-      run: |
-        go build -v \
-        -ldflags "-X main.version=${{ steps.vars.outputs.version }}" \
-        -o ./${{ env.app_name }}-${{ matrix.os }}-${{ steps.vars.outputs.version }}
-
-    - name: Check if release exists
-      id: check_release
-      run: |
-        RELEASE_ID=$(curl --silent \
-          --header "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-          "https://api.github.com/repos/${{ github.repository }}/releases/tags/${{ steps.vars.outputs.version }}" \
-          | jq '.id')
-        if [ "$RELEASE_ID" != "null" ]; then
-          echo "RELEASE_EXISTS=true" >> $GITHUB_ENV
-        else
-          echo "RELEASE_EXISTS=false" >> $GITHUB_ENV
-        fi
-
     - name: Create Release
-      if: env.RELEASE_EXISTS == 'false'
       id: create_release
       uses: actions/create-release@v1
       env:
@@ -65,8 +26,39 @@ jobs:
         draft: false
         prerelease: false
 
+  build:
+    name: Build
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
+        go: ['1.22']
+
+    steps:
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: ${{ matrix.go }}
+
+    - name: Check out code
+      uses: actions/checkout@v4
+
+    - name: Get dependencies
+      run: go get -v -t -d ./...
+
+    - name: Get version
+      id: vars
+      run: echo ::set-output name=version::$(cat VERSION)
+
+    - name: Build
+      id: build
+      run: |
+        go build -v \
+        -ldflags "-X main.version=${{ steps.vars.outputs.version }}" \
+        -o ./${{ env.app_name }}-${{ matrix.os }}-${{ steps.vars.outputs.version }}
+
+
     - name: Get upload URL of existing release
-      if: env.RELEASE_EXISTS == 'true'
       id: get_upload_url
       run: |
         UPLOAD_URL=$(curl --silent \
