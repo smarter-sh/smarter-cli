@@ -98,3 +98,9 @@ For complete details on using the Cobra library, please read the [The Cobra User
 
 - https://api.smarter.sh/v0/cli/logs/: Get logs for a resource
 - https://api.smarter.sh/v0/cli/delete/: Delete a resource
+
+## Build
+
+```console
+go build -ldflags="-X main.version=1.0.0" .
+```

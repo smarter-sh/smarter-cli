@@ -17,12 +17,14 @@ import (
 	"github.com/spf13/viper"
 )
 
+var Version = "local.dev"
+
 func main() {
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
-	cmd.Execute()
+	cmd.Execute(Version)
 
 	// Set up a global --environment flag and bind this to viper.
 	pflag.String("environment", "prod", "API environment: local, alpha, beta, next, prod")
