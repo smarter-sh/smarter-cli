@@ -8,7 +8,7 @@ env:
 
 jobs:
   build_windows_release:
-    name: Build windows and create release
+    name: Build-release Windows
     runs-on: windows-latest
     steps:
     - name: Check out code
@@ -27,6 +27,7 @@ jobs:
 
     - name: Get version
       id: vars
+      shell: pwsh
       run: echo ::set-output name=version::$(cat VERSION)
 
     - name: Build
@@ -58,7 +59,7 @@ jobs:
         asset_content_type: application/octet-stream
 
   build_macos_linux_release:
-    name: Build macOS and Linux
+    name: Build-release macOS/Linux
     needs: build_windows_release
     runs-on: ${{ matrix.os }}
     strategy:
