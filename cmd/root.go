@@ -43,7 +43,7 @@ func Execute(version string) {
 
 var environment string
 var validEnvironments = []string{"", "local", "alpha", "beta", "next", "prod"}
-var validOutputFormats = []string{"json", "yaml"}
+var validOutputFormats = []string{"", "json", "yaml"}
 
 func init() {
 	cobra.OnInitialize(initConfig)
