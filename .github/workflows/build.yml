@@ -11,6 +11,9 @@ jobs:
     name: Create Release
     runs-on: ubuntu-latest
     steps:
+    - name: Check out code
+      uses: actions/checkout@v4
+
     - name: Get version
       id: vars
       run: echo ::set-output name=version::$(cat VERSION)
