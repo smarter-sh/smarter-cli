@@ -40,11 +40,25 @@ jobs:
         -ldflags "-X main.version=${{ steps.vars.outputs.version }}" \
         -o ./${{ env.app_name }}-${{ matrix.os }}-${{ steps.vars.outputs.version }}
 
+    - name: Check if release exists
+      id: check_release
+      run: |
+        RELEASE_ID=$(curl --silent \
+          --header "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+          "https://api.github.com/repos/${{ github.repository }}/releases/tags/${{ steps.vars.outputs.version }}" \
+          | jq '.id')
+        if [ "$RELEASE_ID" != "null" ]; then
+          echo "RELEASE_EXISTS=true" >> $GITHUB_ENV
+        else
+          echo "RELEASE_EXISTS=false" >> $GITHUB_ENV
+        fi
+
     - name: Create Release
+      if: env.RELEASE_EXISTS == 'false'
       id: create_release
       uses: actions/create-release@v1
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         tag_name: ${{ steps.vars.outputs.version }}
         release_name: Release ${{ steps.vars.outputs.version }}
