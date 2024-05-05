@@ -62,15 +62,15 @@ func init() {
 	}
 
 	// Add the --json toggle
-	RootCmd.Flags().BoolP("json", "j", false, "output in JSON format")
+	RootCmd.Flags().BoolP("json", "j", false, "output in JSON format (default)")
 	if err := viper.BindPFlag("json", RootCmd.Flags().Lookup("json")); err != nil {
-		log.Fatalf("Error binding flag: %v", err)
+		log.Fatalf("Error binding toggle: %v", err)
 	}
 
 	// Add the --yaml toggle
 	RootCmd.Flags().BoolP("yaml", "y", false, "output in YAML format")
 	if err := viper.BindPFlag("yaml", RootCmd.Flags().Lookup("yaml")); err != nil {
-		log.Fatalf("Error binding flag: %v", err)
+		log.Fatalf("Error binding toggle: %v", err)
 	}
 
 	// Bind the flag value validators
@@ -78,8 +78,24 @@ func init() {
 		if err := validateEnvironmentFlag(); err != nil {
 			return err
 		}
+		if err := validateOutputToggles(); err != nil {
+			return err
+		}
 		return nil
 	}
+
+}
+
+func validateOutputToggles() error {
+	jsonOutput := viper.GetBool("json")
+	yamlOutput := viper.GetBool("yaml")
+	if jsonOutput && yamlOutput {
+		return errors.New("cannot specify both --json and --yaml")
+	}
+	if !jsonOutput && !yamlOutput {
+		viper.Set("json", true)
+	}
+	return nil
 
 }
 
