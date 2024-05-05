@@ -8,15 +8,34 @@ env:
 
 jobs:
   create_release:
-    name: Create Release
-    runs-on: ubuntu-latest
+    name: Build windows and create release
+    runs-on: windows-latest
     steps:
     - name: Check out code
       uses: actions/checkout@v4
 
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.22'
+
+    - name: Install jq (Windows)
+      run: choco install jq
+
+    - name: Get dependencies
+      run: go get -v -t -d ./...
+
     - name: Get version
       id: vars
       run: echo ::set-output name=version::$(cat VERSION)
+
+    - name: Build
+      id: build
+      shell: pwsh
+      run: |
+        go build -v \
+        -ldflags "-X main.version=${{ steps.vars.outputs.version }}" \
+        -o ./${{ env.app_name }}-${{ matrix.os }}-${{ steps.vars.outputs.version }}
 
     - name: Create Release
       id: create_release
@@ -30,18 +49,14 @@ jobs:
         prerelease: false
 
   build:
-    name: Build
+    name: Build macOS and Linux
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-latest, macos-latest, ubuntu-latest]
+        os: [macos-latest, ubuntu-latest]
         go: ['1.22']
 
     steps:
-    - name: Install Git Bash (Windows)
-      if: runner.os == 'Windows'
-      run: choco install git -params '"/GitAndUnixToolsOnPath"'
-
     - name: Set up Go
       uses: actions/setup-go@v5
       with:
@@ -70,11 +85,21 @@ jobs:
       id: get_upload_url
       shell: bash
       run: |
-        UPLOAD_URL=$(curl --silent \
-          --header "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-          "https://api.github.com/repos/${{ github.repository }}/releases/tags/${{ steps.vars.outputs.version }}" \
-          | jq -r '.upload_url')
-        echo "UPLOAD_URL=$UPLOAD_URL" >> $GITHUB_ENV
+        $headers = @{
+          "Authorization" = "Bearer $env:GITHUB_TOKEN"
+        }
+        $url = "https://api.github.com/repos/$env:GITHUB_REPOSITORY/releases/tags/$env:VERSION"
+        $response = Invoke-RestMethod -Uri $url -Headers $headers
+        if ($null -eq $response.upload_url) {
+          Write-Output "Failed to get upload URL"
+          exit 1
+        }
+        Write-Output "UPLOAD_URL=$($response.upload_url)"
+        Write-Output "UPLOAD_URL=$($response.upload_url)" | Out-File -FilePath $env:GITHUB_ENV -Append
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_REPOSITORY: ${{ github.repository }}
+        VERSION: ${{ steps.vars.outputs.version }}
 
     - name: Upload Release Asset
       id: upload-release-asset
