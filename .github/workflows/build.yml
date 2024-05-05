@@ -34,7 +34,11 @@ jobs:
       run: go get -v -t -d ./...
 
     - name: Build
-      run: go build -v -ldflags "-X main.version=${{ steps.vars.outputs.version }}" .
+      id: build
+      run: |
+        go build -v \
+        -ldflags "-X main.version=${{ steps.vars.outputs.version }}" \
+        -o ./${{ env.app_name }}-${{ matrix.os }}-${{ steps.vars.outputs.version }}
 
     - name: Create Release
       id: create_release
