@@ -1,8 +1,7 @@
 name: Go
 
 on:
-  push:
-    branches: [ main ]
+  workflow_dispatch:
 
 env:
     app_name: smarter
