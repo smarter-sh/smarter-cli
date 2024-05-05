@@ -62,7 +62,7 @@ func init() {
 	}
 
 	// Add the --json toggle
-	RootCmd.PersistentFlags().BoolP("json", "j", false, "output in JSON format (default)")
+	RootCmd.PersistentFlags().BoolP("json", "j", false, "output in JSON format")
 	if err := viper.BindPFlag("json", RootCmd.PersistentFlags().Lookup("json")); err != nil {
 		log.Fatalf("Error binding toggle: %v", err)
 	}

@@ -22,7 +22,8 @@ init:
 	@echo "Initializing local development environment..." & \
 	GO111MODULE=off go install golang.org/x/tools/cmd/goimports & \
 	GO111MODULE=on go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.57.2 & \
-	make pre-commit-init	# install and configure pre-commit
+	make pre-commit-init	# install and configure pre-commit & \
+	npm install
 
 
 pre-commit-init:
