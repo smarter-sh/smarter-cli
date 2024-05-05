@@ -31,4 +31,10 @@ func main() {
 	if err := viper.BindPFlag("environment", pflag.Lookup("environment")); err != nil {
 		log.Fatalf("Error binding flag: %v", err)
 	}
+
+	// Set up a global --output_format flag and bind this to viper.
+	pflag.String("output_format", "json", "Output format: json, yaml, table")
+	if err := viper.BindPFlag("output_format", pflag.Lookup("output_format")); err != nil {
+		log.Fatalf("Error binding flag: %v", err)
+	}
 }

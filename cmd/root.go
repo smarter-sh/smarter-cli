@@ -43,6 +43,7 @@ func Execute(version string) {
 
 var environment string
 var validEnvironments = []string{"", "local", "alpha", "beta", "next", "prod"}
+var validOutputFormats = []string{"json", "yaml"}
 
 func init() {
 	cobra.OnInitialize(initConfig)
@@ -56,7 +57,20 @@ func init() {
 
 	// Add the --environment flag
 	RootCmd.PersistentFlags().StringVar(&environment, "environment", "", "environment to use: local, alpha, beta, next, prod. Default is prod")
-	RootCmd.PersistentPreRunE = validateEnvironmentFlag
+
+	// Add the --output_format flag
+	RootCmd.PersistentFlags().StringP("output_format", "o", "json", "output format: json, yaml")
+
+	// Bind the flag value validators
+	RootCmd.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
+		if err := validateEnvironmentFlag(); err != nil {
+			return err
+		}
+		if err := validateOutputFormatFlag(); err != nil {
+			return err
+		}
+		return nil
+	}
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
@@ -64,13 +78,22 @@ func init() {
 }
 
 // Add this function to validate the environment flag
-func validateEnvironmentFlag(cmd *cobra.Command, args []string) error {
+func validateEnvironmentFlag() error {
 	for _, validEnvironment := range validEnvironments {
 		if environment == validEnvironment {
 			return nil
 		}
 	}
-	return errors.New("invalid environment. Valid environments are development, staging, production")
+	return errors.New("invalid environment. Valid values: " + strings.Join(validEnvironments, ", "))
+}
+func validateOutputFormatFlag() error {
+	outputFormat := viper.GetString("output_format")
+	for _, validOutputFormat := range validOutputFormats {
+		if outputFormat == validOutputFormat {
+			return nil
+		}
+	}
+	return errors.New("invalid output_format. Valid values: " + strings.Join(validOutputFormats, ", "))
 }
 
 // initConfig reads in config file and ENV variables if set.
