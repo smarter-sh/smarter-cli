@@ -50,7 +50,7 @@ jobs:
       id: build
       shell: pwsh
       run: |
-        go build -v -ldflags "-X main.version=${{ steps.vars.outputs.version }}" -o "./${{ env.app_name }}-windows-${{ steps.vars.outputs.version }}"
+        go build -v -ldflags "-X main.Version=${{ steps.vars.outputs.version }}" -o "./${{ env.app_name }}-windows-${{ steps.vars.outputs.version }}"
 
     - name: Create Release
       id: create_release
@@ -104,7 +104,7 @@ jobs:
       shell: bash
       run: |
         go build -v \
-        -ldflags "-X main.version=${{ steps.vars.outputs.version }}" \
+        -ldflags "-X main.Version=${{ steps.vars.outputs.version }}" \
         -o ./${{ env.app_name }}-${{ matrix.os }}-${{ steps.vars.outputs.version }}
 
 

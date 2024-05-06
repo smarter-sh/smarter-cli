@@ -102,5 +102,5 @@ For complete details on using the Cobra library, please read the [The Cobra User
 ## Build
 
 ```console
-go build -ldflags="-X main.version=1.0.0" .
+go build -ldflags="-X main.Version=1.0.0" .
 ```

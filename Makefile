@@ -57,7 +57,6 @@ docker-build:
 docker-run:
 	make docker-check && \
 	docker-compose up
-	docker exec -it smarter-cli /bin/bash
 
 docker-prune:
 	make docker-check && \

@@ -22,7 +22,6 @@ smarter version
 Returns version information about this software.`,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		fmt.Println("Version:", string(Version))
 		jsonFlagValue := viper.GetBool("json")
 		yamlFlagValue := viper.GetBool("yaml")
 
@@ -38,7 +37,7 @@ Returns version information about this software.`,
 				fmt.Println(string(bodyYaml))
 			}
 		} else {
-			fmt.Println("Response:", string(bodyJson))
+			fmt.Println(string(bodyJson))
 		}
 
 	},

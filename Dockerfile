@@ -15,10 +15,13 @@ COPY go.mod go.sum ./
 RUN go mod download
 
 COPY ./cmd ./cmd
-COPY main.go .
+COPY main.go VERSION ./
+
 RUN chown smarter_user:smarter_user -R .
 
-RUN CGO_ENABLED=0 GOOS=linux go build -o ./smarter .
+RUN version=$(cat VERSION) && \
+    CGO_ENABLED=0 GOOS=linux go build -ldflags "-X main.Version=${version}" -o ./smarter .
+
 RUN chown smarter_user:smarter_user -R .
 
 # setup the run-time environment
