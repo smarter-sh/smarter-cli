@@ -1,106 +1,29 @@
 # Smarter Command-line Interface
 
-A Go lang / Cobra command-line interface for working with Smarter resources.
+The Smarter command-line interface for working with Smarter resources. Available on Windows, macOS, Linux and DockerHub.
 
 ## Usage
 
-### Apply
-
-Apply a Smarter API resource manifest. See this [example](./data/manifests/example-configuration.yaml)
-
 ```console
-smarter apply <./file/path/manifest.yaml>
+smarter --help
 ```
 
-### Get
+## CI/CD
 
-```console
-smarter get plugins --name --yaml --json
-smarter get chatbots --name --yaml --json
-smarter get chats --id --yaml --json
-smarter get account --yaml --json
-smarter get account users --username --yaml --json
-```
+The GitHub Actions workflow [.github/workflows/build.yml](./.github/workflows/build.yml) publishes semantically-versioned releases to [https://github.com/QueriumCorp/smarter-cli/releases](https://github.com/QueriumCorp/smarter-cli/releases) which includes binaries for Windows, macOS, Linux and Docker.
 
-### Status
+Semantic version numbers are controlled by npm package [semantic-release](https://www.npmjs.com/package/semantic-release) which itself is governed by these git [commit comment guidelines](./doc/SEMANTIC_VERSIONING.md).
 
-```console
-smarter status --yaml --json
-```
-
-### Deploy
-
-```console
-smarter deploy chatbot --name --yaml --json
-```
-
-### Logs
-
-```console
-smarter logs <kind> --name --yaml --json
-```
-
-### Delete
-
-```console
-smarter delete plugin --name --yaml --json
-smarter delete chatbot --name --yaml --json
-smarter delete chat --id --yaml --json
-smarter delete user --username --yaml --json
-```
-
-scaffolding example
-
-```console
-cobra-cli add get
-cobra-cli add plugins -p 'GetCmd'
-```
-
-## Project Startup
-
-```console
-go mod init github.com/QueriumCorp/smarter-cli
-go mod tidy
-go get -u github.com/spf13/cobra@latest
-go install github.com/spf13/cobra-cli@latest
-```
-
-Cobra initialization
-
-```console
-cobra-cli init --author "Lawrence McDaniel lawrence@querium.com" --viper
-```
-
-To run in development environment
-
-```console
-go run main.go
-```
+Package versions for Go lang, NPM and GitHub Actions are monitored by [Dependabot](https://docs.github.com/en/code-security/dependabot) and [Mergify](https://mergify.com/) and are automatically updated and merged to the [alpha branch](https://github.com/QueriumCorp/smarter-cli/tree/alpha) of this repo.
 
 ## Cobra
 
-See:
+This cli is built on the [Cobra](https://github.com/spf13/cobra) and [Viper](https://github.com/spf13/viper) frameworks for Go lang. See also:
 
 - [Oscon 2017 - Building An Awesome CLI App In Go](https://spf13.com/presentation/building-an-awesome-cli-app-in-go-oscon/)
-- [https://github.com/spf13/cobra](https://github.com/spf13/cobra)
+- [The Cobra Generator README](https://github.com/spf13/cobra-cli/blob/main/README.md)
+- [The Cobra User Guide](https://github.com/spf13/cobra/blob/main/site/content/user_guide.md).
 
-For complete details on using the Cobra-CLI generator, please read [The Cobra Generator README](https://github.com/spf13/cobra-cli/blob/main/README.md)
+## Contributing
 
-For complete details on using the Cobra library, please read the [The Cobra User Guide](https://github.com/spf13/cobra/blob/main/site/content/user_guide.md).
-
-
-## Smarter API
-
-- https://api.smarter.sh/v0/cli/describe/: print the manifest
-- https://api.smarter.sh/v0/cli/apply/: Apply a manifest
-- https://api.smarter.sh/v0/cli/status/: Smarter platform status
-- https://api.smarter.sh/v0/cli/deploy/: Deploy a resource
-
-- https://api.smarter.sh/v0/cli/logs/: Get logs for a resource
-- https://api.smarter.sh/v0/cli/delete/: Delete a resource
-
-## Build
-
-```console
-go build -ldflags="-X main.Version=1.0.0" .
-```
+Please see [./doc/CONTRIBUTING.md](./doc/CONTRIBUTING.md)
