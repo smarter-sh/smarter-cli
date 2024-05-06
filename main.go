@@ -4,8 +4,6 @@ Copyright © 2024 Lawrence McDaniel lawrence@querium.com
 package main
 
 import (
-	"log"
-
 	"github.com/QueriumCorp/smarter-cli/cmd"
 	_ "github.com/QueriumCorp/smarter-cli/cmd/delete"
 	_ "github.com/QueriumCorp/smarter-cli/cmd/delete/account"
@@ -18,10 +16,7 @@ import (
 var Version = "local.dev"
 
 func main() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
+	_ = godotenv.Load()
 
 	cmd.Execute(Version)
 

@@ -1,0 +1,15 @@
+---
+#------------------------------------------------------------------------------
+# For local development, you can use the following docker-compose file
+# to run the application. This file will start the application inside a Docker
+# container. The application will be available at ????.
+#------------------------------------------------------------------------------
+services:
+  smarter-cli:
+    container_name: smarter-cli
+    user: smarter_user
+    build: .
+    image: smarter_cli
+    command: ["/bin/sh", "-c", "while :; do sleep 10; done"]
+    mem_limit: 500m
+    cpus: "0.50"

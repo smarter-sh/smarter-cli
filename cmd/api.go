@@ -3,6 +3,7 @@ package cmd
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -14,6 +15,17 @@ const (
 	RootDomain  = "platform.smarter.sh"
 	ApiBasePath = "/api/v0/cli"
 )
+
+func verifyApiKey() error {
+	apiKey := viper.GetString("api_key")
+	if apiKey == "" {
+		errMsg := `api_key is missing. Please set the API key using the command:
+smarter configure --api_key <api_key string>
+Contact support@querium.com if you need help finding your API key`
+		return errors.New(errMsg)
+	}
+	return nil
+}
 
 func getAPIHost() string {
 	environment := viper.GetString("environment")
@@ -37,6 +49,10 @@ func getAPIHost() string {
 
 func GetAPIResponse(slug string) ([]byte, error) {
 
+	checkApiKey := verifyApiKey()
+	if checkApiKey != nil {
+		return []byte{}, checkApiKey
+	}
 	apiHost := getAPIHost()
 	root_url := apiHost + ApiBasePath
 	url := fmt.Sprintf("%s/%s/", root_url, slug)

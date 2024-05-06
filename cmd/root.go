@@ -48,10 +48,6 @@ func init() {
 	cobra.OnInitialize(initConfig)
 	initConfig()
 
-	// Here you will define your flags and configuration settings.
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
-
 	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.smarter.yaml)")
 
 	// Add the --environment flag
@@ -148,7 +144,7 @@ func initConfig() {
 			"username":       "",
 			"api_key":        "",
 			"environment":    "",
-			"output_format":  "json",
+			"output_format":  "",
 		}
 		viper.SetDefault("config", defaultConfig)
 
