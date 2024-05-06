@@ -58,8 +58,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ steps.vars.outputs.version }}
-        release_name: Release ${{ steps.vars.outputs.version }}
+        tag_name: v${{ steps.vars.outputs.version }}
+        release_name: Release v${{ steps.vars.outputs.version }}
         draft: false
         prerelease: false
 
@@ -112,7 +112,7 @@ jobs:
       id: get_upload_url
       shell: bash
       run: |
-        response=$(curl -s -H "Authorization: token $GITHUB_TOKEN" "https://api.github.com/repos/$GITHUB_REPOSITORY/releases/tags/$VERSION")
+        response=$(curl -s -H "Authorization: token $GITHUB_TOKEN" "https://api.github.com/repos/$GITHUB_REPOSITORY/releases/tags/v$VERSION")
         upload_url=$(echo "$response" | jq -r .upload_url)
         if [ -z "$upload_url" ]; then
           echo "Failed to get upload URL"
