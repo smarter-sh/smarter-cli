@@ -24,6 +24,12 @@ jobs:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+
+    - name: Get version
+      id: vars
+      run: echo "::set-output name=version::$(cat VERSION)"
+
+
     - name: Build and push
       id: docker_build
       uses: docker/build-push-action@v5
@@ -33,6 +39,7 @@ jobs:
         tags: |
           ${{ env.account }}/${{ env.container_name }}:latest
           ${{ env.account }}/${{ env.container_name }}:${{ github.sha }}
+          ${{ env.account }}/${{ env.container_name }}:v${{ steps.vars.outputs.version }}
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache
 
