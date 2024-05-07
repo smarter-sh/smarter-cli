@@ -8,6 +8,26 @@ The Smarter command-line interface for working with Smarter resources. Available
 smarter --help
 ```
 
+## Build
+
+### Windows
+
+```powershell
+go get -v -t -d .
+$VERSION = Get-Content -Path .\VERSION
+$env:VERSION = $VERSION
+go build -ldflags "-X main.Version=$env:VERSION" -o "./smarter-windows-${env:VERSION}.exe"
+```
+
+### macOS / Linux
+
+```bash
+go get -v -t -d .
+export VERSION=$(cat VERSION)
+go build -v -ldflags "-X main.Version=$VERSION" -o "./smarter-linux-$VERSION"
+```
+
+
 ## CI/CD
 
 The GitHub Actions workflow [.github/workflows/build.yml](./.github/workflows/build.yml) publishes semantically-versioned releases to [https://github.com/QueriumCorp/smarter-cli/releases](https://github.com/QueriumCorp/smarter-cli/releases) which includes binaries for Windows, macOS, Linux and Docker.

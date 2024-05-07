@@ -7,11 +7,17 @@
     <authors>Lawrence McDaniel</authors>
     <owners>Querium Corp.</owners>
     <summary>Smarter Command-line Interface</summary>
-    <description>The Smarter command-line interface. The Smarter command-line interface for working with Smarter resources. Available on Windows, macOS, Linux and DockerHub. Give your team and customers accurate answers to the key questions they are asking. Enter a new world of machine learning where answers are at your users’ fingertips. Answer questions clearly and factually without compromising your proprietary data.Your copyrighted data won’t be wind up as training data for an LLM provider. All chatbot responses are auditable and hosted with a Service Level Agreement.</description>
+    <description>The Smarter command-line interface...</description>
     <projectUrl>https://smarter.sh/</projectUrl>
+    <iconUrl>https://smarter.sh/wp-content/uploads/2024/04/Smarter_crop.png</iconUrl>
+    <licenseUrl>https://github.com/QueriumCorp/smarter-cli/blob/main/LICENSE</licenseUrl>
+    <packageSourceUrl>https://github.com/QueriumCorp/smarter-cli/</packageSourceUrl>
+    <releaseNotes>https://github.com/QueriumCorp/smarter-cli/blob/main/CHANGELOG.md/</releaseNotes>
     <tags>go golang smarter cli tool</tags>
   </metadata>
   <files>
     <file src="build\windows\smarter.exe" target="bin" />
+    <file src="LICENSE.txt" target="" />
+    <file src="VERIFICATION.txt" target="" />
   </files>
 </package>
