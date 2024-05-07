@@ -24,7 +24,7 @@ jobs:
 
     - name: Build
       run: |
-        go build -v -o ./build/windows/smarter.exe
+        go build -v -o ./chocolatey/smarter/build/windows/smarter.exe
 
   publish:
     name: Publish to Chocolatey
