@@ -24,12 +24,13 @@ jobs:
 
     - name: Build
       run: |
-        go build -v -o ./chocolatey/smarter/smarter.nuspec
+        go build -v -o ./build/windows/smarter.exe
 
   publish:
     name: Publish to Chocolatey
     needs: build
     runs-on: windows-latest
+
     steps:
     - name: Check out code
       uses: actions/checkout@v4
@@ -44,7 +45,7 @@ jobs:
     - name: Pack Chocolatey package
       run: |
         choco pack ./chocolatey/smarter/smarter.nuspec
-      shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+      shell: pwsh
 
     - name: Get version
       id: vars

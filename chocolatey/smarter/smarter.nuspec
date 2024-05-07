@@ -12,6 +12,6 @@
     <tags>go golang smarter cli tool</tags>
   </metadata>
   <files>
-    <file src="build\windows\smarter-cli.exe" target="bin" />
+    <file src="build\windows\smarter.exe" target="bin" />
   </files>
 </package>
