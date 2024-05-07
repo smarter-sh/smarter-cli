@@ -12,23 +12,31 @@ jobs:
     runs-on: windows-latest
     steps:
     - name: Check out code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
     - name: Set up Go
-      uses: actions/setup-go@v2
+      uses: actions/setup-go@v5
       with:
         go-version: '1.22'
 
-    - name: Get dependencies
+    - name: Go Get dependencies
+      shell: pwsh
       run: go get -v -t -d ./...
 
     - name: Echo Build Path
+      shell: pwsh
       run: |
         echo ${{ github.workspace }}/chocolatey/smarter/build/windows/smarter.exe
 
-    - name: Build
+    - name: Go Build
+      shell: pwsh
       run: |
         go build -v -o ${{ github.workspace }}/chocolatey/smarter/build/windows/smarter.exe
+
+    - name: Echo Built Path
+      shell: pwsh
+      run: |
+        ls -lha ${{ github.workspace }}/chocolatey/smarter/build/windows/
 
   publish:
     name: Publish to Chocolatey
