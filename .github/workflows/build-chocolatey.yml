@@ -36,7 +36,7 @@ jobs:
     - name: Echo Built Path
       shell: pwsh
       run: |
-        ls -lha ${{ github.workspace }}/chocolatey/smarter/build/windows/
+        Get-ChildItem -Force -Recurse ${{ github.workspace }}/chocolatey/smarter/build/windows/ | Select-Object FullName, Length
 
   publish:
     name: Publish to Chocolatey
