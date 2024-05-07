@@ -22,6 +22,10 @@ jobs:
     - name: Get dependencies
       run: go get -v -t -d ./...
 
+    - name: Echo Build Path
+      run: |
+        echo ${{ github.workspace }}/chocolatey/smarter/build/windows/smarter.exe
+
     - name: Build
       run: |
         go build -v -o ${{ github.workspace }}/chocolatey/smarter/build/windows/smarter.exe
