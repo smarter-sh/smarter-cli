@@ -17,7 +17,7 @@
   </metadata>
   <files>
     <file src="build\windows\smarter.exe" target="bin" />
-    <file src="..\..\LICENSE" target="content" />
-    <file src="..\..\VERIFICATION.txt" target="content" />
+    <file src="..\..\LICENSE" />
+    <file src="..\..\VERIFICATION.txt" />
   </files>
 </package>
