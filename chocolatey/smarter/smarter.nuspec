@@ -11,7 +11,11 @@
     <projectUrl>https://smarter.sh/</projectUrl>
     <iconUrl>https://smarter.sh/wp-content/uploads/2024/04/Smarter_crop.png</iconUrl>
     <licenseUrl>https://github.com/QueriumCorp/smarter-cli/blob/main/LICENSE</licenseUrl>
-    <packageSourceUrl>https://github.com/QueriumCorp/smarter-cli/</packageSourceUrl>
+    <packageSourceUrl>https://github.com/QueriumCorp/smarter-cli/archive/refs/tags/v0.0.1.zip</packageSourceUrl>
+    <docsUrl>https://smarter.sh/</docsUrl>
+    <mailingListUrl>https://www.querium.com/contact/</mailingListUrl>
+    <bugTrackerUrl>https://github.com/QueriumCorp/smarter-cli/issues/</bugTrackerUrl>
+    <projectSourceUrl>https://github.com/QueriumCorp/smarter-cli/</projectSourceUrl>
     <releaseNotes>https://github.com/QueriumCorp/smarter-cli/blob/main/CHANGELOG.md/</releaseNotes>
     <tags>go golang smarter cli tool</tags>
   </metadata>
