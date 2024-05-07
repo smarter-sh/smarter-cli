@@ -1,0 +1,56 @@
+name: Build-Release Chocolatey
+
+on:
+  workflow_dispatch:
+
+env:
+  app_name: smarter
+
+jobs:
+  build:
+    name: Build
+    runs-on: windows-latest
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v2
+
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: '1.22'
+
+    - name: Get dependencies
+      run: go get -v -t -d ./...
+
+    - name: Build
+      run: |
+        go build -v -o build/windows/${{ env.app_name }}-cli.exe
+
+  publish:
+    name: Publish to Chocolatey
+    needs: build
+    runs-on: windows-latest
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v4
+
+    - name: Install Chocolatey
+      run: |
+        Set-ExecutionPolicy Bypass -Scope Process -Force
+        [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
+        iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+
+    - name: Pack Chocolatey package
+      run: |
+        choco pack choco/${{ env.app_name }}.nuspec
+
+    - name: Get version
+      id: vars
+      shell: pwsh
+      run: echo "::set-output name=version::$(Get-Content -Path VERSION)"
+
+    - name: Push Chocolatey package
+      run: |
+        choco push ${{ env.app_name }}.${{ steps.vars.outputs.version }}.nupkg --source https://push.chocolatey.org/ --api-key $env:CHOCO_API_KEY
+      env:
+        CHOCO_API_KEY: ${{ secrets.CHOCO_API_KEY }}

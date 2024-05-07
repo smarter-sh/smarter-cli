@@ -1,0 +1,16 @@
+Source: smarter
+Section: utils
+Priority: extra
+Maintainer: Lawrence McDaniel <lawrence@querium.com>
+Build-Depends: debhelper (= 12)
+Standards-Version: 3.9.8
+Homepage: https://smarter.sh/
+Vcs-Git: https://github.com/QueriumCorp/smarter-cli
+Vcs-Browser: https://github.com/QueriumCorp/smarter-cli
+
+Package: smarter-cli
+Architecture: amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}, curl
+Description: The Smarter command-line interface
+ The Smarter command-line interface for working with Smarter resources. Available on Windows, macOS, Linux and DockerHub.
+ Give your team and customers accurate answers to the key questions they are asking. Enter a new world of machine learning where answers are at your users’ fingertips. Answer questions clearly and factually without compromising your proprietary data.Your copyrighted data won’t be wind up as training data for an LLM provider. All chatbot responses are auditable and hosted with a Service Level Agreement.

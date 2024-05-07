@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>smarter</id>
+    <version>0.0.1</version>
+    <title>Smarter CLI</title>
+    <authors>Lawrence McDaniel</authors>
+    <owners>Querium Corp.</owners>
+    <summary>Smarter Command-line Interface</summary>
+    <description>The Smarter command-line interface. The Smarter command-line interface for working with Smarter resources. Available on Windows, macOS, Linux and DockerHub. Give your team and customers accurate answers to the key questions they are asking. Enter a new world of machine learning where answers are at your users’ fingertips. Answer questions clearly and factually without compromising your proprietary data.Your copyrighted data won’t be wind up as training data for an LLM provider. All chatbot responses are auditable and hosted with a Service Level Agreement.</description>
+    <projectUrl>https://smarter.sh/</projectUrl>
+    <tags>go golang smarter cli tool</tags>
+  </metadata>
+  <files>
+    <file src="build\windows\smarter-cli.exe" target="bin" />
+  </files>
+</package>

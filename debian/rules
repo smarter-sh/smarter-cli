@@ -1,0 +1,9 @@
+#!/usr/bin/make -f
+
+%:
+    dh $@
+
+override_dh_install:
+    wget -O smarter https://github.com/QueriumCorp/smarter-cli/releases/download/v0.0.1/smarter-ubuntu-latest-0.0.1
+    chmod +x smarter
+    dh_install smarter /usr/bin/
