@@ -19,6 +19,14 @@ jobs:
       with:
         go-version: '1.22'
 
+    - name: Cache Go dependencies
+      uses: actions/cache@v4
+      with:
+        path: ~/go/pkg/mod
+        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-
+
     - name: Go Get dependencies
       shell: pwsh
       run: go get -v -t -d ./...
@@ -37,15 +45,6 @@ jobs:
       shell: pwsh
       run: |
         Get-ChildItem -Force -Recurse ${{ github.workspace }}/chocolatey/smarter/build/windows/ | Select-Object FullName, Length
-
-  publish:
-    name: Publish to Chocolatey
-    needs: build
-    runs-on: windows-latest
-
-    steps:
-    - name: Check out code
-      uses: actions/checkout@v4
 
     - name: Pack Chocolatey package
       run: |
