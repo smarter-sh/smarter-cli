@@ -50,6 +50,7 @@ jobs:
 
       - name: Update .pre-commit-config.yaml
         run: |
+          pre-commit install
           pre-commit autoupdate
 
       - name: Check for unstaged changes
