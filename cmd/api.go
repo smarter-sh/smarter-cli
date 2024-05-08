@@ -13,7 +13,7 @@ import (
 
 const (
 	RootDomain  = "platform.smarter.sh"
-	ApiBasePath = "/api/v0/cli"
+	ApiBasePath = "/api/v1/cli"
 )
 
 func verifyApiKey() error {
