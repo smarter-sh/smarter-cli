@@ -4,33 +4,31 @@ Copyright © 2024 Lawrence McDaniel <lawrence@querium.com>
 package manifest
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
-// manifestCmd represents the manifest command
+// accountCmd represents the account command
 var accountCmd = &cobra.Command{
 	Use:   "account",
-	Short: "Generate an example Account manifest",
-	Long: `Generate an example Account manifest. For example:
+	Short: "Retrieve your Account manifest",
+	Long: `Generate an example manifest for an account. For example:
 
-	smarter manifest account > my-account.yaml
+	smarter manifest account > my-plugin.yaml
 
-This will generate an example manifest for your Account and write it to my-account.yaml in the current working directory.`,
+This will generate an example manifest for an account and write it to my-plugin.yaml in the current working directory.`,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		manifest := "account"
-		filepath, err := getFilePath("manifest/" + manifest)
+		jsonFlagValue := viper.GetBool("json")
+		yamlFlagValue := viper.GetBool("yaml")
+
+		kwargs := map[string]string{}
+
+		bodyJson, err := GetAPI("chats", kwargs)
 		if err != nil {
-			fmt.Println("Error:", err)
+			panic(err)
 		} else {
-			contents, err := GetAndPrintManifest(filepath, manifest)
-			if err != nil {
-				fmt.Println("Error reading file:", err)
-			} else {
-				fmt.Println(contents)
-			}
+			ConsoleOutput(bodyJson, jsonFlagValue, yamlFlagValue)
 		}
 
 	},
@@ -43,9 +41,9 @@ func init() {
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	// manifestCmd.PersistentFlags().String("foo", "", "A help for foo")
+	// accountCmd.PersistentFlags().String("foo", "", "A help for foo")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// manifestCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	// accountCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

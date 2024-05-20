@@ -1,7 +1,7 @@
 /*
 Copyright © 2024 Lawrence McDaniel <lawrence@querium.com>
 */
-package get
+package manifest
 
 import (
 	"log"
@@ -15,12 +15,12 @@ import (
 var chatsCmd = &cobra.Command{
 	Use:   "chats",
 	Short: "Retrieve a list of Chats or the history of a specific Chat by id",
-	Long: `Retrieve a list of Chats or the history of a specific Chat by id:
+	Long: `Generate an example manifest for a chat session. For example:
 
-smarter get chats --id --chatbot --json --yaml --csv --xml -n 10 --asc --desc --today --yesterday --this-week --last-week --this-month --last-month
+	smarter manifest chat > my-plugin.yaml
 
-The Smarter API will return a list of Chats in the specified format,
-or a manifest for a specific Chat history.`,
+This will generate an example manifest a chat session and write it to my-plugin.yaml in the current working directory.`,
+
 	Run: func(cmd *cobra.Command, args []string) {
 
 		jsonFlagValue := viper.GetBool("json")
@@ -47,7 +47,7 @@ or a manifest for a specific Chat history.`,
 }
 
 func init() {
-	GetCmd.AddCommand(chatsCmd)
+	manifestCmd.AddCommand(chatsCmd)
 
 	// Here you will define your flags and configuration settings.
 
@@ -58,19 +58,19 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// chatsCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	pluginsCmd.Flags().String("name", "", "Name of the chatbot")
-	pluginsCmd.Flags().String("session", "", "Chat session_id")
-	pluginsCmd.Flags().Int("n", 10, "Number of sessions to retrieve")
+	chatsCmd.Flags().String("name", "", "Name of the chatbot")
+	chatsCmd.Flags().String("session", "", "Chat session_id")
+	chatsCmd.Flags().Int("n", 10, "Number of sessions to retrieve")
 
-	if err := viper.BindPFlag("name", pluginsCmd.Flags().Lookup("name")); err != nil {
+	if err := viper.BindPFlag("name", chatsCmd.Flags().Lookup("name")); err != nil {
 		log.Fatalf("Error binding flag 'name': %v", err)
 	}
 
-	if err := viper.BindPFlag("session", pluginsCmd.Flags().Lookup("session")); err != nil {
+	if err := viper.BindPFlag("session", chatsCmd.Flags().Lookup("session")); err != nil {
 		log.Fatalf("Error binding flag 'session': %v", err)
 	}
 
-	if err := viper.BindPFlag("n", pluginsCmd.Flags().Lookup("n")); err != nil {
+	if err := viper.BindPFlag("n", chatsCmd.Flags().Lookup("n")); err != nil {
 		log.Fatalf("Error binding flag 'n': %v", err)
 	}
 }

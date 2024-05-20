@@ -4,11 +4,8 @@ Copyright © 2024 Lawrence McDaniel <lawrence@querium.com>
 package delete
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"sigs.k8s.io/yaml"
 )
 
 // pluginCmd represents the plugin command
@@ -25,23 +22,12 @@ and dissassociate it from any ChatBots.`,
 		jsonFlagValue := viper.GetBool("json")
 		yamlFlagValue := viper.GetBool("yaml")
 
-		bodyJson, err := GetAPI("plugin")
+		kwargs := map[string]string{}
+		bodyJson, err := GetAPI("plugin", kwargs)
 		if err != nil {
 			panic(err)
 		} else {
-			switch {
-			case jsonFlagValue:
-				fmt.Println(string(bodyJson))
-			case yamlFlagValue:
-				bodyYaml, err := yaml.JSONToYAML(bodyJson)
-				if err != nil {
-					panic(err)
-				} else {
-					fmt.Println(string(bodyYaml))
-				}
-			default:
-				fmt.Println(string(bodyJson))
-			}
+			ConsoleOutput(bodyJson, jsonFlagValue, yamlFlagValue)
 		}
 
 	},

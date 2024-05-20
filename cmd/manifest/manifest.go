@@ -4,32 +4,18 @@ Copyright © 2024 Lawrence McDaniel <lawrence@querium.com>
 package manifest
 
 import (
-	"encoding/json"
-
 	"github.com/QueriumCorp/smarter-cli/cmd"
 
 	"github.com/spf13/cobra"
 )
 
-func getFilePath(slug string) (string, error) {
+func GetAPI(slug string, kwargs map[string]string) ([]byte, error) {
 
-	bodyBytes, err := cmd.GetAPIResponse(slug)
-	if err != nil {
-		return "", err
-	} else {
-		var body map[string]interface{}
-		err = json.Unmarshal(bodyBytes, &body)
-		if err != nil {
-			return "", err
-		}
+	return cmd.GetAPIResponse(slug, kwargs)
 
-		if filepath, ok := body["filepath"].(string); ok {
-			return filepath, nil
-		} else {
-			panic("filepath not found or not a string")
-		}
-	}
-
+}
+func ConsoleOutput(bodyJson []byte, jsonFlagValue bool, yamlFlagValue bool) {
+	cmd.ConsoleOutput(bodyJson, jsonFlagValue, yamlFlagValue)
 }
 
 // manifestCmd represents the manifest command
@@ -38,14 +24,13 @@ var manifestCmd = &cobra.Command{
 	Short: "Generate an example manifest for the resource kind",
 	Long: `Generate an example manifest for the resource kind. For example:
 
-	smarter manifest plugin > my-plugin.yaml
+	smarter manifest <kind> > my-plugin.yaml
 
-This will generate an example manifest for a plugin resource and write it to my-plugin.yaml in the current working directory.`,
+This will generate an example manifest for the specified kind of resource and write it to my-plugin.yaml in the current working directory.`,
 }
 
 func init() {
 	cmd.RootCmd.AddCommand(manifestCmd)
-
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command

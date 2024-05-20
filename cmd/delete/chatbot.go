@@ -4,11 +4,8 @@ Copyright © 2024 Lawrence McDaniel <lawrence@querium.com>
 package delete
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"sigs.k8s.io/yaml"
 )
 
 // chatbotCmd represents the chatbot command
@@ -26,23 +23,12 @@ and all related chat history.`,
 		jsonFlagValue := viper.GetBool("json")
 		yamlFlagValue := viper.GetBool("yaml")
 
-		bodyJson, err := GetAPI("chatbot")
+		kwargs := map[string]string{}
+		bodyJson, err := GetAPI("chatbot", kwargs)
 		if err != nil {
 			panic(err)
 		} else {
-			switch {
-			case jsonFlagValue:
-				fmt.Println(string(bodyJson))
-			case yamlFlagValue:
-				bodyYaml, err := yaml.JSONToYAML(bodyJson)
-				if err != nil {
-					panic(err)
-				} else {
-					fmt.Println(string(bodyYaml))
-				}
-			default:
-				fmt.Println(string(bodyJson))
-			}
+			ConsoleOutput(bodyJson, jsonFlagValue, yamlFlagValue)
 		}
 
 	},

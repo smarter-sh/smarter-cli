@@ -11,8 +11,13 @@ import (
 
 func GetAPI(slug string) ([]byte, error) {
 
-	return get.GetAPI(slug)
+	kwargs := map[string]string{}
 
+	return get.GetAPI(slug, kwargs)
+
+}
+func ConsoleOutput(bodyJson []byte, jsonFlagValue bool, yamlFlagValue bool) {
+	get.ConsoleOutput(bodyJson, jsonFlagValue, yamlFlagValue)
 }
 
 // accountCmd represents the account command

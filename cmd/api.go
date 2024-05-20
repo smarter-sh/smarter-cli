@@ -1,12 +1,12 @@
 package cmd
 
 import (
-	"bytes"
-	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/spf13/viper"
 )
@@ -47,7 +47,7 @@ func getAPIHost() string {
 	}
 }
 
-func GetAPIResponse(slug string) ([]byte, error) {
+func GetAPIResponse(slug string, kwargs map[string]string, fileContents ...string) ([]byte, error) {
 
 	checkApiKey := verifyApiKey()
 	if checkApiKey != nil {
@@ -56,13 +56,23 @@ func GetAPIResponse(slug string) ([]byte, error) {
 	apiHost := getAPIHost()
 	root_url := apiHost + ApiBasePath
 	url := fmt.Sprintf("%s/%s/", root_url, slug)
-	jsonData := []byte(`{}`)
 
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
+	var textData string
+	if len(fileContents) > 0 {
+		textData = fileContents[0]
+	} else {
+		textData = ""
+	}
+
+	req, err := http.NewRequest("POST", url, strings.NewReader(textData))
 	if err != nil {
 		panic(err)
 	}
-	req.Header.Set("Content-Type", "application/json")
+	// Set headers from kwargs
+	for key, value := range kwargs {
+		req.Header.Set(key, value)
+	}
+	req.Header.Set("Content-Type", "text/plain")
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
@@ -71,11 +81,10 @@ func GetAPIResponse(slug string) ([]byte, error) {
 	}
 	defer resp.Body.Close()
 
-	var result map[string]interface{}
-	err = json.NewDecoder(resp.Body).Decode(&result)
+	bodyBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatalf("Error decoding JSON: %v", err)
+		log.Fatalf("Error reading response body: %v", err)
 	}
 
-	return json.Marshal(result)
+	return bodyBytes, nil
 }

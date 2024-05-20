@@ -1,7 +1,7 @@
 /*
 Copyright © 2024 Lawrence McDaniel <lawrence@querium.com>
 */
-package get
+package manifest
 
 import (
 	"log"
@@ -15,14 +15,11 @@ import (
 var pluginsCmd = &cobra.Command{
 	Use:   "plugins",
 	Short: "Retrieve a list of Plugins or a manifest for a specific Plugin by name",
-	Long: `Retrieve a list of Plugins,
-	or a manifest for a specific Plugin:
+	Long: `Generate an example manifest for a plugin. For example:
 
-smarter get plugins --name --json --yaml --csv --xml -n 10 --asc --desc --class
+	smarter manifest plugin > my-plugin.yaml
 
-
-The Smarter API will return a list of Plugins in the specified format,
-or a manifest for a specific Plugin.`,
+This will generate an example manifest for a plugin and write it to my-plugin.yaml in the current working directory.`,
 	Run: func(cmd *cobra.Command, args []string) {
 
 		jsonFlagValue := viper.GetBool("json")
@@ -49,7 +46,7 @@ or a manifest for a specific Plugin.`,
 }
 
 func init() {
-	GetCmd.AddCommand(pluginsCmd)
+	manifestCmd.AddCommand(pluginsCmd)
 
 	// Here you will define your flags and configuration settings.
 

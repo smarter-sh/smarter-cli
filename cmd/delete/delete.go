@@ -9,10 +9,13 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func GetAPI(slug string) ([]byte, error) {
+func GetAPI(slug string, kwargs map[string]string) ([]byte, error) {
 
-	return cmd.GetAPIResponse(slug)
+	return cmd.GetAPIResponse(slug, kwargs)
 
+}
+func ConsoleOutput(bodyJson []byte, jsonFlagValue bool, yamlFlagValue bool) {
+	cmd.ConsoleOutput(bodyJson, jsonFlagValue, yamlFlagValue)
 }
 
 // DeleteCmd represents the delete command

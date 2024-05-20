@@ -4,11 +4,8 @@ Copyright © 2024 Lawrence McDaniel <lawrence@querium.com>
 package delete
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"sigs.k8s.io/yaml"
 )
 
 // chatCmd represents the chat command
@@ -25,23 +22,12 @@ The Smarter API will permanently delete the chat history with the specified iden
 		jsonFlagValue := viper.GetBool("json")
 		yamlFlagValue := viper.GetBool("yaml")
 
-		bodyJson, err := GetAPI("chat")
+		kwargs := map[string]string{}
+		bodyJson, err := GetAPI("chat", kwargs)
 		if err != nil {
 			panic(err)
 		} else {
-			switch {
-			case jsonFlagValue:
-				fmt.Println(string(bodyJson))
-			case yamlFlagValue:
-				bodyYaml, err := yaml.JSONToYAML(bodyJson)
-				if err != nil {
-					panic(err)
-				} else {
-					fmt.Println(string(bodyYaml))
-				}
-			default:
-				fmt.Println(string(bodyJson))
-			}
+			ConsoleOutput(bodyJson, jsonFlagValue, yamlFlagValue)
 		}
 
 	},

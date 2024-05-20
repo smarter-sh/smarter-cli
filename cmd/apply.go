@@ -4,11 +4,12 @@ Copyright © 2024 Lawrence McDaniel <lawrence@querium.com>
 package cmd
 
 import (
-	"fmt"
+	"io"
+	"log"
+	"os"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"sigs.k8s.io/yaml"
 )
 
 // applyCmd represents the apply command
@@ -17,7 +18,7 @@ var applyCmd = &cobra.Command{
 	Short: "Apply a Smarter manifest",
 	Long: `Apply a Smarter manifest:
 
-smarter apply -f <manifest.yaml> --json --yaml --dry-run
+smarter apply -f <manifest.yaml> --dry-run
 
 The Smarter API will apply the manifest to the Smarter account,
 migrating the resource to the new state. The --json and --yaml
@@ -28,23 +29,21 @@ flags will output the manifest in the specified format. The
 		jsonFlagValue := viper.GetBool("json")
 		yamlFlagValue := viper.GetBool("yaml")
 
-		bodyJson, err := GetAPIResponse("apply")
+		filename := viper.GetString("f")
+		file, err := os.Open(filename)
+		if err != nil {
+			log.Fatalf("Failed opening file: %s", err)
+		}
+		defer file.Close()
+		byteValue, _ := io.ReadAll(file)
+		fileContents := string(byteValue)
+
+		kwargs := map[string]string{}
+		bodyJson, err := GetAPIResponse("apply", kwargs, fileContents)
 		if err != nil {
 			panic(err)
 		} else {
-			switch {
-			case jsonFlagValue:
-				fmt.Println(string(bodyJson))
-			case yamlFlagValue:
-				bodyYaml, err := yaml.JSONToYAML(bodyJson)
-				if err != nil {
-					panic(err)
-				} else {
-					fmt.Println(string(bodyYaml))
-				}
-			default:
-				fmt.Println(string(bodyJson))
-			}
+			ConsoleOutput(bodyJson, jsonFlagValue, yamlFlagValue)
 		}
 
 	},
@@ -62,4 +61,8 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// applyCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	applyCmd.Flags().String("f", "", "Path and filename of the manifest to apply")
+	if err := viper.BindPFlag("f", applyCmd.Flags().Lookup("f")); err != nil {
+		log.Fatalf("Error binding flag: %v", err)
+	}
 }

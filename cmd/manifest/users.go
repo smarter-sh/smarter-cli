@@ -1,13 +1,12 @@
 /*
 Copyright © 2024 Lawrence McDaniel <lawrence@querium.com>
 */
-package account
+package manifest
 
 import (
 	"log"
 	"strconv"
 
-	"github.com/QueriumCorp/smarter-cli/cmd/get"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -16,12 +15,12 @@ import (
 var usersCmd = &cobra.Command{
 	Use:   "users",
 	Short: "Retrieve a list of Users",
-	Long: `Retrieve a list of Users, or a specific User by username:
+	Long: `Generate an example manifest for a user. For example:
 
-smarter get users --name --json --yaml --csv --xml -n 10 --asc --desc
+	smarter manifest user > my-plugin.yaml
 
-The Smarter API will return a list of Users in the specified format,
-or a manifest for a specific User.`,
+This will generate an example manifest for a user and write it to my-plugin.yaml in the current working directory.`,
+
 	Run: func(cmd *cobra.Command, args []string) {
 
 		jsonFlagValue := viper.GetBool("json")
@@ -34,7 +33,7 @@ or a manifest for a specific User.`,
 			"username": name,
 			"n":        strconv.Itoa(n),
 		}
-		bodyJson, err := get.GetAPI("users", kwargs)
+		bodyJson, err := GetAPI("users", kwargs)
 		if err != nil {
 			panic(err)
 		} else {
@@ -45,7 +44,7 @@ or a manifest for a specific User.`,
 }
 
 func init() {
-	accountCmd.AddCommand(usersCmd)
+	manifestCmd.AddCommand(usersCmd)
 
 	// Here you will define your flags and configuration settings.
 
@@ -56,14 +55,14 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// usersCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	accountCmd.Flags().String("username", "", "Smarter username")
-	accountCmd.Flags().Int("n", 10, "Number of users to retrieve")
+	usersCmd.Flags().String("username", "", "Smarter username")
+	usersCmd.Flags().Int("n", 10, "Number of users to retrieve")
 
-	if err := viper.BindPFlag("username", accountCmd.Flags().Lookup("username")); err != nil {
+	if err := viper.BindPFlag("username", usersCmd.Flags().Lookup("username")); err != nil {
 		log.Fatalf("Error binding flag 'username': %v", err)
 	}
 
-	if err := viper.BindPFlag("n", accountCmd.Flags().Lookup("n")); err != nil {
+	if err := viper.BindPFlag("n", usersCmd.Flags().Lookup("n")); err != nil {
 		log.Fatalf("Error binding flag 'n': %v", err)
 	}
 }

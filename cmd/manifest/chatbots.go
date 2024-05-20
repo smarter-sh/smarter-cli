@@ -1,7 +1,7 @@
 /*
 Copyright © 2024 Lawrence McDaniel <lawrence@querium.com>
 */
-package get
+package manifest
 
 import (
 	"log"
@@ -15,12 +15,12 @@ import (
 var chatbotsCmd = &cobra.Command{
 	Use:   "chatbots",
 	Short: "Retrieve a list of ChatBots or a specific ChatBot by name",
-	Long: `Retrieve a list of ChatBots or a specific ChatBot by name:
+	Long: `Generate an example manifest for a chatbot. For example:
 
-smarter get chatbots --name --json --yaml
+	smarter manifest chatbot > my-plugin.yaml
 
-The Smarter API will return a list of ChatBots in the specified format,
-or a manifest for a specific ChatBot.`,
+This will generate an example manifest for a chatbot and write it to my-plugin.yaml in the current working directory.`,
+
 	Run: func(cmd *cobra.Command, args []string) {
 
 		jsonFlagValue := viper.GetBool("json")
@@ -45,7 +45,7 @@ or a manifest for a specific ChatBot.`,
 }
 
 func init() {
-	GetCmd.AddCommand(chatbotsCmd)
+	manifestCmd.AddCommand(chatbotsCmd)
 
 	// Here you will define your flags and configuration settings.
 
@@ -56,13 +56,14 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// chatbotsCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	pluginsCmd.Flags().String("name", "", "Name of the chatbot")
-	pluginsCmd.Flags().Int("n", 10, "Number of chatbots to retrieve")
+	chatbotsCmd.Flags().String("name", "", "Name of the chatbot")
+	chatbotsCmd.Flags().Int("n", 10, "Number of chatbots to retrieve")
 
-	if err := viper.BindPFlag("name", pluginsCmd.Flags().Lookup("name")); err != nil {
-		log.Fatalf("Error binding flag: %v", err)
+	if err := viper.BindPFlag("name", chatbotsCmd.Flags().Lookup("name")); err != nil {
+		log.Fatalf("Error binding flag 'name': %v", err)
 	}
-	if err := viper.BindPFlag("n", pluginsCmd.Flags().Lookup("n")); err != nil {
-		log.Fatalf("Error binding flag: %v", err)
+
+	if err := viper.BindPFlag("n", chatbotsCmd.Flags().Lookup("n")); err != nil {
+		log.Fatalf("Error binding flag 'n': %v", err)
 	}
 }
