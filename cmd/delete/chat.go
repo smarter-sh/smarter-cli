@@ -19,7 +19,7 @@ The Smarter API will permanently delete the chat history with the specified iden
 	Run: func(cmd *cobra.Command, args []string) {
 
 		kwargs := map[string]string{}
-		bodyJson, err := GetAPIResponse("chat", kwargs)
+		bodyJson, err := APIRequest("chat", kwargs)
 		if err != nil {
 			panic(err)
 		} else {

@@ -13,7 +13,7 @@ import (
 
 const (
 	RootDomain  = "platform.smarter.sh"
-	ApiBasePath = "/api/v1/cli"
+	ApiBasePath = "/api/v1/cli/"
 )
 
 func verifyApiKey() error {
@@ -47,7 +47,7 @@ func getAPIHost() string {
 	}
 }
 
-func GetAPIResponseResponse(slug string, kwargs map[string]string, fileContents ...string) ([]byte, error) {
+func APIRequest(slug string, kwargs map[string]string, fileContents ...string) ([]byte, error) {
 
 	checkApiKey := verifyApiKey()
 	if checkApiKey != nil {

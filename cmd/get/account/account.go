@@ -13,7 +13,7 @@ func GetAPIResponse(slug string) ([]byte, error) {
 
 	kwargs := map[string]string{}
 
-	return get.GetAPIResponse(slug, kwargs)
+	return get.APIRequest(slug, kwargs)
 
 }
 func ConsoleOutput(bodyJson []byte) {

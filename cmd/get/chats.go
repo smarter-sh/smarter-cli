@@ -33,7 +33,7 @@ or a manifest for a specific Chat history.`,
 			"n":          strconv.Itoa(n),
 		}
 
-		bodyJson, err := GetAPIResponse("chats", kwargs)
+		bodyJson, err := APIRequest("chats", kwargs)
 		if err != nil {
 			panic(err)
 		} else {

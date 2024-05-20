@@ -20,7 +20,7 @@ or a manifest for a specific Log file.`,
 	Run: func(cmd *cobra.Command, args []string) {
 
 		kwargs := map[string]string{}
-		bodyJson, err := GetAPIResponseResponse("logs", kwargs)
+		bodyJson, err := APIRequest("logs", kwargs)
 		if err != nil {
 			panic(err)
 		} else {

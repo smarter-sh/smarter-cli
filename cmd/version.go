@@ -4,11 +4,10 @@ Copyright © 2024 Lawrence McDaniel <lawrence@querium.com>
 package cmd
 
 import (
-	"fmt"
+	"encoding/json"
+	"log"
 
-	"github.com/ghodss/yaml"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 // versionCmd represents the status command
@@ -22,22 +21,33 @@ smarter version
 Returns version information about this software.`,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		jsonFlagValue := viper.GetBool("json")
-		yamlFlagValue := viper.GetBool("yaml")
+		localVersion := []byte(`{"version":"` + Version + `"}`)
+		kwargs := map[string]string{}
+		bodyJson, err := APIRequest("whoami", kwargs)
+		if err != nil {
+			panic(err)
+		} else {
+			var localVersionMap map[string]interface{}
+			err := json.Unmarshal(localVersion, &localVersionMap)
+			if err != nil {
+				log.Fatalf("Failed to unmarshal local version: %v", err)
+			}
 
-		bodyJson := []byte(`{"version":"` + Version + `"}`)
+			var bodyJsonMap map[string]interface{}
+			err = json.Unmarshal(bodyJson, &bodyJsonMap)
+			if err != nil {
+				log.Fatalf("Failed to unmarshal body JSON: %v", err)
+			}
 
-		if jsonFlagValue {
-			fmt.Println(string(bodyJson))
-		} else if yamlFlagValue {
-			bodyYaml, err := yaml.JSONToYAML(bodyJson)
+			for k, v := range localVersionMap {
+				bodyJsonMap[k] = v
+			}
+			combinedJson, err := json.Marshal(bodyJsonMap)
 			if err != nil {
 				panic(err)
-			} else {
-				fmt.Println(string(bodyYaml))
 			}
-		} else {
-			fmt.Println(string(bodyJson))
+
+			ConsoleOutput(combinedJson)
 		}
 
 	},

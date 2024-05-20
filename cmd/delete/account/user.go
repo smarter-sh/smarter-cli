@@ -27,7 +27,7 @@ will replace the deleted user.`,
 		kwargs := map[string]string{
 			"username": username,
 		}
-		bodyJson, err := GetAPIResponse("user", kwargs)
+		bodyJson, err := APIRequest("user", kwargs)
 		if err != nil {
 			panic(err)
 		} else {

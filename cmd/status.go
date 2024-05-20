@@ -20,7 +20,7 @@ including the status of all services and resources by region.`,
 	Run: func(cmd *cobra.Command, args []string) {
 
 		kwargs := map[string]string{}
-		bodyJson, err := GetAPIResponseResponse("status", kwargs)
+		bodyJson, err := APIRequest("status", kwargs)
 		if err != nil {
 			panic(err)
 		} else {

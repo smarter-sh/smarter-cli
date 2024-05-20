@@ -1,0 +1,16 @@
+[
+    {
+        "name": "Test manifest/plugin/",
+        "inputURL": "manifest/plugin/",
+        "inputParams": {},
+        "expectedStatus": 200,
+        "expectedBody": "expected body here"
+    },
+    {
+        "name": "Test get/plugins/",
+        "inputURL": "get/plugins/",
+        "inputParams": {"n": "10"},
+        "expectedStatus": 200,
+        "expectedBody": "expected body here"
+    }
+]

@@ -20,7 +20,7 @@ and all related chat history.`,
 	Run: func(cmd *cobra.Command, args []string) {
 
 		kwargs := map[string]string{}
-		bodyJson, err := GetAPIResponse("chatbot", kwargs)
+		bodyJson, err := APIRequest("chatbot", kwargs)
 		if err != nil {
 			panic(err)
 		} else {

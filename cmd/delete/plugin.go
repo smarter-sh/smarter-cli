@@ -20,7 +20,7 @@ and dissassociate it from any ChatBots.`,
 	Run: func(cmd *cobra.Command, args []string) {
 
 		kwargs := map[string]string{}
-		bodyJson, err := GetAPIResponse("plugin", kwargs)
+		bodyJson, err := APIRequest("plugin", kwargs)
 		if err != nil {
 			panic(err)
 		} else {

@@ -19,7 +19,7 @@ The Smarter API will deploy the resource.`,
 	Run: func(cmd *cobra.Command, args []string) {
 
 		kwargs := map[string]string{}
-		bodyJson, err := GetAPIResponseResponse("deploy/chatbot/test", kwargs)
+		bodyJson, err := APIRequest("deploy/chatbot/test", kwargs)
 		if err != nil {
 			panic(err)
 		} else {

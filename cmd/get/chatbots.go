@@ -31,7 +31,7 @@ or a manifest for a specific ChatBot.`,
 			"n":    strconv.Itoa(n),
 		}
 
-		bodyJson, err := GetAPIResponse("chatbots", kwargs)
+		bodyJson, err := APIRequest("chatbots", kwargs)
 		if err != nil {
 			panic(err)
 		} else {
