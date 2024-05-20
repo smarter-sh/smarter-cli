@@ -24,7 +24,7 @@ including the status of all services and resources by region.`,
 		yamlFlagValue := viper.GetBool("yaml")
 
 		kwargs := map[string]string{}
-		bodyJson, err := GetAPIResponse("status", kwargs)
+		bodyJson, err := GetAPIResponseResponse("status", kwargs)
 		if err != nil {
 			panic(err)
 		} else {

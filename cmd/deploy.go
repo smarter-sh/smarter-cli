@@ -23,7 +23,7 @@ The Smarter API will deploy the resource.`,
 		yamlFlagValue := viper.GetBool("yaml")
 
 		kwargs := map[string]string{}
-		bodyJson, err := GetAPIResponse("deploy/chatbot/test", kwargs)
+		bodyJson, err := GetAPIResponseResponse("deploy/chatbot/test", kwargs)
 		if err != nil {
 			panic(err)
 		} else {

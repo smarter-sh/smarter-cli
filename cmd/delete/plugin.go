@@ -23,7 +23,7 @@ and dissassociate it from any ChatBots.`,
 		yamlFlagValue := viper.GetBool("yaml")
 
 		kwargs := map[string]string{}
-		bodyJson, err := GetAPI("plugin", kwargs)
+		bodyJson, err := GetAPIResponse("plugin", kwargs)
 		if err != nil {
 			panic(err)
 		} else {

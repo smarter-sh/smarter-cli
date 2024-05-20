@@ -47,7 +47,7 @@ func getAPIHost() string {
 	}
 }
 
-func GetAPIResponse(slug string, kwargs map[string]string, fileContents ...string) ([]byte, error) {
+func GetAPIResponseResponse(slug string, kwargs map[string]string, fileContents ...string) ([]byte, error) {
 
 	checkApiKey := verifyApiKey()
 	if checkApiKey != nil {

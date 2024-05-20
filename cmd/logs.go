@@ -24,7 +24,7 @@ or a manifest for a specific Log file.`,
 		yamlFlagValue := viper.GetBool("yaml")
 
 		kwargs := map[string]string{}
-		bodyJson, err := GetAPIResponse("logs", kwargs)
+		bodyJson, err := GetAPIResponseResponse("logs", kwargs)
 		if err != nil {
 			panic(err)
 		} else {

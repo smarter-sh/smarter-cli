@@ -33,7 +33,7 @@ This will generate an example manifest for a user and write it to my-plugin.yaml
 			"username": name,
 			"n":        strconv.Itoa(n),
 		}
-		bodyJson, err := GetAPI("users", kwargs)
+		bodyJson, err := GetAPIResponse("users", kwargs)
 		if err != nil {
 			panic(err)
 		} else {

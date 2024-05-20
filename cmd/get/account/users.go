@@ -34,7 +34,7 @@ or a manifest for a specific User.`,
 			"username": name,
 			"n":        strconv.Itoa(n),
 		}
-		bodyJson, err := get.GetAPI("users", kwargs)
+		bodyJson, err := get.GetAPIResponse("users", kwargs)
 		if err != nil {
 			panic(err)
 		} else {

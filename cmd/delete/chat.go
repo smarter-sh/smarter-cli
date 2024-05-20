@@ -23,7 +23,7 @@ The Smarter API will permanently delete the chat history with the specified iden
 		yamlFlagValue := viper.GetBool("yaml")
 
 		kwargs := map[string]string{}
-		bodyJson, err := GetAPI("chat", kwargs)
+		bodyJson, err := GetAPIResponse("chat", kwargs)
 		if err != nil {
 			panic(err)
 		} else {

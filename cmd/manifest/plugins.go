@@ -35,7 +35,7 @@ This will generate an example manifest for a plugin and write it to my-plugin.ya
 			"n":     strconv.Itoa(n),
 		}
 
-		bodyJson, err := GetAPI("plugins", kwargs)
+		bodyJson, err := GetAPIResponse("plugins", kwargs)
 		if err != nil {
 			panic(err)
 		} else {

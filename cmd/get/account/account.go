@@ -9,11 +9,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func GetAPI(slug string) ([]byte, error) {
+func GetAPIResponse(slug string) ([]byte, error) {
 
 	kwargs := map[string]string{}
 
-	return get.GetAPI(slug, kwargs)
+	return get.GetAPIResponse(slug, kwargs)
 
 }
 func ConsoleOutput(bodyJson []byte, jsonFlagValue bool, yamlFlagValue bool) {

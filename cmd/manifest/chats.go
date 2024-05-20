@@ -36,7 +36,7 @@ This will generate an example manifest a chat session and write it to my-plugin.
 			"n":          strconv.Itoa(n),
 		}
 
-		bodyJson, err := GetAPI("chats", kwargs)
+		bodyJson, err := GetAPIResponse("chats", kwargs)
 		if err != nil {
 			panic(err)
 		} else {

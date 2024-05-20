@@ -36,7 +36,7 @@ or a manifest for a specific Chat history.`,
 			"n":          strconv.Itoa(n),
 		}
 
-		bodyJson, err := GetAPI("chats", kwargs)
+		bodyJson, err := GetAPIResponse("chats", kwargs)
 		if err != nil {
 			panic(err)
 		} else {

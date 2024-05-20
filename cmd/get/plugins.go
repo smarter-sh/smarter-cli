@@ -38,7 +38,7 @@ or a manifest for a specific Plugin.`,
 			"n":     strconv.Itoa(n),
 		}
 
-		bodyJson, err := GetAPI("plugins", kwargs)
+		bodyJson, err := GetAPIResponse("plugins", kwargs)
 		if err != nil {
 			panic(err)
 		} else {

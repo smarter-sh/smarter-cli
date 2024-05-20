@@ -24,7 +24,7 @@ and all related chat history.`,
 		yamlFlagValue := viper.GetBool("yaml")
 
 		kwargs := map[string]string{}
-		bodyJson, err := GetAPI("chatbot", kwargs)
+		bodyJson, err := GetAPIResponse("chatbot", kwargs)
 		if err != nil {
 			panic(err)
 		} else {

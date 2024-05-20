@@ -24,7 +24,7 @@ This will generate an example manifest for an account and write it to my-plugin.
 
 		kwargs := map[string]string{}
 
-		bodyJson, err := GetAPI("chats", kwargs)
+		bodyJson, err := GetAPIResponse("chats", kwargs)
 		if err != nil {
 			panic(err)
 		} else {

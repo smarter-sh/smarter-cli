@@ -25,7 +25,7 @@ will replace the deleted user.`,
 		yamlFlagValue := viper.GetBool("yaml")
 
 		kwargs := map[string]string{}
-		bodyJson, err := GetAPI("user", kwargs)
+		bodyJson, err := GetAPIResponse("user", kwargs)
 		if err != nil {
 			panic(err)
 		} else {

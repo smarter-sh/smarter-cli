@@ -23,7 +23,7 @@ configured api_key.`,
 		yamlFlagValue := viper.GetBool("yaml")
 
 		kwargs := map[string]string{}
-		bodyJson, err := GetAPIResponse("whoami", kwargs)
+		bodyJson, err := GetAPIResponseResponse("whoami", kwargs)
 		if err != nil {
 			panic(err)
 		} else {

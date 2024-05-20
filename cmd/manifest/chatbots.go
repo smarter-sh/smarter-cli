@@ -34,7 +34,7 @@ This will generate an example manifest for a chatbot and write it to my-plugin.y
 			"n":    strconv.Itoa(n),
 		}
 
-		bodyJson, err := GetAPI("chatbots", kwargs)
+		bodyJson, err := GetAPIResponse("chatbots", kwargs)
 		if err != nil {
 			panic(err)
 		} else {
