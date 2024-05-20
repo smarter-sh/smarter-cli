@@ -4,9 +4,18 @@ import (
 	"fmt"
 
 	"github.com/ghodss/yaml"
+	"github.com/spf13/viper"
 )
 
-func ConsoleOutput(bodyJson []byte, jsonFlagValue bool, yamlFlagValue bool) {
+var jsonFlagValue bool
+var yamlFlagValue bool
+
+func init() {
+	jsonFlagValue = viper.GetBool("json")
+	yamlFlagValue = viper.GetBool("yaml")
+}
+
+func ConsoleOutput(bodyJson []byte) {
 	switch {
 	case jsonFlagValue:
 		fmt.Println(string(bodyJson))

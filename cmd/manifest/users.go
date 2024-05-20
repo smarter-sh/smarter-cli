@@ -23,9 +23,6 @@ This will generate an example manifest for a user and write it to my-plugin.yaml
 
 	Run: func(cmd *cobra.Command, args []string) {
 
-		jsonFlagValue := viper.GetBool("json")
-		yamlFlagValue := viper.GetBool("yaml")
-
 		name := viper.GetString("username")
 		n := viper.GetInt("n")
 
@@ -37,7 +34,7 @@ This will generate an example manifest for a user and write it to my-plugin.yaml
 		if err != nil {
 			panic(err)
 		} else {
-			ConsoleOutput(bodyJson, jsonFlagValue, yamlFlagValue)
+			ConsoleOutput(bodyJson)
 		}
 
 	},

@@ -5,7 +5,6 @@ package delete
 
 import (
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 // chatbotCmd represents the chatbot command
@@ -20,15 +19,12 @@ The Smarter API will permanently delete the ChatBot with the specified name,
 and all related chat history.`,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		jsonFlagValue := viper.GetBool("json")
-		yamlFlagValue := viper.GetBool("yaml")
-
 		kwargs := map[string]string{}
 		bodyJson, err := GetAPIResponse("chatbot", kwargs)
 		if err != nil {
 			panic(err)
 		} else {
-			ConsoleOutput(bodyJson, jsonFlagValue, yamlFlagValue)
+			ConsoleOutput(bodyJson)
 		}
 
 	},

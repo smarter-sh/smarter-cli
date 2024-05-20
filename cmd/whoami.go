@@ -5,7 +5,6 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 // whoamiCmd represents the status command
@@ -19,15 +18,12 @@ smarter whoami --json --yaml
 Returns informtation about the Smarter user account that owns the
 configured api_key.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		jsonFlagValue := viper.GetBool("json")
-		yamlFlagValue := viper.GetBool("yaml")
-
 		kwargs := map[string]string{}
 		bodyJson, err := GetAPIResponseResponse("whoami", kwargs)
 		if err != nil {
 			panic(err)
 		} else {
-			ConsoleOutput(bodyJson, jsonFlagValue, yamlFlagValue)
+			ConsoleOutput(bodyJson)
 		}
 	},
 }

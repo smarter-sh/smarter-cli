@@ -16,8 +16,8 @@ func GetAPIResponse(slug string) ([]byte, error) {
 	return get.GetAPIResponse(slug, kwargs)
 
 }
-func ConsoleOutput(bodyJson []byte, jsonFlagValue bool, yamlFlagValue bool) {
-	get.ConsoleOutput(bodyJson, jsonFlagValue, yamlFlagValue)
+func ConsoleOutput(bodyJson []byte) {
+	get.ConsoleOutput(bodyJson)
 }
 
 // accountCmd represents the account command

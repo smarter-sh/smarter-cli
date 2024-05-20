@@ -22,9 +22,6 @@ var pluginsCmd = &cobra.Command{
 This will generate an example manifest for a plugin and write it to my-plugin.yaml in the current working directory.`,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		jsonFlagValue := viper.GetBool("json")
-		yamlFlagValue := viper.GetBool("yaml")
-
 		name := viper.GetString("name")
 		plugin_class := viper.GetString("class")
 		n := viper.GetInt("n")
@@ -39,7 +36,7 @@ This will generate an example manifest for a plugin and write it to my-plugin.ya
 		if err != nil {
 			panic(err)
 		} else {
-			ConsoleOutput(bodyJson, jsonFlagValue, yamlFlagValue)
+			ConsoleOutput(bodyJson)
 		}
 
 	},

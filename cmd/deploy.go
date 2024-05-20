@@ -5,7 +5,6 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 // deployCmd represents the deploy command
@@ -19,15 +18,12 @@ smarter deploy <kind>
 The Smarter API will deploy the resource.`,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		jsonFlagValue := viper.GetBool("json")
-		yamlFlagValue := viper.GetBool("yaml")
-
 		kwargs := map[string]string{}
 		bodyJson, err := GetAPIResponseResponse("deploy/chatbot/test", kwargs)
 		if err != nil {
 			panic(err)
 		} else {
-			ConsoleOutput(bodyJson, jsonFlagValue, yamlFlagValue)
+			ConsoleOutput(bodyJson)
 		}
 
 	},

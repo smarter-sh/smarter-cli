@@ -26,9 +26,6 @@ flags will output the manifest in the specified format. The
 --dry-run flag will simulate the apply without making any changes.`,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		jsonFlagValue := viper.GetBool("json")
-		yamlFlagValue := viper.GetBool("yaml")
-
 		filename := viper.GetString("f")
 		file, err := os.Open(filename)
 		if err != nil {
@@ -43,7 +40,7 @@ flags will output the manifest in the specified format. The
 		if err != nil {
 			panic(err)
 		} else {
-			ConsoleOutput(bodyJson, jsonFlagValue, yamlFlagValue)
+			ConsoleOutput(bodyJson)
 		}
 
 	},

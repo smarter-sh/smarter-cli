@@ -25,9 +25,6 @@ The Smarter API will return a list of Plugins in the specified format,
 or a manifest for a specific Plugin.`,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		jsonFlagValue := viper.GetBool("json")
-		yamlFlagValue := viper.GetBool("yaml")
-
 		name := viper.GetString("name")
 		plugin_class := viper.GetString("class")
 		n := viper.GetInt("n")
@@ -42,7 +39,7 @@ or a manifest for a specific Plugin.`,
 		if err != nil {
 			panic(err)
 		} else {
-			ConsoleOutput(bodyJson, jsonFlagValue, yamlFlagValue)
+			ConsoleOutput(bodyJson)
 		}
 
 	},

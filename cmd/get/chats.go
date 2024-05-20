@@ -23,9 +23,6 @@ The Smarter API will return a list of Chats in the specified format,
 or a manifest for a specific Chat history.`,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		jsonFlagValue := viper.GetBool("json")
-		yamlFlagValue := viper.GetBool("yaml")
-
 		name := viper.GetString("name")
 		session_id := viper.GetString("session")
 		n := viper.GetInt("n")
@@ -40,7 +37,7 @@ or a manifest for a specific Chat history.`,
 		if err != nil {
 			panic(err)
 		} else {
-			ConsoleOutput(bodyJson, jsonFlagValue, yamlFlagValue)
+			ConsoleOutput(bodyJson)
 		}
 
 	},

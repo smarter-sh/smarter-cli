@@ -5,7 +5,6 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 // statusCmd represents the status command
@@ -20,15 +19,12 @@ The Smarter API will return the current status of the Smarter Platform,
 including the status of all services and resources by region.`,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		jsonFlagValue := viper.GetBool("json")
-		yamlFlagValue := viper.GetBool("yaml")
-
 		kwargs := map[string]string{}
 		bodyJson, err := GetAPIResponseResponse("status", kwargs)
 		if err != nil {
 			panic(err)
 		} else {
-			ConsoleOutput(bodyJson, jsonFlagValue, yamlFlagValue)
+			ConsoleOutput(bodyJson)
 		}
 	},
 }

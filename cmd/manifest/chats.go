@@ -23,9 +23,6 @@ This will generate an example manifest a chat session and write it to my-plugin.
 
 	Run: func(cmd *cobra.Command, args []string) {
 
-		jsonFlagValue := viper.GetBool("json")
-		yamlFlagValue := viper.GetBool("yaml")
-
 		name := viper.GetString("name")
 		session_id := viper.GetString("session")
 		n := viper.GetInt("n")
@@ -40,7 +37,7 @@ This will generate an example manifest a chat session and write it to my-plugin.
 		if err != nil {
 			panic(err)
 		} else {
-			ConsoleOutput(bodyJson, jsonFlagValue, yamlFlagValue)
+			ConsoleOutput(bodyJson)
 		}
 
 	},

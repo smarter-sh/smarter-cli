@@ -14,8 +14,8 @@ func GetAPIResponse(slug string, kwargs map[string]string) ([]byte, error) {
 	return cmd.GetAPIResponseResponse(slug, kwargs)
 
 }
-func ConsoleOutput(bodyJson []byte, jsonFlagValue bool, yamlFlagValue bool) {
-	cmd.ConsoleOutput(bodyJson, jsonFlagValue, yamlFlagValue)
+func ConsoleOutput(bodyJson []byte) {
+	cmd.ConsoleOutput(bodyJson)
 }
 
 // GetCmd represents the get command

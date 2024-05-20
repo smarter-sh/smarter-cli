@@ -23,9 +23,6 @@ The Smarter API will return a list of ChatBots in the specified format,
 or a manifest for a specific ChatBot.`,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		jsonFlagValue := viper.GetBool("json")
-		yamlFlagValue := viper.GetBool("yaml")
-
 		name := viper.GetString("name")
 		n := viper.GetInt("n")
 
@@ -38,7 +35,7 @@ or a manifest for a specific ChatBot.`,
 		if err != nil {
 			panic(err)
 		} else {
-			ConsoleOutput(bodyJson, jsonFlagValue, yamlFlagValue)
+			ConsoleOutput(bodyJson)
 		}
 
 	},

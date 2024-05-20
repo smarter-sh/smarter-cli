@@ -5,7 +5,6 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 // logsCmd represents the logs command
@@ -20,15 +19,12 @@ The Smarter API will return a list of Log files in the specified format,
 or a manifest for a specific Log file.`,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		jsonFlagValue := viper.GetBool("json")
-		yamlFlagValue := viper.GetBool("yaml")
-
 		kwargs := map[string]string{}
 		bodyJson, err := GetAPIResponseResponse("logs", kwargs)
 		if err != nil {
 			panic(err)
 		} else {
-			ConsoleOutput(bodyJson, jsonFlagValue, yamlFlagValue)
+			ConsoleOutput(bodyJson)
 		}
 
 	},

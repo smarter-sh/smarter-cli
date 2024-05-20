@@ -14,8 +14,8 @@ func GetAPIResponse(slug string, kwargs map[string]string) ([]byte, error) {
 	return delete.GetAPIResponse(slug, kwargs)
 
 }
-func ConsoleOutput(bodyJson []byte, jsonFlagValue bool, yamlFlagValue bool) {
-	delete.ConsoleOutput(bodyJson, jsonFlagValue, yamlFlagValue)
+func ConsoleOutput(bodyJson []byte) {
+	delete.ConsoleOutput(bodyJson)
 }
 
 // DeleteCmd represents the delete command

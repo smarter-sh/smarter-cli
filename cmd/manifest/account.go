@@ -5,7 +5,6 @@ package manifest
 
 import (
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 // accountCmd represents the account command
@@ -19,16 +18,13 @@ var accountCmd = &cobra.Command{
 This will generate an example manifest for an account and write it to my-plugin.yaml in the current working directory.`,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		jsonFlagValue := viper.GetBool("json")
-		yamlFlagValue := viper.GetBool("yaml")
-
 		kwargs := map[string]string{}
 
 		bodyJson, err := GetAPIResponse("chats", kwargs)
 		if err != nil {
 			panic(err)
 		} else {
-			ConsoleOutput(bodyJson, jsonFlagValue, yamlFlagValue)
+			ConsoleOutput(bodyJson)
 		}
 
 	},
