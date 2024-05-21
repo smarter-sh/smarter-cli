@@ -53,13 +53,13 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// chatbotsCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	pluginsCmd.Flags().String("name", "", "Name of the chatbot")
-	pluginsCmd.Flags().Int("n", 10, "Number of chatbots to retrieve")
+	chatbotsCmd.Flags().String("name", "", "Name of the chatbot")
+	chatbotsCmd.Flags().Int("n", 10, "Number of chatbots to retrieve")
 
-	if err := viper.BindPFlag("name", pluginsCmd.Flags().Lookup("name")); err != nil {
+	if err := viper.BindPFlag("name", chatbotsCmd.Flags().Lookup("name")); err != nil {
 		log.Fatalf("Error binding flag: %v", err)
 	}
-	if err := viper.BindPFlag("n", pluginsCmd.Flags().Lookup("n")); err != nil {
+	if err := viper.BindPFlag("n", chatbotsCmd.Flags().Lookup("n")); err != nil {
 		log.Fatalf("Error binding flag: %v", err)
 	}
 }

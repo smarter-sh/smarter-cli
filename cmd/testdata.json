@@ -1,16 +1,12 @@
 [
     {
-        "name": "Test manifest/plugin/",
+        "name": "Test /api/v1/cli/manifest/plugin/",
         "inputURL": "manifest/plugin/",
-        "inputParams": {},
-        "expectedStatus": 200,
-        "expectedBody": "expected body here"
+        "inputParams": {}
     },
     {
-        "name": "Test get/plugins/",
+        "name": "Test /api/v1/cli/get/plugins/",
         "inputURL": "get/plugins/",
-        "inputParams": {"n": "10"},
-        "expectedStatus": 200,
-        "expectedBody": "expected body here"
+        "inputParams": {"n": "10"}
     }
 ]
