@@ -19,6 +19,9 @@ func GetAPIResponse(slug string) ([]byte, error) {
 func ConsoleOutput(bodyJson []byte) {
 	get.ConsoleOutput(bodyJson)
 }
+func ErrorOutput(err error) {
+	get.ErrorOutput(err)
+}
 
 // accountCmd represents the account command
 var accountCmd = &cobra.Command{

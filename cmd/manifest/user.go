@@ -22,7 +22,7 @@ This will generate an example manifest for a user and write it to my-plugin.yaml
 		kwargs := map[string]string{}
 		bodyJson, err := APIRequest("user", kwargs)
 		if err != nil {
-			panic(err)
+			ErrorOutput(err)
 		} else {
 			ConsoleOutput(bodyJson)
 		}

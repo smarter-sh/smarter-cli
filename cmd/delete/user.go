@@ -26,7 +26,7 @@ will replace the deleted user.`,
 		}
 		bodyJson, err := APIRequest("user", kwargs)
 		if err != nil {
-			panic(err)
+			ErrorOutput(err)
 		} else {
 			ConsoleOutput(bodyJson)
 		}

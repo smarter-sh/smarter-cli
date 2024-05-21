@@ -22,7 +22,7 @@ This will generate an example manifest for a plugin and write it to my-plugin.ya
 
 		bodyJson, err := APIRequest("plugin", kwargs)
 		if err != nil {
-			panic(err)
+			ErrorOutput(err)
 		} else {
 			ConsoleOutput(bodyJson)
 		}

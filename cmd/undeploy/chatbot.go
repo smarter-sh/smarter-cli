@@ -25,7 +25,7 @@ This will reverse the effect of having deployed the ChatBot.`,
 
 		bodyJson, err := APIRequest("chatbots", kwargs)
 		if err != nil {
-			panic(err)
+			ErrorOutput(err)
 		} else {
 			ConsoleOutput(bodyJson)
 		}

@@ -25,7 +25,7 @@ The Smarter API will deploy the ChatBot.`,
 
 		bodyJson, err := APIRequest("chatbot", kwargs)
 		if err != nil {
-			panic(err)
+			ErrorOutput(err)
 		} else {
 			ConsoleOutput(bodyJson)
 		}

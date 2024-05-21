@@ -21,7 +21,7 @@ The Smarter API will deploy the resource.`,
 		kwargs := map[string]string{}
 		bodyJson, err := APIRequest("deploy/chatbot/test", kwargs)
 		if err != nil {
-			panic(err)
+			ErrorOutput(err)
 		} else {
 			ConsoleOutput(bodyJson)
 		}

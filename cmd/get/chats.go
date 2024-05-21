@@ -44,7 +44,7 @@ The Smarter API will return a list of Chats.`,
 
 		bodyJson, err := APIRequest("chats", kwargs)
 		if err != nil {
-			panic(err)
+			ErrorOutput(err)
 		} else {
 			ConsoleOutput(bodyJson)
 		}

@@ -68,11 +68,16 @@ func ConsoleOutput(bodyJson []byte) {
 	case yamlFlagValue:
 		bodyYaml, err := yaml.JSONToYAML(bodyJson)
 		if err != nil {
-			panic(err)
+			ErrorOutput(err)
 		} else {
 			fmt.Println(string(bodyYaml))
 		}
 	default:
 		TableOutput(bodyJson)
 	}
+}
+
+func ErrorOutput(err error) {
+	fmt.Fprintf(os.Stderr, "\nError: %v\n", err)
+	os.Exit(1)
 }

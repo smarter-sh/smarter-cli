@@ -21,7 +21,7 @@ configured api_key.`,
 		kwargs := map[string]string{}
 		bodyJson, err := APIRequest("whoami", kwargs)
 		if err != nil {
-			panic(err)
+			ErrorOutput(err)
 		} else {
 			ConsoleOutput(bodyJson)
 		}

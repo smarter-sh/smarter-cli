@@ -23,7 +23,7 @@ This will generate an example manifest for a chatbot and write it to my-plugin.y
 
 		bodyJson, err := APIRequest("chatbot", kwargs)
 		if err != nil {
-			panic(err)
+			ErrorOutput(err)
 		} else {
 			ConsoleOutput(bodyJson)
 		}

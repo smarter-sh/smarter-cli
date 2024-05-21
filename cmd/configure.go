@@ -78,13 +78,13 @@ func setAccountNumber(accountNumber string) {
 //
 // This section contains code related to api_key configuration.
 func validateApiKey(apiKey string) error {
-	regex, err := regexp.Compile(`^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-4[a-fA-F0-9]{3}-[89aAbB][a-fA-F0-9]{3}-[a-fA-F0-9]{12}$`)
+	regex, err := regexp.Compile(`^[a-fA-F0-9]{64}$`)
 	if err != nil {
 		return err
 	}
 
 	if !regex.MatchString(apiKey) {
-		return fmt.Errorf("invalid API key. API keys should be in UUID format")
+		return fmt.Errorf("invalid API key. API keys should be 64 hexadecimal characters")
 	}
 
 	return nil
@@ -92,7 +92,10 @@ func validateApiKey(apiKey string) error {
 
 func getApiKey() string {
 	fmt.Println("getApiKey()")
-	apiKey := viper.Get("api_key").(string)
+	apiKey := viper.Get("config.api_key").(string)
+	if apiKey == "" {
+		apiKey = viper.Get("api_key").(string)
+	}
 	reader := bufio.NewReader(os.Stdin)
 	valid := false
 

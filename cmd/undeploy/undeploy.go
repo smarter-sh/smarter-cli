@@ -17,6 +17,9 @@ func APIRequest(kind string, kwargs map[string]string) ([]byte, error) {
 func ConsoleOutput(bodyJson []byte) {
 	cmd.ConsoleOutput(bodyJson)
 }
+func ErrorOutput(err error) {
+	cmd.ErrorOutput(err)
+}
 
 // UndeployCmd represents the get command
 var UndeployCmd = &cobra.Command{

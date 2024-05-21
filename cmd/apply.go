@@ -38,7 +38,7 @@ flags will output the manifest in the specified format. The
 		kwargs := map[string]string{}
 		bodyJson, err := APIRequest("apply", kwargs, fileContents)
 		if err != nil {
-			panic(err)
+			ErrorOutput(err)
 		} else {
 			ConsoleOutput(bodyJson)
 		}

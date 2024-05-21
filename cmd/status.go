@@ -22,7 +22,7 @@ including the status of all services and resources by region.`,
 		kwargs := map[string]string{}
 		bodyJson, err := APIRequest("status", kwargs)
 		if err != nil {
-			panic(err)
+			ErrorOutput(err)
 		} else {
 			ConsoleOutput(bodyJson)
 		}

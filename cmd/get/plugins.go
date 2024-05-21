@@ -23,6 +23,25 @@ smarter get plugins --name  --class --json --yaml -n <10> --asc --desc
 The Smarter API will return a list of Plugins in the specified format,
 or a manifest for a specific Plugin.`,
 	Run: func(cmd *cobra.Command, args []string) {
+		// Get the class value
+		class := viper.GetString("class")
+
+		// Define allowed classes
+		allowedClasses := []string{"static", "sql", "api"}
+
+		// Check if the class is allowed
+		isValidClass := false
+		for _, allowedClass := range allowedClasses {
+			if class == allowedClass {
+				isValidClass = true
+				break
+			}
+		}
+
+		// If the class is not allowed, log an error and exit
+		if !isValidClass {
+			log.Fatalf("Invalid class '%s'. Allowed classes are: %v", class, allowedClasses)
+		}
 
 		name := viper.GetString("name")
 		plugin_class := viper.GetString("class")
@@ -34,7 +53,7 @@ or a manifest for a specific Plugin.`,
 
 		bodyJson, err := APIRequest("plugins", kwargs)
 		if err != nil {
-			panic(err)
+			ErrorOutput(err)
 		} else {
 			ConsoleOutput(bodyJson)
 		}
@@ -54,25 +73,4 @@ func init() {
 	if err := viper.BindPFlag("class", pluginsCmd.Flags().Lookup("class")); err != nil {
 		log.Fatalf("Error binding flag 'class': %v", err)
 	}
-
-	// Get the class value
-	class := viper.GetString("class")
-
-	// Define allowed classes
-	allowedClasses := []string{"static", "sql", "api"}
-
-	// Check if the class is allowed
-	isValidClass := false
-	for _, allowedClass := range allowedClasses {
-		if class == allowedClass {
-			isValidClass = true
-			break
-		}
-	}
-
-	// If the class is not allowed, log an error and exit
-	if !isValidClass {
-		log.Fatalf("Invalid class '%s'. Allowed classes are: %v", class, allowedClasses)
-	}
-
 }

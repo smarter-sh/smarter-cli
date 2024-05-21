@@ -30,7 +30,7 @@ or a manifest for a specific ChatBot.`,
 
 		bodyJson, err := APIRequest("chatbots", kwargs)
 		if err != nil {
-			panic(err)
+			ErrorOutput(err)
 		} else {
 			ConsoleOutput(bodyJson)
 		}

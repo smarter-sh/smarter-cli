@@ -30,7 +30,7 @@ or a manifest for a specific User.`,
 		}
 		bodyJson, err := get.APIRequest("users", kwargs)
 		if err != nil {
-			panic(err)
+			ErrorOutput(err)
 		} else {
 			ConsoleOutput(bodyJson)
 		}

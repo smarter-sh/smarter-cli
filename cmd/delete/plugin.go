@@ -24,7 +24,7 @@ and dissassociate it from any ChatBots.`,
 		}
 		bodyJson, err := APIRequest("plugin", kwargs)
 		if err != nil {
-			panic(err)
+			ErrorOutput(err)
 		} else {
 			ConsoleOutput(bodyJson)
 		}

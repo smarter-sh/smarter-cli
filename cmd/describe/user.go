@@ -26,7 +26,7 @@ This will retrieve a manifest for User <username> and write it to my-plugin.yaml
 		}
 		bodyJson, err := APIRequest("user", kwargs)
 		if err != nil {
-			panic(err)
+			ErrorOutput(err)
 		} else {
 			ConsoleOutput(bodyJson)
 		}

@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"path"
 	"strings"
 
 	"github.com/spf13/viper"
@@ -16,8 +17,16 @@ const (
 	ApiBasePath = "/api/v1/cli/"
 )
 
+func fetchAPIKey() string {
+	apiKey := viper.Get("config.api_key").(string)
+	if apiKey == "" {
+		apiKey = viper.Get("api_key").(string)
+	}
+	return apiKey
+}
+
 func verifyApiKey() error {
-	apiKey := viper.GetString("api_key")
+	apiKey := fetchAPIKey()
 	if apiKey == "" {
 		errMsg := `api_key is missing. Please set the API key using the command:
 smarter configure --api_key <api_key string>
@@ -53,9 +62,13 @@ func APIRequest(slug string, kwargs map[string]string, fileContents ...string) (
 	if checkApiKey != nil {
 		return []byte{}, checkApiKey
 	}
+	apiKey := fetchAPIKey()
 	apiHost := getAPIHost()
-	root_url := apiHost + ApiBasePath
-	url := fmt.Sprintf("%s/%s/", root_url, slug)
+	url_path := path.Clean("/" + ApiBasePath + slug)
+	url := apiHost + url_path
+	if !strings.HasSuffix(url, "/") {
+		url += "/"
+	}
 
 	var textData string
 	if len(fileContents) > 0 {
@@ -64,20 +77,23 @@ func APIRequest(slug string, kwargs map[string]string, fileContents ...string) (
 		textData = ""
 	}
 
+	fmt.Println("HTTP Request:", url, textData)
 	req, err := http.NewRequest("POST", url, strings.NewReader(textData))
 	if err != nil {
-		panic(err)
+		ErrorOutput(err)
 	}
 	// Set headers from kwargs
 	for key, value := range kwargs {
 		req.Header.Set(key, value)
 	}
-	req.Header.Set("Content-Type", "text/plain")
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", "Token "+apiKey)
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
+	fmt.Println("HTTP Response Status:", resp.StatusCode)
 	if err != nil {
-		return []byte{}, err
+		ErrorOutput(err)
 	}
 	defer resp.Body.Close()
 

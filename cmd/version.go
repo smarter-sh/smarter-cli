@@ -25,7 +25,7 @@ Returns version information about this software.`,
 		kwargs := map[string]string{}
 		bodyJson, err := APIRequest("whoami", kwargs)
 		if err != nil {
-			panic(err)
+			ErrorOutput(err)
 		} else {
 			var localVersionMap map[string]interface{}
 			err := json.Unmarshal(localVersion, &localVersionMap)
@@ -44,7 +44,7 @@ Returns version information about this software.`,
 			}
 			combinedJson, err := json.Marshal(bodyJsonMap)
 			if err != nil {
-				panic(err)
+				ErrorOutput(err)
 			}
 
 			ConsoleOutput(combinedJson)

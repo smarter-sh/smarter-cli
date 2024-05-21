@@ -24,7 +24,7 @@ and all related chat history.`,
 		}
 		bodyJson, err := APIRequest("chatbot", kwargs)
 		if err != nil {
-			panic(err)
+			ErrorOutput(err)
 		} else {
 			ConsoleOutput(bodyJson)
 		}

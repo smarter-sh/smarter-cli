@@ -23,7 +23,7 @@ The Smarter API will permanently delete the chat history with the specified iden
 		}
 		bodyJson, err := APIRequest("chat", kwargs)
 		if err != nil {
-			panic(err)
+			ErrorOutput(err)
 		} else {
 			ConsoleOutput(bodyJson)
 		}

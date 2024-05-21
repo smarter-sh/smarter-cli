@@ -25,10 +25,8 @@ var RootCmd = &cobra.Command{
 	Long: `A command-line interface for working with Smarter resources.
 Using the smarter cli, you can create Smarter plugins, add these to a ChatBot,
 and deploy the ChatBot to a custom URL. You can interact with the ChatBot
-on the command line, view chat log data, and manage your Smarter account.`,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	// Run: func(cmd *cobra.Command, args []string) { },
+on the command line, view chat log data, and manage your Smarter account.
+Support: https://smarter.sh and support@smarter.sh.`,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.

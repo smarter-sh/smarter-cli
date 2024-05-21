@@ -26,7 +26,7 @@ This will retrieve the manifest for a plugin named <name> and write it to my-plu
 
 		bodyJson, err := APIRequest("plugin", kwargs)
 		if err != nil {
-			panic(err)
+			ErrorOutput(err)
 		} else {
 			ConsoleOutput(bodyJson)
 		}
