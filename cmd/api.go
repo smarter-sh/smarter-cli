@@ -82,10 +82,13 @@ func APIRequest(slug string, kwargs map[string]string, fileContents ...string) (
 	if err != nil {
 		ErrorOutput(err)
 	}
+
 	// Set headers from kwargs
 	for key, value := range kwargs {
 		req.Header.Set(key, value)
 	}
+
+	// see https://jazzband.github.io/django-rest-knox/auth/
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", "Token "+apiKey)
 
@@ -100,6 +103,10 @@ func APIRequest(slug string, kwargs map[string]string, fileContents ...string) (
 	bodyBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
 		log.Fatalf("Error reading response body: %v", err)
+	}
+
+	if resp.StatusCode != 200 {
+		ErrorOutput(fmt.Errorf("HTTP Response Status: %d", resp.StatusCode))
 	}
 
 	return bodyBytes, nil
