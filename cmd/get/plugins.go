@@ -5,7 +5,6 @@ package get
 
 import (
 	"log"
-	"strconv"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -13,12 +12,12 @@ import (
 
 // pluginsCmd represents the plugins command
 var pluginsCmd = &cobra.Command{
-	Use:   "plugins",
+	Use:   "plugins --name --class --json --yaml -n <10> --asc --desc",
 	Short: "Retrieve a list of Plugins or a manifest for a specific Plugin by name",
 	Long: `Retrieve a list of Plugins,
 	or a manifest for a specific Plugin:
 
-smarter get plugins --name --json --yaml --csv --xml -n 10 --asc --desc --class
+smarter get plugins --name  --class --json --yaml -n <10> --asc --desc
 
 
 The Smarter API will return a list of Plugins in the specified format,
@@ -27,12 +26,10 @@ or a manifest for a specific Plugin.`,
 
 		name := viper.GetString("name")
 		plugin_class := viper.GetString("class")
-		n := viper.GetInt("n")
 
 		kwargs := map[string]string{
 			"name":  name,
 			"class": plugin_class,
-			"n":     strconv.Itoa(n),
 		}
 
 		bodyJson, err := APIRequest("plugins", kwargs)
@@ -48,29 +45,34 @@ or a manifest for a specific Plugin.`,
 func init() {
 	GetCmd.AddCommand(pluginsCmd)
 
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// pluginsCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// pluginsCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-
-	pluginsCmd.Flags().String("name", "", "Name of the plugin")
-	pluginsCmd.Flags().String("class", "", "Plugin class: static, sql, api")
-	pluginsCmd.Flags().Int("n", 10, "Number of plugins to retrieve")
-
+	pluginsCmd.Flags().StringP("name", "n", "", "Name of the plugin")
 	if err := viper.BindPFlag("name", pluginsCmd.Flags().Lookup("name")); err != nil {
 		log.Fatalf("Error binding flag 'name': %v", err)
 	}
 
+	pluginsCmd.Flags().StringP("class", "c", "", "Plugin class: static, sql, api")
 	if err := viper.BindPFlag("class", pluginsCmd.Flags().Lookup("class")); err != nil {
 		log.Fatalf("Error binding flag 'class': %v", err)
 	}
 
-	if err := viper.BindPFlag("n", pluginsCmd.Flags().Lookup("n")); err != nil {
-		log.Fatalf("Error binding flag 'n': %v", err)
+	// Get the class value
+	class := viper.GetString("class")
+
+	// Define allowed classes
+	allowedClasses := []string{"static", "sql", "api"}
+
+	// Check if the class is allowed
+	isValidClass := false
+	for _, allowedClass := range allowedClasses {
+		if class == allowedClass {
+			isValidClass = true
+			break
+		}
 	}
+
+	// If the class is not allowed, log an error and exit
+	if !isValidClass {
+		log.Fatalf("Invalid class '%s'. Allowed classes are: %v", class, allowedClasses)
+	}
+
 }

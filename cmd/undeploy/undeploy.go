@@ -9,9 +9,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func APIRequest(slug string, kwargs map[string]string) ([]byte, error) {
+func APIRequest(kind string, kwargs map[string]string) ([]byte, error) {
 
-	return cmd.APIRequest("undeploy/"+slug, kwargs)
+	return cmd.APIRequest("undeploy/"+kind+"/", kwargs)
 
 }
 func ConsoleOutput(bodyJson []byte) {
@@ -20,26 +20,15 @@ func ConsoleOutput(bodyJson []byte) {
 
 // UndeployCmd represents the get command
 var UndeployCmd = &cobra.Command{
-	Use:   "undeploy",
-	Short: "Generate a list of Smarter resources or a manifest for a specific resource",
-	Long: `Generate a list of Smarter resources or a manifest for a specific resource:
+	Use:   "undeploy <kind> <name>",
+	Short: "Undo a Smarter resource deployment.",
+	Long: `Undo a Smarter resource deployment. For example:
 
-smarter get <kind> --name --json --yaml --csv --xml -n 10 --asc --desc
+smarter undeploy <kind> <name>
 
-The Smarter API will return a list of resources in the specified format,
-or a manifest for a specific resource.`,
+The Smarter API will undo the deployment of the resource.`,
 }
 
 func init() {
 	cmd.RootCmd.AddCommand(UndeployCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// UndeployCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// UndeployCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

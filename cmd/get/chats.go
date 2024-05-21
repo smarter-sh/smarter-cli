@@ -13,24 +13,33 @@ import (
 
 // chatsCmd represents the chats command
 var chatsCmd = &cobra.Command{
-	Use:   "chats",
-	Short: "Retrieve a list of Chats or the history of a specific Chat by id",
-	Long: `Retrieve a list of Chats or the history of a specific Chat by id:
+	Use:   "chats --session_id <session_id> --chatbot <name> --json --yaml -n <10> --asc --desc --today --yesterday --this-week --last-week --this-month --last-month",
+	Short: "Retrieve a list of Chats",
+	Long: `Retrieves a list of Chats:
 
-smarter get chats --id --chatbot --json --yaml --csv --xml -n 10 --asc --desc --today --yesterday --this-week --last-week --this-month --last-month
+smarter get chats --session_id <session_id> --chatbot <name> --json --yaml -n <10> --asc --desc --today --yesterday --this-week --last-week --this-month --last-month
 
-The Smarter API will return a list of Chats in the specified format,
-or a manifest for a specific Chat history.`,
+The Smarter API will return a list of Chats.`,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		name := viper.GetString("name")
-		session_id := viper.GetString("session")
-		n := viper.GetInt("n")
+		chatbot := viper.GetString("chatbot")
+		session_id := viper.GetString("session_id")
+		today := viper.GetBool("today")
+		yesterday := viper.GetBool("yesterday")
+		this_week := viper.GetBool("this-week")
+		last_week := viper.GetBool("last-week")
+		this_month := viper.GetBool("this-month")
+		last_month := viper.GetBool("last-month")
 
 		kwargs := map[string]string{
-			"name":       name,
+			"chatbot":    chatbot,
 			"session_id": session_id,
-			"n":          strconv.Itoa(n),
+			"today":      strconv.FormatBool(today),
+			"yesterday":  strconv.FormatBool(yesterday),
+			"this-week":  strconv.FormatBool(this_week),
+			"last-week":  strconv.FormatBool(last_week),
+			"this-month": strconv.FormatBool(this_month),
+			"last-month": strconv.FormatBool(last_month),
 		}
 
 		bodyJson, err := APIRequest("chats", kwargs)
@@ -46,28 +55,43 @@ or a manifest for a specific Chat history.`,
 func init() {
 	GetCmd.AddCommand(chatsCmd)
 
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// chatsCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// chatsCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	pluginsCmd.Flags().String("name", "", "Name of the chatbot")
-	pluginsCmd.Flags().String("session", "", "Chat session_id")
-	pluginsCmd.Flags().Int("n", 10, "Number of sessions to retrieve")
-
-	if err := viper.BindPFlag("name", pluginsCmd.Flags().Lookup("name")); err != nil {
-		log.Fatalf("Error binding flag 'name': %v", err)
+	pluginsCmd.Flags().String("chatbot", "c", "Name of the chatbot")
+	if err := viper.BindPFlag("chatbot", pluginsCmd.Flags().Lookup("chatbot")); err != nil {
+		log.Fatalf("Error binding flag 'chatbot': %v", err)
 	}
 
-	if err := viper.BindPFlag("session", pluginsCmd.Flags().Lookup("session")); err != nil {
-		log.Fatalf("Error binding flag 'session': %v", err)
+	pluginsCmd.Flags().String("session_id", "s", "Chat session_id")
+	if err := viper.BindPFlag("session_id", pluginsCmd.Flags().Lookup("session_id")); err != nil {
+		log.Fatalf("Error binding flag 'session_id': %v", err)
 	}
 
-	if err := viper.BindPFlag("n", pluginsCmd.Flags().Lookup("n")); err != nil {
-		log.Fatalf("Error binding flag 'n': %v", err)
+	pluginsCmd.Flags().Bool("today", false, "Filter for today")
+	if err := viper.BindPFlag("today", pluginsCmd.Flags().Lookup("today")); err != nil {
+		log.Fatalf("Error binding flag 'today': %v", err)
+	}
+
+	pluginsCmd.Flags().Bool("yesterday", false, "Filter for yesterday")
+	if err := viper.BindPFlag("yesterday", pluginsCmd.Flags().Lookup("yesterday")); err != nil {
+		log.Fatalf("Error binding flag 'yesterday': %v", err)
+	}
+
+	pluginsCmd.Flags().Bool("this-week", false, "Filter for this week")
+	if err := viper.BindPFlag("this-week", pluginsCmd.Flags().Lookup("this-week")); err != nil {
+		log.Fatalf("Error binding flag 'this-week': %v", err)
+	}
+
+	pluginsCmd.Flags().Bool("last-week", false, "Filter for last week")
+	if err := viper.BindPFlag("last-week", pluginsCmd.Flags().Lookup("last-week")); err != nil {
+		log.Fatalf("Error binding flag 'last-week': %v", err)
+	}
+
+	pluginsCmd.Flags().Bool("this-month", false, "Filter for this month")
+	if err := viper.BindPFlag("this-month", pluginsCmd.Flags().Lookup("this-month")); err != nil {
+		log.Fatalf("Error binding flag 'this-month': %v", err)
+	}
+
+	pluginsCmd.Flags().Bool("last-month", false, "Filter for last month")
+	if err := viper.BindPFlag("last-month", pluginsCmd.Flags().Lookup("last-month")); err != nil {
+		log.Fatalf("Error binding flag 'last-month': %v", err)
 	}
 }

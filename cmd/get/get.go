@@ -4,27 +4,43 @@ Copyright © 2024 Lawrence McDaniel <lawrence@querium.com>
 package get
 
 import (
+	"log"
+	"strconv"
+
 	"github.com/QueriumCorp/smarter-cli/cmd"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
-func APIRequest(slug string, kwargs map[string]string) ([]byte, error) {
+func APIRequest(kind string, kwargs map[string]string) ([]byte, error) {
 
-	return cmd.APIRequest("get/"+slug, kwargs)
+	n := viper.GetInt("n")
+	asc := viper.GetBool("asc")
+	desc := viper.GetBool("desc")
+	common_kwargs := map[string]string{
+		"n":    strconv.Itoa(n),
+		"asc":  strconv.FormatBool(asc),
+		"desc": strconv.FormatBool(desc),
+	}
+	for key, value := range common_kwargs {
+		kwargs[key] = value
+	}
+	return cmd.APIRequest("get/"+kind+"/", kwargs)
 
 }
+
 func ConsoleOutput(bodyJson []byte) {
 	cmd.ConsoleOutput(bodyJson)
 }
 
 // GetCmd represents the get command
 var GetCmd = &cobra.Command{
-	Use:   "get",
-	Short: "Generate a list of Smarter resources or a manifest for a specific resource",
-	Long: `Generate a list of Smarter resources or a manifest for a specific resource:
+	Use:   "get <kind> --json --yaml -n <10> --asc --desc",
+	Short: "Generate a list of Smarter resources",
+	Long: `Generate a list of Smarter resources:
 
-smarter get <kind> --name --json --yaml --csv --xml -n 10 --asc --desc
+smarter get <kind> --json --yaml -n <10> --asc --desc
 
 The Smarter API will return a list of resources in the specified format,
 or a manifest for a specific resource.`,
@@ -33,13 +49,16 @@ or a manifest for a specific resource.`,
 func init() {
 	cmd.RootCmd.AddCommand(GetCmd)
 
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// GetCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// GetCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	GetCmd.PersistentFlags().Int("n", 10, "Number of resources to retrieve")
+	if err := viper.BindPFlag("n", GetCmd.PersistentFlags().Lookup("n")); err != nil {
+		log.Fatalf("Error binding flag: %v", err)
+	}
+	GetCmd.PersistentFlags().Bool("asc", false, "Sort results in ascending order")
+	if err := viper.BindPFlag("asc", GetCmd.PersistentFlags().Lookup("asc")); err != nil {
+		log.Fatalf("Error binding flag: %v", err)
+	}
+	GetCmd.PersistentFlags().Bool("desc", false, "Sort results in descending order")
+	if err := viper.BindPFlag("desc", GetCmd.PersistentFlags().Lookup("desc")); err != nil {
+		log.Fatalf("Error binding flag: %v", err)
+	}
 }

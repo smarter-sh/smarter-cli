@@ -33,14 +33,4 @@ The Smarter API will return your Account manifest in the specified format.`,
 
 func init() {
 	get.GetCmd.AddCommand(accountCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// accountCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// accountCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

@@ -14,7 +14,7 @@ import (
 
 // applyCmd represents the apply command
 var applyCmd = &cobra.Command{
-	Use:   "apply",
+	Use:   "apply -f <manifest.yaml> --dry-run",
 	Short: "Apply a Smarter manifest",
 	Long: `Apply a Smarter manifest:
 
@@ -26,7 +26,7 @@ flags will output the manifest in the specified format. The
 --dry-run flag will simulate the apply without making any changes.`,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		filename := viper.GetString("f")
+		filename := viper.GetString("filename")
 		file, err := os.Open(filename)
 		if err != nil {
 			log.Fatalf("Failed opening file: %s", err)
@@ -58,8 +58,8 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// applyCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	applyCmd.Flags().String("f", "", "Path and filename of the manifest to apply")
-	if err := viper.BindPFlag("f", applyCmd.Flags().Lookup("f")); err != nil {
+	applyCmd.Flags().StringP("filename", "f", "", "Path and filename of the manifest to apply")
+	if err := viper.BindPFlag("filename", applyCmd.Flags().Lookup("filename")); err != nil {
 		log.Fatalf("Error binding flag: %v", err)
 	}
 }

@@ -56,6 +56,11 @@ func init() {
 	if err := viper.BindPFlag("environment", RootCmd.PersistentFlags().Lookup("environment")); err != nil {
 		log.Fatalf("Error binding flag: %v", err)
 	}
+	// Add the --api_key flag
+	RootCmd.PersistentFlags().String("api_key", "", "Smarter API key to use")
+	if err := viper.BindPFlag("api_key", RootCmd.PersistentFlags().Lookup("api_key")); err != nil {
+		log.Fatalf("Error binding flag: %v", err)
+	}
 
 	// Add the --json toggle
 	RootCmd.PersistentFlags().BoolP("json", "j", false, "output in JSON format")

@@ -9,16 +9,18 @@ import (
 
 // chatCmd represents the chat command
 var chatCmd = &cobra.Command{
-	Use:   "chat",
+	Use:   "chat <session_id>",
 	Short: "Delete a chat history",
-	Long: `Delete a chat history:
+	Long: `Deletes a chat history:
 
-smarter delete chat -id
+smarter delete chat <session_id>
 
 The Smarter API will permanently delete the chat history with the specified identifier.`,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		kwargs := map[string]string{}
+		kwargs := map[string]string{
+			"session_id": args[0],
+		}
 		bodyJson, err := APIRequest("chat", kwargs)
 		if err != nil {
 			panic(err)
@@ -31,14 +33,4 @@ The Smarter API will permanently delete the chat history with the specified iden
 
 func init() {
 	DeleteCmd.AddCommand(chatCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// chatCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// chatCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

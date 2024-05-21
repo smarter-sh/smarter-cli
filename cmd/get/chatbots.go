@@ -5,7 +5,6 @@ package get
 
 import (
 	"log"
-	"strconv"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -13,22 +12,20 @@ import (
 
 // chatbotsCmd represents the chatbots command
 var chatbotsCmd = &cobra.Command{
-	Use:   "chatbots",
+	Use:   "chatbots --name --json --yaml --n <10>",
 	Short: "Retrieve a list of ChatBots or a specific ChatBot by name",
 	Long: `Retrieve a list of ChatBots or a specific ChatBot by name:
 
-smarter get chatbots --name --json --yaml
+smarter get chatbots --name --json --yaml --n <10>
 
 The Smarter API will return a list of ChatBots in the specified format,
 or a manifest for a specific ChatBot.`,
 	Run: func(cmd *cobra.Command, args []string) {
 
 		name := viper.GetString("name")
-		n := viper.GetInt("n")
 
 		kwargs := map[string]string{
 			"name": name,
-			"n":    strconv.Itoa(n),
 		}
 
 		bodyJson, err := APIRequest("chatbots", kwargs)
@@ -44,22 +41,9 @@ or a manifest for a specific ChatBot.`,
 func init() {
 	GetCmd.AddCommand(chatbotsCmd)
 
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// chatbotsCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// chatbotsCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	chatbotsCmd.Flags().String("name", "", "Name of the chatbot")
-	chatbotsCmd.Flags().Int("n", 10, "Number of chatbots to retrieve")
+	chatbotsCmd.Flags().StringP("name", "n", "", "Name of the chatbot")
 
 	if err := viper.BindPFlag("name", chatbotsCmd.Flags().Lookup("name")); err != nil {
-		log.Fatalf("Error binding flag: %v", err)
-	}
-	if err := viper.BindPFlag("n", chatbotsCmd.Flags().Lookup("n")); err != nil {
 		log.Fatalf("Error binding flag: %v", err)
 	}
 }

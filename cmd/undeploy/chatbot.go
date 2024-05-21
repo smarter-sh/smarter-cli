@@ -1,20 +1,20 @@
 /*
 Copyright © 2024 Lawrence McDaniel <lawrence@querium.com>
 */
-package deploy
+package undeploy
 
 import (
 	"github.com/spf13/cobra"
 )
 
-var chatbotCmd = &cobra.Command{
+var chatbotsCmd = &cobra.Command{
 	Use:   "chatbot <name>",
-	Short: "Deploy a ChatBot",
-	Long: `Deploys a ChatBot:
+	Short: "Undo a ChatBot deployment.",
+	Long: `Undo a ChatBot deployment. For example:
 
-smarter deploy chatbot <name> --json --yaml
+smarter undeploy chatbot <name>
 
-The Smarter API will deploy the ChatBot.`,
+This will reverse the effect of having deployed the ChatBot.`,
 	Run: func(cmd *cobra.Command, args []string) {
 
 		name := args[0]
@@ -23,7 +23,7 @@ The Smarter API will deploy the ChatBot.`,
 			"name": name,
 		}
 
-		bodyJson, err := APIRequest("chatbot", kwargs)
+		bodyJson, err := APIRequest("chatbots", kwargs)
 		if err != nil {
 			panic(err)
 		} else {
@@ -34,5 +34,5 @@ The Smarter API will deploy the ChatBot.`,
 }
 
 func init() {
-	DeployCmd.AddCommand(chatbotCmd)
+	UndeployCmd.AddCommand(chatbotsCmd)
 }
