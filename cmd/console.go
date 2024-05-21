@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -33,6 +34,8 @@ type Table struct {
 func TableOutput(bodyJson []byte) {
 	var table Table
 
+	fmt.Print(bodyJson)
+
 	err := json.Unmarshal([]byte(bodyJson), &table)
 	if err != nil {
 		log.Fatalf("Error parsing JSON: %v", err)
@@ -61,19 +64,34 @@ func TableOutput(bodyJson []byte) {
 
 }
 
+func JsonOutput(bodyJson []byte) {
+	var prettyJSON bytes.Buffer
+	err := json.Indent(&prettyJSON, bodyJson, "", "\t")
+	if err != nil {
+		fmt.Println("JSON parse error: ", err)
+		return
+	}
+	fmt.Println("default")
+	fmt.Println(prettyJSON.String())
+}
+
+func YamlOutput(bodyJson []byte) {
+	bodyYaml, err := yaml.JSONToYAML(bodyJson)
+	if err != nil {
+		ErrorOutput(err)
+	} else {
+		fmt.Println(string(bodyYaml))
+	}
+}
+
 func ConsoleOutput(bodyJson []byte) {
 	switch {
 	case jsonFlagValue:
-		fmt.Println(string(bodyJson))
+		JsonOutput(bodyJson)
 	case yamlFlagValue:
-		bodyYaml, err := yaml.JSONToYAML(bodyJson)
-		if err != nil {
-			ErrorOutput(err)
-		} else {
-			fmt.Println(string(bodyYaml))
-		}
+		YamlOutput(bodyJson)
 	default:
-		TableOutput(bodyJson)
+		JsonOutput(bodyJson)
 	}
 }
 

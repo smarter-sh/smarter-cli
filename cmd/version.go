@@ -23,7 +23,7 @@ Returns version information about this software.`,
 
 		localVersion := []byte(`{"version":"` + Version + `"}`)
 		kwargs := map[string]string{}
-		bodyJson, err := APIRequest("whoami", kwargs)
+		bodyJson, err := APIRequest("version", kwargs)
 		if err != nil {
 			ErrorOutput(err)
 		} else {
