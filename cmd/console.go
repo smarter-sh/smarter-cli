@@ -63,7 +63,6 @@ func JsonOutput(bodyJson []byte) {
 		fmt.Println("JSON parse error: ", err)
 		return
 	}
-	fmt.Println("default")
 	fmt.Println(prettyJSON.String())
 }
 

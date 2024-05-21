@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"net/http/httputil"
 	"path"
 	"strings"
 
@@ -58,6 +59,7 @@ func getAPIHost() string {
 }
 
 func APIRequest(slug string, kwargs map[string]string, fileContents ...string) ([]byte, error) {
+	verbose := viper.GetBool("verbose")
 
 	checkApiKey := verifyApiKey()
 	if checkApiKey != nil {
@@ -93,12 +95,28 @@ func APIRequest(slug string, kwargs map[string]string, fileContents ...string) (
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", "Token "+apiKey)
 
+	if verbose {
+		reqDump, err := httputil.DumpRequestOut(req, true)
+		if err != nil {
+			fmt.Printf("Something went wrong: %s\n", err)
+		}
+		fmt.Printf("Request: %s\n", reqDump)
+	}
+
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
 		ErrorOutput(err)
 	}
 	defer resp.Body.Close()
+
+	if verbose {
+		respDump, err := httputil.DumpResponse(resp, true)
+		if err != nil {
+			fmt.Printf("Something went wrong: %s\n", err)
+		}
+		fmt.Printf("Response: %s\n", respDump)
+	}
 
 	bodyBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -109,8 +127,6 @@ func APIRequest(slug string, kwargs map[string]string, fileContents ...string) (
 		var result map[string]interface{}
 		var description interface{}
 		var stackTrace interface{}
-
-		verbose := viper.GetBool("verbose")
 
 		err := json.Unmarshal([]byte(bodyBytes), &result)
 		if err != nil {
