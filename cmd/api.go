@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -94,7 +95,6 @@ func APIRequest(slug string, kwargs map[string]string, fileContents ...string) (
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
-	fmt.Println("HTTP Response Status:", resp.StatusCode)
 	if err != nil {
 		ErrorOutput(err)
 	}
@@ -106,7 +106,18 @@ func APIRequest(slug string, kwargs map[string]string, fileContents ...string) (
 	}
 
 	if resp.StatusCode != 200 {
-		ErrorOutput(fmt.Errorf("HTTP Response Status: %d", resp.StatusCode))
+		var result map[string]interface{}
+		err := json.Unmarshal([]byte(bodyBytes), &result)
+		if err != nil {
+			log.Fatalf("Failed to unmarshal JSON: %v", err)
+		}
+		var description interface{}
+		if desc, ok := result["description"]; ok {
+			description = desc
+		} else {
+			description = "unknown error"
+		}
+		ErrorOutput(fmt.Errorf("http response %d: %s", resp.StatusCode, description))
 	}
 
 	return bodyBytes, nil

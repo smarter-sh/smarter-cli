@@ -4,6 +4,9 @@ Copyright © 2024 Lawrence McDaniel <lawrence@querium.com>
 package manifest
 
 import (
+	"encoding/json"
+	"log"
+
 	"github.com/QueriumCorp/smarter-cli/cmd"
 
 	"github.com/spf13/cobra"
@@ -21,7 +24,19 @@ func ConsoleOutput(bodyJson []byte) {
 	if !jsonFlagValue && !yamlFlagValue {
 		viper.Set("yaml", true)
 	}
+	var data map[string]interface{}
+	err := json.Unmarshal(bodyJson, &data)
+	if err != nil {
+		log.Fatalf("Error occurred during unmarshalling. %v", err)
+	}
 
+	value, ok := data["data"]
+	if ok {
+		bodyJson, err = json.Marshal(value)
+		if err != nil {
+			log.Fatalf("Error occurred during marshalling. %v", err)
+		}
+	}
 	cmd.ConsoleOutput(bodyJson)
 }
 func ErrorOutput(err error) {
