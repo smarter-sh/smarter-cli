@@ -108,6 +108,9 @@ func APIRequest(slug string, kwargs map[string]string, fileContents ...string) (
 	if resp.StatusCode != 200 {
 		var result map[string]interface{}
 		var description interface{}
+		var stackTrace interface{}
+
+		verbose := viper.GetBool("verbose")
 
 		err := json.Unmarshal([]byte(bodyBytes), &result)
 		if err != nil {
@@ -117,6 +120,15 @@ func APIRequest(slug string, kwargs map[string]string, fileContents ...string) (
 			description = desc
 		} else {
 			description = "unknown error"
+		}
+		if verbose {
+			if stack, ok := result["stacktrace"]; ok {
+				stackTrace = stack
+			} else {
+				stackTrace = "unknown stack trace"
+			}
+
+			description = fmt.Sprintf("%s\nStack trace: %s", description, stackTrace)
 		}
 		ErrorOutput(fmt.Errorf("received an http response %d from %s: %s", resp.StatusCode, url, description))
 	}

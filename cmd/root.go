@@ -60,16 +60,16 @@ func init() {
 		log.Fatalf("Error binding flag: %v", err)
 	}
 
-	// Add the --json toggle
-	RootCmd.PersistentFlags().BoolP("json", "j", false, "output in JSON format")
-	if err := viper.BindPFlag("json", RootCmd.PersistentFlags().Lookup("json")); err != nil {
+	// Add the --verbose toggle
+	RootCmd.PersistentFlags().BoolP("verbose", "v", false, "verbose output")
+	if err := viper.BindPFlag("verbose", RootCmd.PersistentFlags().Lookup("verbose")); err != nil {
 		log.Fatalf("Error binding toggle: %v", err)
 	}
 
-	// Add the --yaml toggle
-	RootCmd.PersistentFlags().BoolP("yaml", "y", false, "output in YAML format")
-	if err := viper.BindPFlag("yaml", RootCmd.PersistentFlags().Lookup("yaml")); err != nil {
-		log.Fatalf("Error binding toggle: %v", err)
+	// Add the --output_format flag
+	RootCmd.PersistentFlags().StringP("output_format", "o", "", "output format: json, yaml")
+	if err := viper.BindPFlag("config.output_format", RootCmd.PersistentFlags().Lookup("output_format")); err != nil {
+		log.Fatalf("Error binding flag: %v", err)
 	}
 
 	// Bind the flag value validators
@@ -86,22 +86,19 @@ func init() {
 }
 
 func validateOutputToggles() error {
-	jsonOutput := viper.GetBool("json")
-	yamlOutput := viper.GetBool("yaml")
-	output_format := viper.GetString("config.output_format")
+	outputFormat := viper.GetString("config.output_format")
 
-	if jsonOutput && yamlOutput {
-		return errors.New("cannot specify both --json and --yaml")
-	}
-	if !jsonOutput && !yamlOutput {
-		// check the config file
-		if output_format == "json" {
-			viper.Set("json", true)
-		} else {
-			if output_format != "yaml" {
-				viper.Set("yaml", true)
-			}
+	validFormats := []string{"json", "yaml"}
+	isValidFormat := false
+	for _, format := range validFormats {
+		if outputFormat == format {
+			isValidFormat = true
+			break
 		}
+	}
+
+	if !isValidFormat {
+		log.Fatalf("Invalid output format: %v. Valid formats are 'json' or 'yaml'", outputFormat)
 	}
 	return nil
 

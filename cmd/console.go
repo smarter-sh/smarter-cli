@@ -77,13 +77,12 @@ func YamlOutput(bodyJson []byte) {
 }
 
 func ConsoleOutput(bodyJson []byte) {
-	jsonFlagValue := viper.GetBool("json")
-	yamlFlagValue := viper.GetBool("yaml")
+	outputFormat := viper.GetString("output_format")
 
 	switch {
-	case jsonFlagValue:
+	case outputFormat == "json":
 		JsonOutput(bodyJson)
-	case yamlFlagValue:
+	case outputFormat == "yaml":
 		YamlOutput(bodyJson)
 	default:
 		JsonOutput(bodyJson)
