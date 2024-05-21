@@ -107,17 +107,18 @@ func APIRequest(slug string, kwargs map[string]string, fileContents ...string) (
 
 	if resp.StatusCode != 200 {
 		var result map[string]interface{}
+		var description interface{}
+
 		err := json.Unmarshal([]byte(bodyBytes), &result)
 		if err != nil {
 			log.Fatalf("Failed to unmarshal JSON: %v", err)
 		}
-		var description interface{}
 		if desc, ok := result["description"]; ok {
 			description = desc
 		} else {
 			description = "unknown error"
 		}
-		ErrorOutput(fmt.Errorf("http response %d: %s", resp.StatusCode, description))
+		ErrorOutput(fmt.Errorf("received an http response %d from %s: %s", resp.StatusCode, url, description))
 	}
 
 	return bodyBytes, nil
