@@ -13,14 +13,6 @@ import (
 	"github.com/spf13/viper"
 )
 
-var jsonFlagValue bool
-var yamlFlagValue bool
-
-func init() {
-	jsonFlagValue = viper.GetBool("json")
-	yamlFlagValue = viper.GetBool("yaml")
-}
-
 type Column struct {
 	Title string      `json:"title"`
 	Type  interface{} `json:"type"`
@@ -85,6 +77,9 @@ func YamlOutput(bodyJson []byte) {
 }
 
 func ConsoleOutput(bodyJson []byte) {
+	jsonFlagValue := viper.GetBool("json")
+	yamlFlagValue := viper.GetBool("yaml")
+
 	switch {
 	case jsonFlagValue:
 		JsonOutput(bodyJson)

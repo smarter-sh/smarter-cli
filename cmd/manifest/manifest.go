@@ -7,6 +7,7 @@ import (
 	"github.com/QueriumCorp/smarter-cli/cmd"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 func APIRequest(kind string, kwargs map[string]string) ([]byte, error) {
@@ -15,6 +16,12 @@ func APIRequest(kind string, kwargs map[string]string) ([]byte, error) {
 
 }
 func ConsoleOutput(bodyJson []byte) {
+	jsonFlagValue := viper.GetBool("json")
+	yamlFlagValue := viper.GetBool("yaml")
+	if !jsonFlagValue && !yamlFlagValue {
+		viper.Set("yaml", true)
+	}
+
 	cmd.ConsoleOutput(bodyJson)
 }
 func ErrorOutput(err error) {
