@@ -10,11 +10,10 @@ import (
 	"github.com/spf13/viper"
 )
 
-// chatbotsCmd represents the chatbots command
 var chatbotsCmd = &cobra.Command{
 	Use:   "chatbots --name --json --yaml --n <10>",
-	Short: "Retrieve a list of ChatBots or a specific ChatBot by name",
-	Long: `Retrieve a list of ChatBots or a specific ChatBot by name:
+	Short: "Retrieve a list of ChatBots",
+	Long: `Retrieve a list of ChatBots:
 
 smarter get chatbots --name --json --yaml --n <10>
 
@@ -28,7 +27,7 @@ or a manifest for a specific ChatBot.`,
 			"name": name,
 		}
 
-		bodyJson, err := APIRequest("chatbots", kwargs)
+		bodyJson, err := APIRequest("Chatbot", kwargs)
 		if err != nil {
 			ErrorOutput(err)
 		} else {

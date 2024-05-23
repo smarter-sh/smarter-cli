@@ -1,23 +1,21 @@
 /*
 Copyright © 2024 Lawrence McDaniel <lawrence@querium.com>
 */
-package account
+package get
 
 import (
 	"log"
 
-	"github.com/QueriumCorp/smarter-cli/cmd/get"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
-// usersCmd represents the users command
 var usersCmd = &cobra.Command{
 	Use:   "users",
 	Short: "Retrieve a list of Users",
-	Long: `Retrieve a list of Users, or a specific User by username:
+	Long: `Retrieves a list of Users:
 
-smarter get account users --name --json --yaml -n <10> --asc --desc
+smarter get users --name --json --yaml -n <10> --asc --desc
 
 The Smarter API will return a list of Users in the specified format,
 or a manifest for a specific User.`,
@@ -28,7 +26,7 @@ or a manifest for a specific User.`,
 		kwargs := map[string]string{
 			"username": name,
 		}
-		bodyJson, err := get.APIRequest("users", kwargs)
+		bodyJson, err := APIRequest("User", kwargs)
 		if err != nil {
 			ErrorOutput(err)
 		} else {
@@ -39,9 +37,9 @@ or a manifest for a specific User.`,
 }
 
 func init() {
-	accountCmd.AddCommand(usersCmd)
-	accountCmd.Flags().StringP("username", "u", "", "Smarter username")
-	if err := viper.BindPFlag("username", accountCmd.Flags().Lookup("username")); err != nil {
+	GetCmd.AddCommand(usersCmd)
+	usersCmd.Flags().StringP("username", "u", "", "Smarter username")
+	if err := viper.BindPFlag("username", usersCmd.Flags().Lookup("username")); err != nil {
 		log.Fatalf("Error binding flag 'username': %v", err)
 	}
 

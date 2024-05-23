@@ -13,9 +13,8 @@ import (
 // pluginsCmd represents the plugins command
 var pluginsCmd = &cobra.Command{
 	Use:   "plugins --name --class --json --yaml -n <10> --asc --desc",
-	Short: "Retrieve a list of Plugins or a manifest for a specific Plugin by name",
-	Long: `Retrieve a list of Plugins,
-	or a manifest for a specific Plugin:
+	Short: "Retrieve a list of Plugins",
+	Long: `Retrieves a list of Plugins:
 
 smarter get plugins --name  --class --json --yaml -n <10> --asc --desc
 
@@ -51,7 +50,7 @@ or a manifest for a specific Plugin.`,
 			"class": plugin_class,
 		}
 
-		bodyJson, err := APIRequest("plugins", kwargs)
+		bodyJson, err := APIRequest("Plugin", kwargs)
 		if err != nil {
 			ErrorOutput(err)
 		} else {

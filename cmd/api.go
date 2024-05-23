@@ -98,7 +98,7 @@ func APIRequest(slug string, kwargs map[string]string, fileContents ...string) (
 	if verbose {
 		reqDump, err := httputil.DumpRequestOut(req, true)
 		if err != nil {
-			fmt.Printf("Something went wrong: %s\n", err)
+			ErrorOutput(err)
 		}
 		fmt.Printf("Request: %s\n", reqDump)
 	}
@@ -113,7 +113,7 @@ func APIRequest(slug string, kwargs map[string]string, fileContents ...string) (
 	if verbose {
 		respDump, err := httputil.DumpResponse(resp, true)
 		if err != nil {
-			fmt.Printf("Something went wrong: %s\n", err)
+			ErrorOutput(err)
 		}
 		fmt.Printf("Response: %s\n", respDump)
 	}

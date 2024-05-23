@@ -15,11 +15,11 @@ import (
 
 func APIRequest(kind string, kwargs map[string]string) ([]byte, error) {
 
-	n := viper.GetInt("n")
+	i := viper.GetInt("i")
 	asc := viper.GetBool("asc")
 	desc := viper.GetBool("desc")
 	common_kwargs := map[string]string{
-		"n":    strconv.Itoa(n),
+		"i":    strconv.Itoa(i),
 		"asc":  strconv.FormatBool(asc),
 		"desc": strconv.FormatBool(desc),
 	}
@@ -52,8 +52,8 @@ or a manifest for a specific resource.`,
 func init() {
 	cmd.RootCmd.AddCommand(GetCmd)
 
-	GetCmd.PersistentFlags().Int("n", 10, "Number of resources to retrieve")
-	if err := viper.BindPFlag("n", GetCmd.PersistentFlags().Lookup("n")); err != nil {
+	GetCmd.PersistentFlags().Int("i", 10, "Number of resources to retrieve")
+	if err := viper.BindPFlag("i", GetCmd.PersistentFlags().Lookup("i")); err != nil {
 		log.Fatalf("Error binding flag: %v", err)
 	}
 	GetCmd.PersistentFlags().Bool("asc", false, "Sort results in ascending order")

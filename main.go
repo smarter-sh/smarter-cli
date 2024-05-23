@@ -9,7 +9,6 @@ import (
 	_ "github.com/QueriumCorp/smarter-cli/cmd/deploy"
 	_ "github.com/QueriumCorp/smarter-cli/cmd/describe"
 	_ "github.com/QueriumCorp/smarter-cli/cmd/get"
-	_ "github.com/QueriumCorp/smarter-cli/cmd/get/account"
 	_ "github.com/QueriumCorp/smarter-cli/cmd/logs"
 	_ "github.com/QueriumCorp/smarter-cli/cmd/manifest"
 	_ "github.com/QueriumCorp/smarter-cli/cmd/undeploy"
