@@ -72,14 +72,19 @@ func TableOutput(bodyJson []byte) {
 	for _, item := range body.Data.Data.Items {
 		values := make([]string, len(titles))
 		for i, title := range titles {
+			value, ok := item[title.Name]
+			if !ok || value == nil {
+				values[i] = ""
+				continue
+			}
 			if title.Type == "DateTimeField" {
-				t, err := time.Parse(time.RFC3339, item[title.Name].(string))
+				t, err := time.Parse(time.RFC3339, value.(string))
 				if err != nil {
 					log.Fatalf("Error parsing date: %v", err)
 				}
 				values[i] = t.Format("2006-Jan-02 15:04")
 			} else {
-				values[i] = fmt.Sprint(item[title.Name])
+				values[i] = fmt.Sprint(value)
 			}
 		}
 		fmt.Fprintln(w, strings.Join(values, "\t"))
