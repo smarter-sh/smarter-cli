@@ -13,22 +13,38 @@ import (
 	"github.com/spf13/viper"
 )
 
-type Column struct {
-	Title string      `json:"title"`
-	Type  interface{} `json:"type"`
+type Title struct {
+	Name string `json:"name"`
+	Type string `json:"type"`
 }
 
-type Table struct {
-	Titles []Column                 `json:"titles"`
-	Data   []map[string]interface{} `json:"data"`
+type Item map[string]interface{}
+
+type InnerData struct {
+	Titles []Title `json:"titles"`
+	Items  []Item  `json:"items"`
+}
+
+type Data struct {
+	ApiVersion string `json:"apiVersion"`
+	Kind       string `json:"kind"`
+	Name       string `json:"name"`
+	Metadata   struct {
+		Count int `json:"count"`
+	} `json:"metadata"`
+	Kwargs map[string]interface{} `json:"kwargs"`
+	Data   InnerData              `json:"data"`
+}
+
+type Body struct {
+	Data    Data   `json:"data"`
+	Message string `json:"message"`
 }
 
 func TableOutput(bodyJson []byte) {
-	var table Table
+	var body Body
 
-	fmt.Print(bodyJson)
-
-	err := json.Unmarshal([]byte(bodyJson), &table)
+	err := json.Unmarshal(bodyJson, &body)
 	if err != nil {
 		log.Fatalf("Error parsing JSON: %v", err)
 	}
@@ -37,23 +53,22 @@ func TableOutput(bodyJson []byte) {
 	w.Init(os.Stdout, 0, 8, 2, '\t', tabwriter.AlignRight)
 
 	// print column titles
-	titles := make([]string, len(table.Titles))
-	for i, title := range table.Titles {
-		titles[i] = title.Title
+	titles := make([]string, len(body.Data.Data.Titles))
+	for i, title := range body.Data.Data.Titles {
+		titles[i] = title.Name
 	}
 	fmt.Fprintln(w, strings.Join(titles, "\t"))
 
 	// print data rows
-	for _, row := range table.Data {
-		values := make([]string, len(table.Titles))
-		for i, title := range table.Titles {
-			values[i] = fmt.Sprint(row[title.Title])
+	for _, item := range body.Data.Data.Items {
+		values := make([]string, len(body.Data.Data.Titles))
+		for i, title := range body.Data.Data.Titles {
+			values[i] = fmt.Sprint(item[title.Name])
 		}
 		fmt.Fprintln(w, strings.Join(values, "\t"))
 	}
 
 	w.Flush()
-
 }
 
 func JsonOutput(bodyJson []byte) {
@@ -83,6 +98,8 @@ func ConsoleOutput(bodyJson []byte) {
 		JsonOutput(bodyJson)
 	case outputFormat == "yaml":
 		YamlOutput(bodyJson)
+	case outputFormat == "tabular":
+		TableOutput(bodyJson)
 	default:
 		JsonOutput(bodyJson)
 	}

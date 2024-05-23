@@ -68,7 +68,7 @@ func APIRequest(slug string, kwargs map[string]string, fileContents ...string) (
 	apiKey := fetchAPIKey()
 	apiHost := getAPIHost()
 	url_path := path.Clean("/" + ApiBasePath + slug)
-	url := apiHost + url_path
+	url := strings.ToLower(apiHost + url_path)
 	if !strings.HasSuffix(url, "/") {
 		url += "/"
 	}
@@ -126,6 +126,7 @@ func APIRequest(slug string, kwargs map[string]string, fileContents ...string) (
 	if resp.StatusCode != 200 {
 		var result map[string]interface{}
 		var description interface{}
+		var context interface{}
 		var stackTrace interface{}
 
 		err := json.Unmarshal([]byte(bodyBytes), &result)
@@ -137,6 +138,11 @@ func APIRequest(slug string, kwargs map[string]string, fileContents ...string) (
 		} else {
 			description = "unknown error"
 		}
+		if cntx, ok := result["context"]; ok {
+			context = cntx
+		} else {
+			context = "unknown context"
+		}
 		if verbose {
 			if stack, ok := result["stacktrace"]; ok {
 				stackTrace = stack
@@ -146,7 +152,7 @@ func APIRequest(slug string, kwargs map[string]string, fileContents ...string) (
 
 			description = fmt.Sprintf("%s\nStack trace: %s", description, stackTrace)
 		}
-		ErrorOutput(fmt.Errorf("received an http response %d from %s: %s", resp.StatusCode, url, description))
+		ErrorOutput(fmt.Errorf("received an http response %d from %s: %s %s", resp.StatusCode, url, description, context))
 	}
 
 	return bodyBytes, nil

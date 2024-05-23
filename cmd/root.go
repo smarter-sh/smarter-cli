@@ -68,7 +68,7 @@ func init() {
 
 	// Add the --output_format flag
 	RootCmd.PersistentFlags().StringP("output_format", "o", "", "output format: json, yaml")
-	if err := viper.BindPFlag("config.output_format", RootCmd.PersistentFlags().Lookup("output_format")); err != nil {
+	if err := viper.BindPFlag("output_format", RootCmd.PersistentFlags().Lookup("output_format")); err != nil {
 		log.Fatalf("Error binding flag: %v", err)
 	}
 
@@ -88,7 +88,8 @@ func init() {
 func validateOutputToggles() error {
 	outputFormat := viper.GetString("config.output_format")
 
-	validFormats := []string{"json", "yaml"}
+	// table is used internally for get() commands
+	validFormats := []string{"json", "yaml", "tabular"}
 	isValidFormat := false
 	for _, format := range validFormats {
 		if outputFormat == format {
