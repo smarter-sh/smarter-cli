@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"net/http/httputil"
+	"net/url"
 	"path"
 	"strings"
 
@@ -68,9 +69,9 @@ func APIRequest(slug string, kwargs map[string]string, fileContents ...string) (
 	apiKey := fetchAPIKey()
 	apiHost := getAPIHost()
 	url_path := path.Clean("/" + ApiBasePath + slug)
-	url := strings.ToLower(apiHost + url_path)
-	if !strings.HasSuffix(url, "/") {
-		url += "/"
+	urlOrig := strings.ToLower(apiHost + url_path)
+	if !strings.HasSuffix(urlOrig, "/") {
+		urlOrig += "/"
 	}
 
 	var textData string
@@ -80,10 +81,15 @@ func APIRequest(slug string, kwargs map[string]string, fileContents ...string) (
 		textData = ""
 	}
 
-	if verbose {
-		fmt.Println("HTTP Request:", url, textData)
+	params := url.Values{}
+	for key, value := range kwargs {
+		params.Add(key, value)
 	}
-	req, err := http.NewRequest("POST", url, strings.NewReader(textData))
+	reqURL := fmt.Sprintf("%s?%s", urlOrig, params.Encode())
+	if verbose {
+		fmt.Println("HTTP Request:", reqURL, textData)
+	}
+	req, err := http.NewRequest("POST", reqURL, strings.NewReader(textData))
 	if err != nil {
 		ErrorOutput(err)
 	}
@@ -154,7 +160,7 @@ func APIRequest(slug string, kwargs map[string]string, fileContents ...string) (
 
 			description = fmt.Sprintf("%s\nStack trace: %s", description, stackTrace)
 		}
-		ErrorOutput(fmt.Errorf("received an http response %d from %s: %s %s", resp.StatusCode, url, description, context))
+		ErrorOutput(fmt.Errorf("received an http response %d from %s: %s %s", resp.StatusCode, urlOrig, description, context))
 	}
 
 	return bodyBytes, nil

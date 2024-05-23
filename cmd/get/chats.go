@@ -55,12 +55,12 @@ The Smarter API will return a list of Chats.`,
 func init() {
 	GetCmd.AddCommand(chatsCmd)
 
-	chatsCmd.Flags().String("chatbot", "c", "Name of the chatbot")
+	chatsCmd.Flags().StringP("chatbot", "c", "", "Name of the chatbot")
 	if err := viper.BindPFlag("chatbot", chatsCmd.Flags().Lookup("chatbot")); err != nil {
 		log.Fatalf("Error binding flag 'chatbot': %v", err)
 	}
 
-	chatsCmd.Flags().String("session_id", "s", "Chat session_id")
+	chatsCmd.Flags().StringP("session_id", "s", "", "Chat session_id")
 	if err := viper.BindPFlag("session_id", chatsCmd.Flags().Lookup("session_id")); err != nil {
 		log.Fatalf("Error binding flag 'session_id': %v", err)
 	}
