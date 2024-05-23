@@ -7,14 +7,14 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var chatbotCmd = &cobra.Command{
-	Use:   "chatbot <name>",
-	Short: "Returns the logs for a ChatBot",
-	Long: `Returns the logs for a ChatBot:
+var chatsCmd = &cobra.Command{
+	Use:   "chat <session_id>",
+	Short: "Returns the logs for a Chat session_id",
+	Long: `Returns the logs for a Chat:
 
-smarter logs chatbot <name>
+smarter logs chat <session_id>
 
-The Smarter API will deploy the ChatBot.`,
+The Smarter API will return the logs for a Chat session_id.`,
 	Run: func(cmd *cobra.Command, args []string) {
 
 		name := args[0]
@@ -23,7 +23,7 @@ The Smarter API will deploy the ChatBot.`,
 			"name": name,
 		}
 
-		bodyJson, err := APIRequest("ChatBot", kwargs)
+		bodyJson, err := APIRequest("Chat", kwargs)
 		if err != nil {
 			ErrorOutput(err)
 		} else {
@@ -34,5 +34,5 @@ The Smarter API will deploy the ChatBot.`,
 }
 
 func init() {
-	logsCmd.AddCommand(chatbotCmd)
+	logsCmd.AddCommand(chatsCmd)
 }

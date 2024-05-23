@@ -16,7 +16,7 @@ var apiConnectionCmd = &cobra.Command{
 	Short: "Retrieve a list of PluginDataApiConnections",
 	Long: `Retrieve a list of PluginDataApiConnections:
 
-smarter get sqlconnection [flags]
+smarter get apiconnection [flags]
 
 The Smarter API will return a list of PluginDataApiConnection in the specified format,
 or a manifest for a specific PluginDataApiConnection.`,
