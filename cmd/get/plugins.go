@@ -10,6 +10,19 @@ import (
 	"github.com/spf13/viper"
 )
 
+func validateClass(class string) bool {
+	allowedClasses := []string{"static", "sql", "api"}
+
+	for _, allowedClass := range allowedClasses {
+		if class == allowedClass {
+			return true
+		}
+	}
+
+	log.Fatalf("Invalid class '%s'. Allowed classes are: %v", class, allowedClasses)
+	return false
+}
+
 // pluginsCmd represents the plugins command
 var pluginsCmd = &cobra.Command{
 	Use:   "plugins",
@@ -22,28 +35,13 @@ smarter get plugins [flags]
 The Smarter API will return a list of Plugins in the specified format,
 or a manifest for a specific Plugin.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// Get the class value
-		class := viper.GetString("class")
-
-		// Define allowed classes
-		allowedClasses := []string{"static", "sql", "api"}
-
-		// Check if the class is allowed
-		isValidClass := false
-		for _, allowedClass := range allowedClasses {
-			if class == allowedClass {
-				isValidClass = true
-				break
-			}
-		}
-
-		// If the class is not allowed, log an error and exit
-		if !isValidClass {
-			log.Fatalf("Invalid class '%s'. Allowed classes are: %v", class, allowedClasses)
-		}
 
 		name := viper.GetString("name")
+
 		plugin_class := viper.GetString("class")
+		if plugin_class != "" {
+			validateClass(plugin_class)
+		}
 
 		kwargs := map[string]string{
 			"name":  name,
