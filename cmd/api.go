@@ -80,7 +80,9 @@ func APIRequest(slug string, kwargs map[string]string, fileContents ...string) (
 		textData = ""
 	}
 
-	fmt.Println("HTTP Request:", url, textData)
+	if verbose {
+		fmt.Println("HTTP Request:", url, textData)
+	}
 	req, err := http.NewRequest("POST", url, strings.NewReader(textData))
 	if err != nil {
 		ErrorOutput(err)

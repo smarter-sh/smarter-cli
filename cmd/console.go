@@ -8,6 +8,7 @@ import (
 	"os"
 	"strings"
 	"text/tabwriter"
+	"time"
 
 	"github.com/ghodss/yaml"
 	"github.com/spf13/viper"
@@ -53,17 +54,33 @@ func TableOutput(bodyJson []byte) {
 	w.Init(os.Stdout, 0, 8, 2, '\t', tabwriter.AlignRight)
 
 	// print column titles
-	titles := make([]string, len(body.Data.Data.Titles))
-	for i, title := range body.Data.Data.Titles {
-		titles[i] = title.Name
+	titles := body.Data.Data.Titles
+	titleNames := make([]string, len(titles))
+	for i, title := range titles {
+		titleNames[i] = title.Name
 	}
-	fmt.Fprintln(w, strings.Join(titles, "\t"))
+	fmt.Fprintln(w, strings.Join(titleNames, "\t"))
+
+	// print dashed line
+	dashes := make([]string, len(titles))
+	for i, title := range titles {
+		dashes[i] = strings.Repeat("-", len(title.Name))
+	}
+	fmt.Fprintln(w, strings.Join(dashes, "\t"))
 
 	// print data rows
 	for _, item := range body.Data.Data.Items {
-		values := make([]string, len(body.Data.Data.Titles))
-		for i, title := range body.Data.Data.Titles {
-			values[i] = fmt.Sprint(item[title.Name])
+		values := make([]string, len(titles))
+		for i, title := range titles {
+			if title.Type == "DateTimeField" {
+				t, err := time.Parse(time.RFC3339, item[title.Name].(string))
+				if err != nil {
+					log.Fatalf("Error parsing date: %v", err)
+				}
+				values[i] = t.Format("2006-Jan-02 15:04")
+			} else {
+				values[i] = fmt.Sprint(item[title.Name])
+			}
 		}
 		fmt.Fprintln(w, strings.Join(values, "\t"))
 	}
