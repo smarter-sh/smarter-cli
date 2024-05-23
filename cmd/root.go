@@ -46,7 +46,7 @@ func init() {
 	cobra.OnInitialize(initConfig)
 	initConfig()
 
-	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.smarter.yaml)")
+	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.smarter/config.yaml)")
 
 	// Add the --environment flag
 	// Set up a global --environment flag and bind this to viper.
