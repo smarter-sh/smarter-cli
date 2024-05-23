@@ -15,7 +15,7 @@ var apikeyCmd = &cobra.Command{
 	Short: "Retrieve a list of SmarterAuthTokens",
 	Long: `Retrieves a list of SmarterAuthTokens:
 
-smarter get apikey --name --json --yaml -n <10> --asc --desc
+smarter get apikey [flags]
 
 The Smarter API will return a list of apikeys in the specified format,
 or a manifest for a specific apikey.`,

@@ -13,7 +13,7 @@ var accountCmd = &cobra.Command{
 	Short: "Retrieve your Account manifest",
 	Long: `Retrieve your Account manifest:
 
-smarter get account --json --yaml -n <10> --asc --desc
+smarter get account [flags]
 
 The Smarter API will your Account manifest.`,
 

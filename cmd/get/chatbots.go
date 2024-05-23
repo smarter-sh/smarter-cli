@@ -11,11 +11,11 @@ import (
 )
 
 var chatbotsCmd = &cobra.Command{
-	Use:   "chatbots --name --json --yaml --n <10>",
+	Use:   "chatbots",
 	Short: "Retrieve a list of ChatBots",
 	Long: `Retrieve a list of ChatBots:
 
-smarter get chatbots --name --json --yaml --n <10>
+smarter get chatbots [flags]
 
 The Smarter API will return a list of ChatBots in the specified format,
 or a manifest for a specific ChatBot.`,

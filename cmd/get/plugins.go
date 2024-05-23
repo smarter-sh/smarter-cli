@@ -12,11 +12,11 @@ import (
 
 // pluginsCmd represents the plugins command
 var pluginsCmd = &cobra.Command{
-	Use:   "plugins --name --class --json --yaml -n <10> --asc --desc",
+	Use:   "plugins",
 	Short: "Retrieve a list of Plugins",
 	Long: `Retrieves a list of Plugins:
 
-smarter get plugins --name  --class --json --yaml -n <10> --asc --desc
+smarter get plugins [flags]
 
 
 The Smarter API will return a list of Plugins in the specified format,

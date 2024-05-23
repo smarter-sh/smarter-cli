@@ -15,7 +15,7 @@ var usersCmd = &cobra.Command{
 	Short: "Retrieve a list of Users",
 	Long: `Retrieves a list of Users:
 
-smarter get users --name --json --yaml -n <10> --asc --desc
+smarter get users [flags]
 
 The Smarter API will return a list of Users in the specified format,
 or a manifest for a specific User.`,

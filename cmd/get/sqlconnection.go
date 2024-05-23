@@ -12,11 +12,11 @@ import (
 
 // sqlConnectionCmd represents the sqlconnection command
 var sqlConnectionCmd = &cobra.Command{
-	Use:   "sqlconnection --name --json --yaml --n <10>",
+	Use:   "sqlconnection",
 	Short: "Retrieve a list of PluginDataSqlConnections",
 	Long: `Retrieve a list of PluginDataSqlConnections:
 
-smarter get sqlconnection --name --json --yaml --n <10>
+smarter get sqlconnection [flags]
 
 The Smarter API will return a list of PluginDataSqlConnection in the specified format,
 or a manifest for a specific PluginDataSqlConnection.`,

@@ -39,11 +39,11 @@ func ErrorOutput(err error) {
 
 // GetCmd represents the get command
 var GetCmd = &cobra.Command{
-	Use:   "get <kind> --json --yaml -n <10> --asc --desc",
+	Use:   "get",
 	Short: "Generate a list of Smarter resources",
 	Long: `Generate a list of Smarter resources:
 
-smarter get <kind> --json --yaml -n <10> --asc --desc
+smarter get [kind] [flags]
 
 The Smarter API will return a list of resources in the specified format,
 or a manifest for a specific resource.`,

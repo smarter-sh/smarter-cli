@@ -13,11 +13,11 @@ import (
 
 // chatsCmd represents the chats command
 var chatsCmd = &cobra.Command{
-	Use:   "chats --session_id <session_id> --chatbot <name> --json --yaml -n <10> --asc --desc --today --yesterday --this-week --last-week --this-month --last-month",
+	Use:   "chats",
 	Short: "Retrieve a list of Chats",
 	Long: `Retrieves a list of Chats:
 
-smarter get chats --session_id <session_id> --chatbot <name> --json --yaml -n <10> --asc --desc --today --yesterday --this-week --last-week --this-month --last-month
+smarter get chats [flags]
 
 The Smarter API will return a list of Chats.`,
 	Run: func(cmd *cobra.Command, args []string) {
