@@ -12,7 +12,7 @@ import (
 
 // sqlConnectionCmd represents the sqlconnection command
 var sqlConnectionCmd = &cobra.Command{
-	Use:   "sqlconnection",
+	Use:   "sqlconnections",
 	Short: "Retrieve a list of PluginDataSqlConnections",
 	Long: `Retrieve a list of PluginDataSqlConnections:
 

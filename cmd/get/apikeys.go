@@ -11,7 +11,7 @@ import (
 )
 
 var apikeyCmd = &cobra.Command{
-	Use:   "apikey",
+	Use:   "apikeys",
 	Short: "Retrieve a list of SmarterAuthTokens",
 	Long: `Retrieves a list of SmarterAuthTokens:
 
