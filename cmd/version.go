@@ -5,9 +5,11 @@ package cmd
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 // versionCmd represents the status command
@@ -20,8 +22,12 @@ smarter version
 
 Returns version information about this software.`,
 	Run: func(cmd *cobra.Command, args []string) {
-
+		verbose := viper.GetBool("verbose")
 		localVersion := []byte(`{"version":"` + Version + `"}`)
+		if !verbose {
+			fmt.Printf("Local version: %s\n", Version)
+			return
+		}
 		kwargs := map[string]string{}
 		bodyJson, err := APIRequest("version", kwargs)
 		if err != nil {
