@@ -20,11 +20,11 @@ The Smarter API will permanently delete the chat history with the specified iden
 		kwargs := map[string]string{
 			"session_id": args[0],
 		}
-		bodyJson, err := APIRequest("chat", kwargs)
+		_, err := APIRequest("chat", kwargs)
 		if err != nil {
 			ErrorOutput(err)
 		} else {
-			ConsoleOutput(bodyJson)
+			ConsoleOutput()
 		}
 
 	},

@@ -4,6 +4,8 @@ Copyright © 2024 Lawrence McDaniel <lawrence@querium.com>
 package delete
 
 import (
+	"fmt"
+
 	"github.com/QueriumCorp/smarter-cli/cmd"
 
 	"github.com/spf13/cobra"
@@ -14,8 +16,8 @@ func APIRequest(kind string, kwargs map[string]string) ([]byte, error) {
 	return cmd.APIRequest("delete/"+kind+"/", kwargs)
 
 }
-func ConsoleOutput(bodyJson []byte) {
-	cmd.ConsoleOutput(bodyJson)
+func ConsoleOutput() {
+	fmt.Println("deleted.")
 }
 func ErrorOutput(err error) {
 	cmd.ErrorOutput(err)

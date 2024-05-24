@@ -20,11 +20,11 @@ The Smarter API will permanently delete the PluginDataApiConnection with the spe
 		kwargs := map[string]string{
 			"name": args[0],
 		}
-		bodyJson, err := APIRequest("PluginDataApiConnection", kwargs)
+		_, err := APIRequest("PluginDataApiConnection", kwargs)
 		if err != nil {
 			ErrorOutput(err)
 		} else {
-			ConsoleOutput(bodyJson)
+			ConsoleOutput()
 		}
 
 	},

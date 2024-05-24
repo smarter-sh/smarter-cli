@@ -21,11 +21,11 @@ and dissassociate it from any ChatBots.`,
 		kwargs := map[string]string{
 			"name": args[0],
 		}
-		bodyJson, err := APIRequest("plugin", kwargs)
+		_, err := APIRequest("plugin", kwargs)
 		if err != nil {
 			ErrorOutput(err)
 		} else {
-			ConsoleOutput(bodyJson)
+			ConsoleOutput()
 		}
 
 	},

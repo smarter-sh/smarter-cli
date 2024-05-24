@@ -21,11 +21,11 @@ and all related chat history.`,
 		kwargs := map[string]string{
 			"name": args[0],
 		}
-		bodyJson, err := APIRequest("chatbot", kwargs)
+		_, err := APIRequest("chatbot", kwargs)
 		if err != nil {
 			ErrorOutput(err)
 		} else {
-			ConsoleOutput(bodyJson)
+			ConsoleOutput()
 		}
 
 	},

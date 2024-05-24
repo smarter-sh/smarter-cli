@@ -23,11 +23,11 @@ will replace the deleted user.`,
 		kwargs := map[string]string{
 			"username": username,
 		}
-		bodyJson, err := APIRequest("user", kwargs)
+		_, err := APIRequest("user", kwargs)
 		if err != nil {
 			ErrorOutput(err)
 		} else {
-			ConsoleOutput(bodyJson)
+			ConsoleOutput()
 		}
 
 	},
