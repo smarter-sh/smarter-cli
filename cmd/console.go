@@ -114,6 +114,19 @@ func YamlOutput(bodyJson []byte) {
 
 func ConsoleOutput(bodyJson []byte) {
 	outputFormat := viper.GetString("output_format")
+	var jsonData map[string]interface{}
+
+	err := json.Unmarshal(bodyJson, &jsonData)
+	if err != nil {
+		log.Fatalf("Error occurred during unmarshalling json: %v", err)
+	}
+
+	// if bodyJson contains a payload dict (named 'data'), extract it
+	// and use it as the bodyJson
+	if data, ok := jsonData["data"]; ok {
+		newData, _ := json.Marshal(data)
+		bodyJson = newData
+	}
 
 	switch {
 	case outputFormat == "json":
