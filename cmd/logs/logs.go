@@ -21,7 +21,6 @@ func ErrorOutput(err error) {
 	cmd.ErrorOutput(err)
 }
 
-// logsCmd represents the get command
 var logsCmd = &cobra.Command{
 	Use:   "logs <kind> <name>",
 	Short: "Returns the logs for a resource",

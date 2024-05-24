@@ -7,7 +7,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// apikeyCmd represents the chatbots command
 var apikeyCmd = &cobra.Command{
 	Use:   "apikey <name>",
 	Short: "Retrieve a SmarterAuthToken manifest by name",

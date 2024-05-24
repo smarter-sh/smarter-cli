@@ -40,7 +40,6 @@ func ErrorOutput(err error) {
 	cmd.ErrorOutput(err)
 }
 
-// GetCmd represents the get command
 var GetCmd = &cobra.Command{
 	Use:   "get",
 	Short: "Generate a list of Smarter resources",

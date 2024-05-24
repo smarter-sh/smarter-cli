@@ -43,7 +43,6 @@ func ErrorOutput(err error) {
 	cmd.ErrorOutput(err)
 }
 
-// manifestCmd represents the manifest command
 var manifestCmd = &cobra.Command{
 	Use:   "manifest <kind> --json --yaml",
 	Short: "Generate an example manifest for the resource kind",

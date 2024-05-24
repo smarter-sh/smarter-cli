@@ -7,7 +7,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// apikeyCmd represents the chatbot command
 var apikeyCmd = &cobra.Command{
 	Use:   "apikey <name>",
 	Short: "Delete a SmarterAuthToken",

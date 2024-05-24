@@ -7,7 +7,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// sqlConnectionCmd represents the chatbot command
 var sqlConnectionCmd = &cobra.Command{
 	Use:   "sqlconnection <name>",
 	Short: "Delete a PluginDataSqlConnection",

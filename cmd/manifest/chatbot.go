@@ -7,7 +7,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// chatbotCmd represents the chatbots command
 var chatbotCmd = &cobra.Command{
 	Use:   "chatbot --json --yaml",
 	Short: "Generate an example manifest for a ChatBot",

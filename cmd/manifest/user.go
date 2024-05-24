@@ -7,7 +7,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// usersCmd represents the users command
 var usersCmd = &cobra.Command{
 	Use:   "user --json --yaml",
 	Short: "Generate an example manifest for a user.",

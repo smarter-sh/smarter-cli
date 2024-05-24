@@ -7,7 +7,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// deployCmd represents the deploy command
 var deployCmd = &cobra.Command{
 	Use:   "deploy",
 	Short: "Deploy a Smarter resource",

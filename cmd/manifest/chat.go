@@ -7,7 +7,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// chatsCmd represents the chats command
 var chatsCmd = &cobra.Command{
 	Use:   "chat --json --yaml",
 	Short: "Generate an example manifest for a chat session.",

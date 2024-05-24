@@ -21,7 +21,6 @@ func ErrorOutput(err error) {
 	cmd.ErrorOutput(err)
 }
 
-// UndeployCmd represents the get command
 var UndeployCmd = &cobra.Command{
 	Use:   "undeploy <kind> <name>",
 	Short: "Undo a Smarter resource deployment.",

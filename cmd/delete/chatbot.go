@@ -7,7 +7,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// chatbotCmd represents the chatbot command
 var chatbotCmd = &cobra.Command{
 	Use:   "chatbot <name>",
 	Short: "Delete a ChatBot",

@@ -23,7 +23,6 @@ func validateClass(class string) bool {
 	return false
 }
 
-// pluginsCmd represents the plugins command
 var pluginsCmd = &cobra.Command{
 	Use:   "plugins",
 	Short: "Retrieve a list of Plugins",

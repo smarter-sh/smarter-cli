@@ -7,7 +7,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// apiConnectionCmd represents the chatbots command
 var apiConnectionCmd = &cobra.Command{
 	Use:   "apiconnection <name>",
 	Short: "Retrieve a PluginDataApiConnection manifest by name",

@@ -7,7 +7,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// UserCmd represents the users command
 var UserCmd = &cobra.Command{
 	Use:   "user <username>",
 	Short: "Retrieve a manifest for a User",

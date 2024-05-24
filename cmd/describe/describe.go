@@ -21,7 +21,6 @@ func ErrorOutput(err error) {
 	cmd.ErrorOutput(err)
 }
 
-// describeCmd represents the manifest command
 var describeCmd = &cobra.Command{
 	Use:   "describe <kind> <name>",
 	Short: "Return a manifest for the resource kind",

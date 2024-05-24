@@ -7,7 +7,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// chatCmd represents the chat command
 var chatCmd = &cobra.Command{
 	Use:   "chat <session_id>",
 	Short: "Delete a chat history",

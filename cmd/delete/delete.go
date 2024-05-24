@@ -21,7 +21,6 @@ func ErrorOutput(err error) {
 	cmd.ErrorOutput(err)
 }
 
-// DeleteCmd represents the delete command
 var DeleteCmd = &cobra.Command{
 	Use:   "delete <kind> <name>",
 	Short: "Permanently delete a Smarter resource",

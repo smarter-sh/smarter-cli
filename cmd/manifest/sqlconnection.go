@@ -7,7 +7,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// sqlConnectionCmd represents the chats command
 var sqlConnectionCmd = &cobra.Command{
 	Use:   "sqlconnection",
 	Short: "Generate an example manifest for a PluginDataSqlConnection.",

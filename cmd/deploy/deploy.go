@@ -21,7 +21,6 @@ func ErrorOutput(err error) {
 	cmd.ErrorOutput(err)
 }
 
-// DeployCmd represents the get command
 var DeployCmd = &cobra.Command{
 	Use:   "deploy",
 	Short: "Deploy a resource",

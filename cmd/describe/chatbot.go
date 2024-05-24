@@ -7,7 +7,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// chatbotCmd represents the chatbots command
 var chatbotCmd = &cobra.Command{
 	Use:   "chatbot <name>",
 	Short: "Retrieve a ChatBot manifest by name",

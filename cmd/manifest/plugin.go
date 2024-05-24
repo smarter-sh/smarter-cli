@@ -7,7 +7,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// pluginsCmd represents the plugins command
 var pluginsCmd = &cobra.Command{
 	Use:   "plugin --json --yaml",
 	Short: "Generate an example manifest for a plugin.",

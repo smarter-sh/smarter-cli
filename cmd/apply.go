@@ -12,7 +12,6 @@ import (
 	"github.com/spf13/viper"
 )
 
-// applyCmd represents the apply command
 var applyCmd = &cobra.Command{
 	Use:   "apply -f <manifest.yaml> --dry-run",
 	Short: "Apply a Smarter manifest",

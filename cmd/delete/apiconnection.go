@@ -7,7 +7,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// apiConnectionCmd represents the chatbot command
 var apiConnectionCmd = &cobra.Command{
 	Use:   "apiconnection <name>",
 	Short: "Delete a PluginDataApiConnection",

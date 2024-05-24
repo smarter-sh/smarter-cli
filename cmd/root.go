@@ -18,7 +18,6 @@ import (
 var cfgFile string
 var Version string
 
-// RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
 	Use:   "smarter",
 	Short: "A command-line interface for working with Smarter resources",

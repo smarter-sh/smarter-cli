@@ -12,7 +12,6 @@ import (
 	"github.com/spf13/viper"
 )
 
-// versionCmd represents the status command
 var versionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "Retrieve version information",

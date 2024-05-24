@@ -11,7 +11,6 @@ import (
 	"github.com/spf13/viper"
 )
 
-// chatsCmd represents the chats command
 var chatsCmd = &cobra.Command{
 	Use:   "chats",
 	Short: "Retrieve a list of Chats",

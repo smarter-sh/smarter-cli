@@ -10,7 +10,6 @@ import (
 	"github.com/spf13/viper"
 )
 
-// apiConnectionCmd represents the sqlconnection command
 var apiConnectionCmd = &cobra.Command{
 	Use:   "apiconnections",
 	Short: "Retrieve a list of PluginDataApiConnections",

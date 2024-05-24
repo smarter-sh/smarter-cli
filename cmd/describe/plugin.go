@@ -7,7 +7,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// pluginsCmd represents the plugins command
 var pluginsCmd = &cobra.Command{
 	Use:   "plugin <name>",
 	Short: "Retrieve a manifest for a Plugin",

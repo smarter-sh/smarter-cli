@@ -242,7 +242,6 @@ func setOutputFormat(outputFormat string) {
 	}
 }
 
-// applyCmd represents the apply command
 var configureCmd = &cobra.Command{
 	Use:   "configure",
 	Short: "Configure the smarter command-line interface",

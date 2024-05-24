@@ -7,7 +7,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// whoamiCmd represents the status command
 var whoamiCmd = &cobra.Command{
 	Use:   "whoami",
 	Short: "Retrieve information about the api_key owner",
