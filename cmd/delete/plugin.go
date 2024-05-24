@@ -32,5 +32,5 @@ and dissassociate it from any ChatBots.`,
 }
 
 func init() {
-	DeleteCmd.AddCommand(pluginCmd)
+	deleteCmd.AddCommand(pluginCmd)
 }

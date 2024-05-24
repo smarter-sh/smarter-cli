@@ -31,5 +31,5 @@ The Smarter API will permanently delete the PluginDataSqlConnection with the spe
 }
 
 func init() {
-	DeleteCmd.AddCommand(sqlConnectionCmd)
+	deleteCmd.AddCommand(sqlConnectionCmd)
 }

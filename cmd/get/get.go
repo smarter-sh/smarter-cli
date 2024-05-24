@@ -40,7 +40,7 @@ func ErrorOutput(err error) {
 	cmd.ErrorOutput(err)
 }
 
-var GetCmd = &cobra.Command{
+var getCmd = &cobra.Command{
 	Use:   "get",
 	Short: "Generate a list of Smarter resources",
 	Long: `Generate a list of Smarter resources:
@@ -52,18 +52,18 @@ or a manifest for a specific resource.`,
 }
 
 func init() {
-	cmd.RootCmd.AddCommand(GetCmd)
+	cmd.RootCmd.AddCommand(getCmd)
 
-	GetCmd.PersistentFlags().Int("i", 10, "Number of resources to retrieve")
-	if err := viper.BindPFlag("i", GetCmd.PersistentFlags().Lookup("i")); err != nil {
+	getCmd.PersistentFlags().Int("i", 10, "Number of resources to retrieve")
+	if err := viper.BindPFlag("i", getCmd.PersistentFlags().Lookup("i")); err != nil {
 		log.Fatalf("Error binding flag: %v", err)
 	}
-	GetCmd.PersistentFlags().Bool("asc", false, "Sort results in ascending order")
-	if err := viper.BindPFlag("asc", GetCmd.PersistentFlags().Lookup("asc")); err != nil {
+	getCmd.PersistentFlags().Bool("asc", false, "Sort results in ascending order")
+	if err := viper.BindPFlag("asc", getCmd.PersistentFlags().Lookup("asc")); err != nil {
 		log.Fatalf("Error binding flag: %v", err)
 	}
-	GetCmd.PersistentFlags().Bool("desc", false, "Sort results in descending order")
-	if err := viper.BindPFlag("desc", GetCmd.PersistentFlags().Lookup("desc")); err != nil {
+	getCmd.PersistentFlags().Bool("desc", false, "Sort results in descending order")
+	if err := viper.BindPFlag("desc", getCmd.PersistentFlags().Lookup("desc")); err != nil {
 		log.Fatalf("Error binding flag: %v", err)
 	}
 }

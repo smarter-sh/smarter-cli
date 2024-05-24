@@ -44,11 +44,11 @@ func ErrorOutput(err error) {
 }
 
 var manifestCmd = &cobra.Command{
-	Use:   "manifest <kind> --json --yaml",
+	Use:   "manifest <kind> [flags]",
 	Short: "Generate an example manifest for the resource kind",
 	Long: `Generate an example manifest for the resource kind. For example:
 
-	smarter manifest <kind> --json --yaml > my-plugin.yaml
+	smarter manifest <kind> [flags] > my-plugin.yaml
 
 This will generate an example manifest for the specified kind of resource and write it to my-plugin.yaml in the current working directory.`,
 }

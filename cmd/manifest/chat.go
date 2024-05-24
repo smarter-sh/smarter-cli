@@ -8,11 +8,11 @@ import (
 )
 
 var chatsCmd = &cobra.Command{
-	Use:   "chat --json --yaml",
+	Use:   "chat [flags]",
 	Short: "Generate an example manifest for a chat session.",
 	Long: `Generates an example manifest for a chat session. For example:
 
-	smarter manifest chat --json --yaml > my-plugin.yaml
+	smarter manifest chat [flags] > my-plugin.yaml
 
 This will generate an example manifest a chat session and write it to my-plugin.yaml in the current working directory.`,
 

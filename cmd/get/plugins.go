@@ -58,7 +58,7 @@ or a manifest for a specific Plugin.`,
 }
 
 func init() {
-	GetCmd.AddCommand(pluginsCmd)
+	getCmd.AddCommand(pluginsCmd)
 
 	pluginsCmd.Flags().StringP("name", "n", "", "Name of the plugin")
 	if err := viper.BindPFlag("name", pluginsCmd.Flags().Lookup("name")); err != nil {

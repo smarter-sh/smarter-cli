@@ -8,11 +8,11 @@ import (
 )
 
 var usersCmd = &cobra.Command{
-	Use:   "user --json --yaml",
+	Use:   "user [flags]",
 	Short: "Generate an example manifest for a user.",
 	Long: `Generate an example manifest for a user. For example:
 
-	smarter manifest user --json --yaml > my-plugin.yaml
+	smarter manifest user [flags] > my-plugin.yaml
 
 This will generate an example manifest for a user and write it to my-plugin.yaml in the current working directory.`,
 

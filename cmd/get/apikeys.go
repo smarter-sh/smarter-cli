@@ -37,7 +37,7 @@ or a manifest for a specific apikey.`,
 }
 
 func init() {
-	GetCmd.AddCommand(apikeyCmd)
+	getCmd.AddCommand(apikeyCmd)
 
 	apikeyCmd.Flags().StringP("name", "n", "", "SmarterAuthToken name")
 	if err := viper.BindPFlag("name", apikeyCmd.Flags().Lookup("name")); err != nil {

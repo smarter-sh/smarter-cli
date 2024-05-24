@@ -8,11 +8,11 @@ import (
 )
 
 var pluginsCmd = &cobra.Command{
-	Use:   "plugin --json --yaml",
+	Use:   "plugin [flags]",
 	Short: "Generate an example manifest for a plugin.",
 	Long: `Generates an example manifest for a plugin. For example:
 
-	smarter manifest plugin --json --yaml > my-plugin.yaml
+	smarter manifest plugin [flags] > my-plugin.yaml
 
 This will generate an example manifest for a plugin and write it to my-plugin.yaml in the current working directory.`,
 	Run: func(cmd *cobra.Command, args []string) {

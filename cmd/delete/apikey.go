@@ -31,5 +31,5 @@ The Smarter API will permanently delete the SmarterAuthToken with the specified 
 }
 
 func init() {
-	DeleteCmd.AddCommand(apikeyCmd)
+	deleteCmd.AddCommand(apikeyCmd)
 }

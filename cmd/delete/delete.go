@@ -21,7 +21,7 @@ func ErrorOutput(err error) {
 	cmd.ErrorOutput(err)
 }
 
-var DeleteCmd = &cobra.Command{
+var deleteCmd = &cobra.Command{
 	Use:   "delete <kind> <name>",
 	Short: "Permanently delete a Smarter resource",
 	Long: `Permanently delete a Smarter resource:
@@ -32,5 +32,5 @@ The Smarter API will permanently delete the resource.`,
 }
 
 func init() {
-	cmd.RootCmd.AddCommand(DeleteCmd)
+	cmd.RootCmd.AddCommand(deleteCmd)
 }

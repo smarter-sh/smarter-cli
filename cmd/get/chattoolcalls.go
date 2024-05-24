@@ -37,7 +37,7 @@ The Smarter API will return the chat tool calls for the session_id.`,
 }
 
 func init() {
-	GetCmd.AddCommand(chatToolCalls)
+	getCmd.AddCommand(chatToolCalls)
 
 	chatToolCalls.Flags().StringP("session_id", "s", "", "Chat session_id")
 	if err := chatToolCalls.MarkFlagRequired("session_id"); err != nil {

@@ -38,7 +38,7 @@ or a manifest for a specific PluginDataApiConnection.`,
 }
 
 func init() {
-	GetCmd.AddCommand(apiConnectionCmd)
+	getCmd.AddCommand(apiConnectionCmd)
 
 	apiConnectionCmd.Flags().StringP("name", "n", "", "Name of the PluginDataApiConnection")
 

@@ -12,7 +12,7 @@ var whoamiCmd = &cobra.Command{
 	Short: "Retrieve information about the api_key owner",
 	Long: `Retrieve information about the api_key owner:
 
-smarter whoami --json --yaml
+smarter whoami [flags]
 
 Returns informtation about the Smarter user account that owns the
 configured api_key.`,

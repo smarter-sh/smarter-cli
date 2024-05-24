@@ -37,7 +37,7 @@ The Smarter API will return the chat plugin usage for the session_id.`,
 }
 
 func init() {
-	GetCmd.AddCommand(chatPluginUsage)
+	getCmd.AddCommand(chatPluginUsage)
 
 	chatPluginUsage.Flags().StringP("session_id", "s", "", "Chat session_id")
 	if err := chatPluginUsage.MarkFlagRequired("session_id"); err != nil {

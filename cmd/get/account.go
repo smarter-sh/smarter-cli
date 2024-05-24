@@ -35,5 +35,5 @@ The Smarter API will your Account manifest.`,
 }
 
 func init() {
-	GetCmd.AddCommand(accountCmd)
+	getCmd.AddCommand(accountCmd)
 }

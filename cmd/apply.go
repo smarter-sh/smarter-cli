@@ -4,6 +4,7 @@ Copyright © 2024 Lawrence McDaniel <lawrence@querium.com>
 package cmd
 
 import (
+	"fmt"
 	"io"
 	"log"
 	"os"
@@ -35,11 +36,11 @@ flags will output the manifest in the specified format. The
 		fileContents := string(byteValue)
 
 		kwargs := map[string]string{}
-		bodyJson, err := APIRequest("apply", kwargs, fileContents)
+		_, err = APIRequest("apply", kwargs, fileContents)
 		if err != nil {
 			ErrorOutput(err)
 		} else {
-			ConsoleOutput(bodyJson)
+			fmt.Println("manifest applied.")
 		}
 
 	},

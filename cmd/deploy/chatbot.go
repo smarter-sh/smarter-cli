@@ -12,7 +12,7 @@ var chatbotCmd = &cobra.Command{
 	Short: "Deploy a ChatBot",
 	Long: `Deploys a ChatBot:
 
-smarter deploy chatbot <name> --json --yaml
+smarter deploy chatbot <name> [flags]
 
 The Smarter API will deploy the ChatBot.`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -23,16 +23,16 @@ The Smarter API will deploy the ChatBot.`,
 			"name": name,
 		}
 
-		bodyJson, err := APIRequest("chatbot", kwargs)
+		_, err := APIRequest("ChatBot", kwargs)
 		if err != nil {
 			ErrorOutput(err)
 		} else {
-			ConsoleOutput(bodyJson)
+			ConsoleOutput()
 		}
 
 	},
 }
 
 func init() {
-	DeployCmd.AddCommand(chatbotCmd)
+	deployCmd.AddCommand(chatbotCmd)
 }

@@ -38,7 +38,7 @@ or a manifest for a specific ChatBot.`,
 }
 
 func init() {
-	GetCmd.AddCommand(chatbotsCmd)
+	getCmd.AddCommand(chatbotsCmd)
 
 	chatbotsCmd.Flags().StringP("name", "n", "", "Name of the chatbot")
 

@@ -37,7 +37,7 @@ The Smarter API will return the chat history for the session_id.`,
 }
 
 func init() {
-	GetCmd.AddCommand(chatHistoryCmd)
+	getCmd.AddCommand(chatHistoryCmd)
 
 	chatHistoryCmd.Flags().StringP("session_id", "s", "", "Chat session_id")
 	if err := chatHistoryCmd.MarkFlagRequired("session_id"); err != nil {

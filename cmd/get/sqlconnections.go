@@ -38,7 +38,7 @@ or a manifest for a specific PluginDataSqlConnection.`,
 }
 
 func init() {
-	GetCmd.AddCommand(sqlConnectionCmd)
+	getCmd.AddCommand(sqlConnectionCmd)
 
 	sqlConnectionCmd.Flags().StringP("name", "n", "", "Name of the PluginDataSqlConnection")
 

@@ -23,16 +23,16 @@ This will reverse the effect of having deployed the ChatBot.`,
 			"name": name,
 		}
 
-		bodyJson, err := APIRequest("chatbots", kwargs)
+		_, err := APIRequest("ChatBot", kwargs)
 		if err != nil {
 			ErrorOutput(err)
 		} else {
-			ConsoleOutput(bodyJson)
+			ConsoleOutput()
 		}
 
 	},
 }
 
 func init() {
-	UndeployCmd.AddCommand(chatbotsCmd)
+	undeployCmd.AddCommand(chatbotsCmd)
 }

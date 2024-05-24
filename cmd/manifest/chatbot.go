@@ -8,11 +8,11 @@ import (
 )
 
 var chatbotCmd = &cobra.Command{
-	Use:   "chatbot --json --yaml",
+	Use:   "chatbot [flags]",
 	Short: "Generate an example manifest for a ChatBot",
 	Long: `Generates an example manifest for a ChatBot resource. For example:
 
-	smarter manifest chatbot --json --yaml > my-plugin.yaml
+	smarter manifest chatbot [flags] > my-plugin.yaml
 
 This will generate an example manifest for a chatbot and write it to my-plugin.yaml in the current working directory.`,
 

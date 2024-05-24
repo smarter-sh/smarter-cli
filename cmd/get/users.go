@@ -37,7 +37,7 @@ or a manifest for a specific User.`,
 }
 
 func init() {
-	GetCmd.AddCommand(usersCmd)
+	getCmd.AddCommand(usersCmd)
 	usersCmd.Flags().StringP("username", "u", "", "Smarter username")
 	if err := viper.BindPFlag("username", usersCmd.Flags().Lookup("username")); err != nil {
 		log.Fatalf("Error binding flag 'username': %v", err)

@@ -52,7 +52,7 @@ The Smarter API will return a list of Chats.`,
 }
 
 func init() {
-	GetCmd.AddCommand(chatsCmd)
+	getCmd.AddCommand(chatsCmd)
 
 	chatsCmd.Flags().StringP("chatbot", "c", "", "Name of the chatbot")
 	if err := viper.BindPFlag("chatbot", chatsCmd.Flags().Lookup("chatbot")); err != nil {

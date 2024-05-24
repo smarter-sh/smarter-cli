@@ -34,5 +34,5 @@ will replace the deleted user.`,
 }
 
 func init() {
-	DeleteCmd.AddCommand(userCmd)
+	deleteCmd.AddCommand(userCmd)
 }

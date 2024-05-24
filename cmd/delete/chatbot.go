@@ -32,5 +32,5 @@ and all related chat history.`,
 }
 
 func init() {
-	DeleteCmd.AddCommand(chatbotCmd)
+	deleteCmd.AddCommand(chatbotCmd)
 }

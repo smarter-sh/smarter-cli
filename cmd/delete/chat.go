@@ -31,5 +31,5 @@ The Smarter API will permanently delete the chat history with the specified iden
 }
 
 func init() {
-	DeleteCmd.AddCommand(chatCmd)
+	deleteCmd.AddCommand(chatCmd)
 }
