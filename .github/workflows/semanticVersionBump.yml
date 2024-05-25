@@ -101,7 +101,7 @@ jobs:
         if: env.VERSION_CHANGED == 'true'
         id: update_version
         run: |
-          echo "\"${{ env.NEXT_VERSION }}\"" >>  ${{ env.VERSION_FILE }}
+          echo "${{ env.NEXT_VERSION }}" >  ${{ env.VERSION_FILE }}
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add ${{ env.VERSION_FILE }}
