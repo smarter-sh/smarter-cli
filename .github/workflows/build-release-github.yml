@@ -13,6 +13,8 @@ jobs:
     steps:
     - name: Check out code
       uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.PAT }}
 
     - name: Setup Node.js environment
       uses: actions/setup-node@v4
@@ -40,6 +42,8 @@ jobs:
     steps:
     - name: Check out code
       uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.PAT }}
 
     - name: Set up Go
       uses: actions/setup-go@v5
@@ -106,6 +110,8 @@ jobs:
 
     - name: Check out code
       uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.PAT }}
 
     - name: Get dependencies
       run: go get -v -t -d ./...
@@ -150,3 +156,34 @@ jobs:
         asset_path: ./${{ env.app_name }}-${{ matrix.os }}-${{ steps.vars.outputs.version }}
         asset_name: ${{ env.app_name }}-${{ matrix.os }}-${{ steps.vars.outputs.version }}
         asset_content_type: application/octet-stream
+
+  homebrew:
+    name: Homebrew Tap
+    needs: mac_linux
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Check out code
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.PAT }}
+
+    - name: Update Homebrew Tap
+      run: |
+        git clone https://github.com/smarter-sh/homebrew-tap.git
+        cd homebrew-tap/Formula
+
+        # Update the URL and SHA256 in the formula file
+        url="https://github.com/smarter-sh/smarter-cli/releases/download/v${{ steps.vars.outputs.version }}/smarter-macos-latest-${{ steps.vars.outputs.version }}"
+        sha256=$(curl -L -s $url | shasum -a 256 | cut -d " " -f 1)
+        sed -i '' "s|url \".*\"|url \"$url\"|" smarter.rb
+        sed -i '' "s|sha256 \".*\"|sha256 \"$sha256\"|" smarter.rb
+
+        # Commit and push the changes
+        git config --global user.name "GitHub Actions"
+        git config --global user.email "actions@github.com"
+        git add smarter.rb
+        git commit -m "[CI/CD] release ${{ steps.vars.outputs.version }}"
+        git push
+      env:
+        GH_TOKEN: ${{ secrets.PAT }}
