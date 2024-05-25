@@ -39,6 +39,8 @@ lint:
 test:
 	go test -v ./...
 
+release:
+	git commit -m "fix: force a new release" --allow-empty && git push
 
 ######################
 # HELP
