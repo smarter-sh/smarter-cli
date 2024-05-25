@@ -1,4 +1,4 @@
-module github.com/QueriumCorp/smarter-cli
+module github.com/smarter-sh/smarter-cli
 
 go 1.21.6
 
