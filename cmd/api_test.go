@@ -24,7 +24,7 @@ func TestGetAPIHost(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		viper.Set("environment", tc.environment)
+		viper.Set("config.environment", tc.environment)
 		result := getAPIHost()
 		if result != tc.expected {
 			t.Errorf("For environment %s, expected %s but got %s", tc.environment, tc.expected, result)

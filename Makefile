@@ -29,7 +29,6 @@ init:
 pre-commit-init:
 	pre-commit install
 	pre-commit autoupdate
-	pre-commit run --all-files
 
 pre-commit-run:
 	pre-commit run --all-files
@@ -40,32 +39,6 @@ lint:
 test:
 	go test -v ./...
 
-# ---------------------------------------------------------
-# Docker
-# ---------------------------------------------------------
-docker-check:
-	@docker ps >/dev/null 2>&1 || { echo >&2 "This project requires Docker but it's not running.  Aborting."; exit 1; }
-
-docker-init:
-	make docker-check && \
-	echo "Building Docker images..." && \
-	docker-compose up -d && \
-	echo "Docker and Smarter CLI are initialized." && \
-	docker ps
-
-docker-build:
-	make docker-check && \
-	docker-compose build
-
-docker-run:
-	make docker-check && \
-	docker-compose up
-
-docker-prune:
-	make docker-check && \
-	docker system prune -a && \
-	docker volume prune -f && \
-	docker builder prune -a -f
 
 ######################
 # HELP

@@ -132,6 +132,7 @@ func initConfig() {
 		viper.AddConfigPath(configDir)
 		viper.SetConfigType("yaml")
 		viper.SetConfigName("config")
+		viper.SetEnvPrefix("config")
 	}
 
 	viper.AutomaticEnv() // read in environment variables that match

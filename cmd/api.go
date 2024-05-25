@@ -40,7 +40,7 @@ Contact support@querium.com if you need help finding your API key`
 }
 
 func getAPIHost() string {
-	environment := viper.GetString("environment")
+	environment := viper.GetString("config.environment")
 	baseURL := fmt.Sprintf("https://%%s.%s", RootDomain)
 
 	switch environment {

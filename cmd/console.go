@@ -1,3 +1,10 @@
+/*
+Copyright © 2024 Lawrence McDaniel <lawrence@querium.com>
+
+Shared functions for generated formatted console output in any of json, yaml,
+or tabular formats.
+*/
+
 package cmd
 
 import (

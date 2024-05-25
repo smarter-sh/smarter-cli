@@ -1,5 +1,11 @@
 /*
-Copyright © 2024 Lawrence McDaniel lawrence@querium.com
+Copyright © 2024 Lawrence McDaniel <lawrence@querium.com>
+
+This file is part of smarter-cli. smarter-cli is free software: you can
+redistribute it and/or modify it under the terms of the MIT License.
+smarter-cli is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the MIT License for more details.
 */
 package main
 
