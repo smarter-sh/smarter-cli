@@ -11,6 +11,14 @@ jobs:
       issues: write
       pull-requests: write
     steps:
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.9.0"
+
+      - name: Install npm dependencies
+        run: npm install
+
       - name: "Auto-assign issue"
         uses: pozil/auto-assign-issue@v2
         with:
