@@ -52,6 +52,11 @@ jobs:
       run: |
         go build -v -ldflags "-X main.Version=${{ steps.vars.outputs.version }}" -o "./${{ env.app_name }}-windows-${{ steps.vars.outputs.version }}.exe"
 
+    - name: Delete existing release
+      continue-on-error: true
+      run: |
+        gh release delete v${{ steps.vars.outputs.version }} -y
+
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
