@@ -49,7 +49,8 @@ jobs:
         # the current version persisted to VERSION
         id: current_version
         run: |
-          cd ${{ env.PACKAGE_PATH }}
+          pwd
+          ls -lha
           echo "CURRENT_VERSION=$(cat VERSION)" >> $GITHUB_ENV
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
