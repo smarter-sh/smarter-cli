@@ -5,8 +5,8 @@ Maintainer: Lawrence McDaniel <lawrence@querium.com>
 Build-Depends: debhelper (= 12)
 Standards-Version: 3.9.8
 Homepage: https://smarter.sh/
-Vcs-Git: https://github.com/QueriumCorp/smarter-cli
-Vcs-Browser: https://github.com/QueriumCorp/smarter-cli
+Vcs-Git: https://github.com/smarter-sh/smarter-cli
+Vcs-Browser: https://github.com/smarter-sh/smarter-cli
 
 Package: smarter-cli
 Architecture: amd64

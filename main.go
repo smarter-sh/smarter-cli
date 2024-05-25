@@ -10,15 +10,15 @@ FOR A PARTICULAR PURPOSE.  See the MIT License for more details.
 package main
 
 import (
-	"github.com/QueriumCorp/smarter-cli/cmd"
-	_ "github.com/QueriumCorp/smarter-cli/cmd/delete"
-	_ "github.com/QueriumCorp/smarter-cli/cmd/deploy"
-	_ "github.com/QueriumCorp/smarter-cli/cmd/describe"
-	_ "github.com/QueriumCorp/smarter-cli/cmd/get"
-	_ "github.com/QueriumCorp/smarter-cli/cmd/logs"
-	_ "github.com/QueriumCorp/smarter-cli/cmd/manifest"
-	_ "github.com/QueriumCorp/smarter-cli/cmd/undeploy"
 	"github.com/joho/godotenv"
+	"github.com/smarter-sh/smarter-cli/cmd"
+	_ "github.com/smarter-sh/smarter-cli/cmd/delete"
+	_ "github.com/smarter-sh/smarter-cli/cmd/deploy"
+	_ "github.com/smarter-sh/smarter-cli/cmd/describe"
+	_ "github.com/smarter-sh/smarter-cli/cmd/get"
+	_ "github.com/smarter-sh/smarter-cli/cmd/logs"
+	_ "github.com/smarter-sh/smarter-cli/cmd/manifest"
+	_ "github.com/smarter-sh/smarter-cli/cmd/undeploy"
 )
 
 var Version = "local.dev"

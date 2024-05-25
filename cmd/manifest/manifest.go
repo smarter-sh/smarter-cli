@@ -7,7 +7,7 @@ import (
 	"encoding/json"
 	"log"
 
-	"github.com/QueriumCorp/smarter-cli/cmd"
+	"github.com/smarter-sh/smarter-cli/cmd"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"

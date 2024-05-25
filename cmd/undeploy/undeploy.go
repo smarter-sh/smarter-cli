@@ -6,7 +6,7 @@ package undeploy
 import (
 	"fmt"
 
-	"github.com/QueriumCorp/smarter-cli/cmd"
+	"github.com/smarter-sh/smarter-cli/cmd"
 
 	"github.com/spf13/cobra"
 )
