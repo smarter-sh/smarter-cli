@@ -70,8 +70,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.PAT }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./${{ env.app_name }}-windows-${{ steps.vars.outputs.version }}
-        asset_name: ${{ env.app_name }}-windows-${{ steps.vars.outputs.version }}
+        asset_path: ./${{ env.app_name }}-windows-${{ steps.vars.outputs.version }}.exe
+        asset_name: ${{ env.app_name }}-windows-${{ steps.vars.outputs.version }}.exe
         asset_content_type: application/octet-stream
 
   mac_linux:
