@@ -12,6 +12,7 @@ package main
 import (
 	"github.com/joho/godotenv"
 	"github.com/smarter-sh/smarter-cli/cmd"
+	_ "github.com/smarter-sh/smarter-cli/cmd/chat"
 	_ "github.com/smarter-sh/smarter-cli/cmd/delete"
 	_ "github.com/smarter-sh/smarter-cli/cmd/deploy"
 	_ "github.com/smarter-sh/smarter-cli/cmd/describe"

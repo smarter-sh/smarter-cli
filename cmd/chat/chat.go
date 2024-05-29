@@ -1,14 +1,31 @@
 /*
 Copyright © 2024 Lawrence McDaniel <lawrence@querium.com>
 */
-package cmd
+package chat
 
 import (
 	"log"
 
+	"github.com/smarter-sh/smarter-cli/cmd"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
+
+func APIRequest(path string, kwargs map[string]string) ([]byte, error) {
+
+	// deal with me please!!!
+	return cmd.APIRequest(path, kwargs, true)
+
+}
+func ConsoleOutput(bodyJson []byte) {
+	if !viper.IsSet("output_format") {
+		viper.Set("output_format", "json")
+	}
+	cmd.ConsoleOutput(bodyJson)
+}
+func ErrorOutput(err error) {
+	cmd.ErrorOutput(err)
+}
 
 var chatCmd = &cobra.Command{
 	Use:   "chat",
@@ -39,7 +56,7 @@ then echo its response to the console.`,
 }
 
 func init() {
-	RootCmd.AddCommand(chatCmd)
+	cmd.RootCmd.AddCommand(chatCmd)
 
 	chatCmd.PersistentFlags().StringP("session_key", "s", "", "Smarter Chat session_key to use")
 	if err := viper.BindPFlag("session_key", chatCmd.PersistentFlags().Lookup("session_key")); err != nil {

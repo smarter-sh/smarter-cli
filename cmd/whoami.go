@@ -18,7 +18,7 @@ Returns informtation about the Smarter user account that owns the
 configured api_key.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		kwargs := map[string]string{}
-		bodyJson, err := APIRequest("whoami", kwargs)
+		bodyJson, err := APIRequest("whoami", kwargs, false)
 		if err != nil {
 			ErrorOutput(err)
 		} else {
