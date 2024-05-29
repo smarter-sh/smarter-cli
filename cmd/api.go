@@ -21,7 +21,9 @@ const (
 )
 
 func fetchAPIKey() string {
-	apiKey := viper.Get("config.api_key").(string)
+	environment := viper.GetString("config.environment")
+	apiKey := viper.GetString(fmt.Sprintf("%s.api_key", environment))
+
 	if apiKey == "" {
 		apiKey = viper.Get("api_key").(string)
 	}
@@ -119,7 +121,7 @@ func APIRequest(slug string, kwargs map[string]string, fileContents ...string) (
 	defer resp.Body.Close()
 
 	if verbose {
-		respDump, err := httputil.DumpResponse(resp, true)
+		respDump, err := httputil.DumpResponse(resp, false)
 		if err != nil {
 			ErrorOutput(err)
 		}

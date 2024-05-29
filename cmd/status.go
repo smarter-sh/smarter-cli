@@ -12,7 +12,7 @@ var statusCmd = &cobra.Command{
 	Short: "Retrieve real-time status of the Smarter Platform",
 	Long: `Retrieve real-time status of the Smarter Platform:
 
-smarter get status [flags]
+smarter status [flags]
 
 The Smarter API will return the current status of the Smarter Platform,
 including the status of all services and resources by region.`,

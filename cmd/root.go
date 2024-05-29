@@ -53,10 +53,28 @@ func init() {
 	if err := viper.BindPFlag("environment", RootCmd.PersistentFlags().Lookup("environment")); err != nil {
 		log.Fatalf("Error binding flag: %v", err)
 	}
+	if viper.GetString("environment") == "" {
+		environment = viper.GetString("config.environment")
+		if environment == "" {
+			environment = "prod"
+		}
+		viper.Set("environment", environment)
+	}
+
 	// Add the --api_key flag
 	RootCmd.PersistentFlags().String("api_key", "", "Smarter API key to use")
 	if err := viper.BindPFlag("api_key", RootCmd.PersistentFlags().Lookup("api_key")); err != nil {
 		log.Fatalf("Error binding flag: %v", err)
+	}
+
+	// If the api_key flag was not passed on the command line then get the it from the appropriate environment section
+	if viper.GetString("api_key") == "" {
+		api_key := viper.GetString(fmt.Sprintf("%s.api_key", environment))
+		if api_key == "" {
+			log.Fatalf("No api_key found for environment: %s", environment)
+		} else {
+			viper.Set("api_key", api_key)
+		}
 	}
 
 	// Add the --verbose toggle
@@ -142,12 +160,19 @@ func initConfig() {
 	if err := viper.ReadInConfig(); err != nil {
 		defaultConfig := map[string]interface{}{
 			"account_number": "",
-			"username":       "",
 			"api_key":        "",
 			"environment":    "",
 			"output_format":  "",
 		}
 		viper.SetDefault("config", defaultConfig)
+		envConfig := map[string]interface{}{
+			"api_key": "",
+		}
+		viper.SetDefault("local", envConfig)
+		viper.SetDefault("alpha", envConfig)
+		viper.SetDefault("beta", envConfig)
+		viper.SetDefault("next", envConfig)
+		viper.SetDefault("prod", envConfig)
 
 		if _, err := os.Stat(configDir); os.IsNotExist(err) {
 			if err := os.Mkdir(configDir, 0755); err != nil {
