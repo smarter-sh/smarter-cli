@@ -10,17 +10,14 @@ import (
 	"github.com/spf13/viper"
 )
 
-var configCmd = &cobra.Command{
-	Use:   "config",
-	Short: "Retrieve the React configuration for a ChatBot",
-	Long: `Retrieves the React configuration for a ChatBot:
+var promptCmd = &cobra.Command{
+	Use:   "prompt",
+	Short: "Prompt a ChatBot and echo its response to the console",
+	Long: `Prompts a ChatBot and echos its response to the console:
 
-smarter chat config [flags]
+smarter chat prompt [flags]
 
-
-The Smarter API will return a dict of the configuration that is provided
-to the React chat application in the Smarter web console. This is the same
-dict that is returned by the /chatapp/<chatbot>/config/ endpoint.`,
+The Smarter API will send the prompt to the ChatBot and return its response.`,
 	Run: func(cmd *cobra.Command, args []string) {
 
 		chatbot, _ := cmd.Flags().GetString("chatbot")
@@ -45,10 +42,10 @@ dict that is returned by the /chatapp/<chatbot>/config/ endpoint.`,
 }
 
 func init() {
-	chatCmd.AddCommand(configCmd)
+	chatCmd.AddCommand(promptCmd)
 
-	configCmd.Flags().StringP("chatbot", "c", "", "the name of a deployed ChatBot")
-	if err := viper.BindPFlag("chatbot", configCmd.Flags().Lookup("chatbot")); err != nil {
+	promptCmd.PersistentFlags().StringP("prompt", "p", "", "A prompt to send to the ChatBot")
+	if err := viper.BindPFlag("prompt", promptCmd.PersistentFlags().Lookup("prompt")); err != nil {
 		log.Fatalf("Error binding flag: %v", err)
 	}
 

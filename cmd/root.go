@@ -160,7 +160,6 @@ func initConfig() {
 	if err := viper.ReadInConfig(); err != nil {
 		defaultConfig := map[string]interface{}{
 			"account_number": "",
-			"api_key":        "",
 			"environment":    "",
 			"output_format":  "",
 		}

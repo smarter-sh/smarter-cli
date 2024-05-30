@@ -4,6 +4,7 @@ Copyright © 2024 Lawrence McDaniel <lawrence@querium.com>
 package chat
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/smarter-sh/smarter-cli/cmd"
@@ -25,6 +26,13 @@ func ConsoleOutput(bodyJson []byte) {
 }
 func ErrorOutput(err error) {
 	cmd.ErrorOutput(err)
+}
+
+func fetchSessionKey() string {
+	environment := viper.GetString("config.environment")
+	sessionKey := viper.GetString(fmt.Sprintf("%s.session_key", environment))
+
+	return sessionKey
 }
 
 var chatCmd = &cobra.Command{
@@ -62,9 +70,9 @@ func init() {
 	if err := viper.BindPFlag("session_key", chatCmd.PersistentFlags().Lookup("session_key")); err != nil {
 		log.Fatalf("Error binding flag: %v", err)
 	}
-
-	chatCmd.PersistentFlags().StringP("prompt", "p", "", "A prompt to send to the ChatBot")
-	if err := viper.BindPFlag("prompt", chatCmd.PersistentFlags().Lookup("prompt")); err != nil {
+	promptCmd.Flags().StringP("chatbot", "c", "", "the name of a deployed ChatBot")
+	if err := viper.BindPFlag("chatbot", promptCmd.Flags().Lookup("chatbot")); err != nil {
 		log.Fatalf("Error binding flag: %v", err)
 	}
+
 }
