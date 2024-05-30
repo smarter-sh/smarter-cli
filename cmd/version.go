@@ -28,7 +28,7 @@ Returns version information about this software.`,
 			return
 		}
 		kwargs := map[string]string{}
-		bodyJson, err := APIRequest("version", kwargs, false)
+		bodyJson, err := APIRequest("version", kwargs)
 		if err != nil {
 			ErrorOutput(err)
 		} else {

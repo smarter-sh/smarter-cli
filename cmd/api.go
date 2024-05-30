@@ -61,7 +61,7 @@ func getAPIHost() string {
 	}
 }
 
-func APIRequest(slug string, kwargs map[string]string, absolute bool, fileContents ...string) ([]byte, error) {
+func APIRequest(slug string, kwargs map[string]string, fileContents ...string) ([]byte, error) {
 	verbose := viper.GetBool("verbose")
 
 	checkApiKey := verifyApiKey()
@@ -70,12 +70,7 @@ func APIRequest(slug string, kwargs map[string]string, absolute bool, fileConten
 	}
 	apiKey := fetchAPIKey()
 	apiHost := getAPIHost()
-	url_path := ""
-	if absolute {
-		url_path = path.Clean(slug)
-	} else {
-		url_path = path.Clean("/" + ApiBasePath + slug)
-	}
+	url_path := path.Clean("/" + ApiBasePath + slug)
 	urlOrig := strings.ToLower(apiHost + url_path)
 	if !strings.HasSuffix(urlOrig, "/") {
 		urlOrig += "/"

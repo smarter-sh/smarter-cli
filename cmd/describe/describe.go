@@ -11,7 +11,7 @@ import (
 
 func APIRequest(kind string, kwargs map[string]string) ([]byte, error) {
 
-	return cmd.APIRequest("describe/"+kind+"/", kwargs, false)
+	return cmd.APIRequest("describe/"+kind+"/", kwargs)
 
 }
 func ConsoleOutput(bodyJson []byte) {

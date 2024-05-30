@@ -1,0 +1,33 @@
+{
+    "session_key": "7449d448efacc6c5ac48b86156eccf84d22804b5ec914c1261a8e9395414b5e0",
+    "messages": [
+      {
+        "role": "user",
+        "content": "hello world"
+      },
+      {
+        "role": "assistant",
+        "content": "Hello! How can I assist you today?"
+      },
+      {
+        "role": "user",
+        "content": "what is an everlasting gobstopper and where do i buy one?"
+      },
+      {
+        "role": "assistant",
+        "content": "An Everlasting Gobstopper is a fictional candy from the movie \"Willy Wonka & the Chocolate Factory.\" It is a candy that changes colors and flavors, but never gets smaller. \n\nUnfortunately, Everlasting Gobstoppers are not real and cannot be purchased. However, there are similar jawbreakers and hard candies available for purchase at candy stores or online."
+      },
+      {
+        "role": "user",
+        "content": "that's a very good answer, thank you"
+      },
+      {
+        "role": "assistant",
+        "content": "You're welcome! If you have any more questions or need assistance with anything else, feel free to ask. Enjoy your day!"
+      },
+      {
+        "role": "user",
+        "content": "do you know any riddles?"
+      }
+    ]
+  }

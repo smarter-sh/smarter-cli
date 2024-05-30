@@ -12,10 +12,13 @@ import (
 	"github.com/spf13/viper"
 )
 
-func APIRequest(path string, kwargs map[string]string) ([]byte, error) {
+func APIRequest(slug string, kwargs map[string]string) ([]byte, error) {
 
-	// deal with me please!!!
-	return cmd.APIRequest(path, kwargs, true)
+	if slug == "" {
+		return cmd.APIRequest("chat", kwargs)
+	} else {
+		return cmd.APIRequest(fmt.Sprintf("chat/%s", slug), kwargs)
+	}
 
 }
 func ConsoleOutput(bodyJson []byte) {
@@ -46,12 +49,10 @@ The Smarter API will send the prompt to a deployed ChatBot and
 then echo its response to the console.`,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		session_key := viper.GetString("session_key")
 		prompt := viper.GetString("prompt")
 
 		kwargs := map[string]string{
-			"session_key": session_key,
-			"prompt":      prompt,
+			"prompt": prompt,
 		}
 
 		bodyJson, err := APIRequest("chat", kwargs)
@@ -66,10 +67,6 @@ then echo its response to the console.`,
 func init() {
 	cmd.RootCmd.AddCommand(chatCmd)
 
-	chatCmd.PersistentFlags().StringP("session_key", "s", "", "Smarter Chat session_key to use")
-	if err := viper.BindPFlag("session_key", chatCmd.PersistentFlags().Lookup("session_key")); err != nil {
-		log.Fatalf("Error binding flag: %v", err)
-	}
 	promptCmd.Flags().StringP("chatbot", "c", "", "the name of a deployed ChatBot")
 	if err := viper.BindPFlag("chatbot", promptCmd.Flags().Lookup("chatbot")); err != nil {
 		log.Fatalf("Error binding flag: %v", err)
