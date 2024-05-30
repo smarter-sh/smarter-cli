@@ -24,6 +24,7 @@ This will generate a manifest for a SmarterAuthToken named <name> and write it t
 			"name": name,
 		}
 
+		// this request goes to /api/v1/cli/describe/smarterauthtoken/
 		bodyJson, err := APIRequest("SmarterAuthToken", kwargs)
 		if err != nil {
 			ErrorOutput(err)

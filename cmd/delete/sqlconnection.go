@@ -20,6 +20,8 @@ The Smarter API will permanently delete the PluginDataSqlConnection with the spe
 		kwargs := map[string]string{
 			"name": args[0],
 		}
+
+		// this request goes to /api/v1/cli/delete/plugindatasqlconnection/
 		_, err := APIRequest("PluginDataSqlConnection", kwargs)
 		if err != nil {
 			ErrorOutput(err)

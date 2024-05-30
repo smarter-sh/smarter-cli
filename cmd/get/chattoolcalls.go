@@ -26,6 +26,7 @@ The Smarter API will return the chat tool calls for the session_id.`,
 			"session_id": session_id,
 		}
 
+		// this request goes to /api/v1/cli/get/chattoolcall/
 		bodyJson, err := APIRequest("ChatToolCall", kwargs)
 		if err != nil {
 			ErrorOutput(err)

@@ -19,6 +19,7 @@ This will generate an example manifest for a plugin and write it to my-plugin.ya
 
 		kwargs := map[string]string{}
 
+		// this request goes to /api/v1/cli/manifest/plugin/
 		bodyJson, err := APIRequest("plugin", kwargs)
 		if err != nil {
 			ErrorOutput(err)

@@ -24,6 +24,7 @@ This will generate a manifest for a PluginDataApiConnection named <name> and wri
 			"name": name,
 		}
 
+		// this request goes to /api/v1/cli/describe/plugindataapiconnection/
 		bodyJson, err := APIRequest("PluginDataApiConnection", kwargs)
 		if err != nil {
 			ErrorOutput(err)

@@ -27,6 +27,7 @@ or a manifest for a specific PluginDataApiConnection.`,
 			"name": name,
 		}
 
+		// this request goes to /api/v1/cli/get/plugindataapiconnection/
 		bodyJson, err := APIRequest("PluginDataApiConnection", kwargs)
 		if err != nil {
 			ErrorOutput(err)

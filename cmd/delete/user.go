@@ -23,6 +23,8 @@ will replace the deleted user.`,
 		kwargs := map[string]string{
 			"username": username,
 		}
+
+		// this request goes to /api/v1/cli/delete/user/
 		_, err := APIRequest("user", kwargs)
 		if err != nil {
 			ErrorOutput(err)

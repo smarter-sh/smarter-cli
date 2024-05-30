@@ -21,6 +21,8 @@ and dissassociate it from any ChatBots.`,
 		kwargs := map[string]string{
 			"name": args[0],
 		}
+
+		// this request goes to /api/v1/cli/delete/plugin/
 		_, err := APIRequest("plugin", kwargs)
 		if err != nil {
 			ErrorOutput(err)

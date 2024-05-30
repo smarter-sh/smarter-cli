@@ -23,6 +23,7 @@ The Smarter API will deploy the ChatBot.`,
 			"name": name,
 		}
 
+		// this request goes to /api/v1/cli/deploy/chatbot/
 		_, err := APIRequest("ChatBot", kwargs)
 		if err != nil {
 			ErrorOutput(err)

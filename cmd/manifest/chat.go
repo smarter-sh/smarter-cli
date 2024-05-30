@@ -20,6 +20,7 @@ This will generate an example manifest a chat session and write it to my-plugin.
 
 		kwargs := map[string]string{}
 
+		// this request goes to /api/v1/cli/manifest/chat/
 		bodyJson, err := APIRequest("chat", kwargs)
 		if err != nil {
 			ErrorOutput(err)

@@ -23,6 +23,7 @@ This will retrieve the manifest for a plugin named <name> and write it to my-plu
 			"name": name,
 		}
 
+		// this request goes to /api/v1/cli/describe/plugin/
 		bodyJson, err := APIRequest("plugin", kwargs)
 		if err != nil {
 			ErrorOutput(err)

@@ -23,6 +23,7 @@ This will reverse the effect of having deployed the ChatBot.`,
 			"name": name,
 		}
 
+		// this request goes to /api/v1/cli/undeploy/chatbot/
 		_, err := APIRequest("ChatBot", kwargs)
 		if err != nil {
 			ErrorOutput(err)

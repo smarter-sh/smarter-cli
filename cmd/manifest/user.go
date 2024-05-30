@@ -19,6 +19,8 @@ This will generate an example manifest for a user and write it to my-plugin.yaml
 	Run: func(cmd *cobra.Command, args []string) {
 
 		kwargs := map[string]string{}
+
+		// this request goes to /api/v1/cli/manifest/user/
 		bodyJson, err := APIRequest("user", kwargs)
 		if err != nil {
 			ErrorOutput(err)

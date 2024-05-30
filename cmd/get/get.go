@@ -26,6 +26,8 @@ func APIRequest(kind string, kwargs map[string]string) ([]byte, error) {
 	for key, value := range common_kwargs {
 		kwargs[key] = value
 	}
+
+	// en route to /api/v1/cli/get/<str:kind>/
 	return cmd.APIRequest("get/"+kind+"/", kwargs)
 
 }

@@ -26,6 +26,8 @@ or a manifest for a specific apikey.`,
 		kwargs := map[string]string{
 			"name": name,
 		}
+
+		// this request goes to /api/v1/cli/get/smarterauthtoken/
 		bodyJson, err := APIRequest("SmarterAuthToken", kwargs)
 		if err != nil {
 			ErrorOutput(err)

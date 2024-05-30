@@ -20,6 +20,7 @@ This will generate an example manifest a PluginDataSqlConnection and write it to
 
 		kwargs := map[string]string{}
 
+		// this request goes to /api/v1/cli/manifest/plugindatasqlconnection/
 		bodyJson, err := APIRequest("PluginDataSqlConnection", kwargs)
 		if err != nil {
 			ErrorOutput(err)

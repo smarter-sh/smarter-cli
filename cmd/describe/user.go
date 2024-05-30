@@ -23,6 +23,8 @@ This will retrieve a manifest for User <username> and write it to my-plugin.yaml
 		kwargs := map[string]string{
 			"username": username,
 		}
+
+		// this request goes to /api/v1/cli/describe/user/
 		bodyJson, err := APIRequest("user", kwargs)
 		if err != nil {
 			ErrorOutput(err)

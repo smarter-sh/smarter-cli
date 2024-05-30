@@ -11,6 +11,7 @@ import (
 
 func APIRequest(kind string, kwargs map[string]string) ([]byte, error) {
 
+	// en route to /api/v1/cli/logs/<str:kind>/
 	return cmd.APIRequest("logs/"+kind+"/", kwargs)
 
 }

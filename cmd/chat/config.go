@@ -34,7 +34,8 @@ dict that is returned by the /chatapp/<chatbot>/config/ endpoint.`,
 			"session_key": session_key,
 		}
 
-		bodyJson, err := APIRequest("/chatapp/"+chatbot+"/config/", kwargs)
+		// this request goes to /api/v1/cli/chat/config/
+		bodyJson, err := APIRequest("config", kwargs)
 		if err != nil {
 			ErrorOutput(err)
 		} else {

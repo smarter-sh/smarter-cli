@@ -20,6 +20,8 @@ The Smarter API will permanently delete the SmarterAuthToken with the specified 
 		kwargs := map[string]string{
 			"name": args[0],
 		}
+
+		// this request goes to /api/v1/cli/delete/smarterauthtoken/
 		_, err := APIRequest("SmarterAuthToken", kwargs)
 		if err != nil {
 			ErrorOutput(err)

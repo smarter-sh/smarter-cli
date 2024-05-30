@@ -23,6 +23,7 @@ The Smarter API will return the logs for a Chat session_id.`,
 			"name": name,
 		}
 
+		// this request goes to /api/v1/cli/logs/chat/
 		bodyJson, err := APIRequest("Chat", kwargs)
 		if err != nil {
 			ErrorOutput(err)

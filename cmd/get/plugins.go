@@ -47,6 +47,7 @@ or a manifest for a specific Plugin.`,
 			"class": plugin_class,
 		}
 
+		// this request goes to /api/v1/cli/get/plugin/
 		bodyJson, err := APIRequest("Plugin", kwargs)
 		if err != nil {
 			ErrorOutput(err)

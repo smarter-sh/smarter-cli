@@ -31,7 +31,9 @@ The Smarter API will send the prompt to the ChatBot and return its response.`,
 			"session_key": session_key,
 		}
 
-		bodyJson, err := APIRequest("/chatapp/"+chatbot+"/config/", kwargs)
+		// this request goes to /api/v1/cli/chat/ which is immediately upstream
+		// from here. Hence, we're not providing a slug
+		bodyJson, err := APIRequest("", kwargs)
 		if err != nil {
 			ErrorOutput(err)
 		} else {

@@ -20,6 +20,7 @@ This will generate an example manifest a SmarterAuthToken and write it to my-plu
 
 		kwargs := map[string]string{}
 
+		// this request goes to /api/v1/cli/manifest/smarterauthtoken/
 		bodyJson, err := APIRequest("SmarterAuthToken", kwargs)
 		if err != nil {
 			ErrorOutput(err)

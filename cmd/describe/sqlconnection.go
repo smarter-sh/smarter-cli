@@ -24,6 +24,7 @@ This will generate a manifest for a PluginDataSqlConnections named <name> and wr
 			"name": name,
 		}
 
+		// this request goes to /api/v1/cli/describe/plugindatasqlconnections/
 		bodyJson, err := APIRequest("PluginDataSqlConnections", kwargs)
 		if err != nil {
 			ErrorOutput(err)

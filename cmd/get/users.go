@@ -26,6 +26,8 @@ or a manifest for a specific User.`,
 		kwargs := map[string]string{
 			"username": name,
 		}
+
+		// this request goes to /api/v1/cli/get/user/
 		bodyJson, err := APIRequest("User", kwargs)
 		if err != nil {
 			ErrorOutput(err)

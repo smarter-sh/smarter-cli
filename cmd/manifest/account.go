@@ -19,6 +19,7 @@ This will generate an example manifest for an Account and write it to my-plugin.
 
 		kwargs := map[string]string{}
 
+		// this request goes to /api/v1/cli/manifest/account/
 		bodyJson, err := APIRequest("Account", kwargs)
 		if err != nil {
 			ErrorOutput(err)

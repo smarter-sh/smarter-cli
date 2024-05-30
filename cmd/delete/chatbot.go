@@ -21,6 +21,8 @@ and all related chat history.`,
 		kwargs := map[string]string{
 			"name": args[0],
 		}
+
+		// this request goes to /api/v1/cli/delete/chatbot/
 		_, err := APIRequest("chatbot", kwargs)
 		if err != nil {
 			ErrorOutput(err)

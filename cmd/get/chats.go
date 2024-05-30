@@ -41,6 +41,7 @@ The Smarter API will return a list of Chats.`,
 			"last-month": strconv.FormatBool(last_month),
 		}
 
+		// this request goes to /api/v1/cli/get/chat/
 		bodyJson, err := APIRequest("Chat", kwargs)
 		if err != nil {
 			ErrorOutput(err)

@@ -27,6 +27,7 @@ or a manifest for a specific ChatBot.`,
 			"name": name,
 		}
 
+		// this request goes to /api/v1/cli/get/chatbot/
 		bodyJson, err := APIRequest("Chatbot", kwargs)
 		if err != nil {
 			ErrorOutput(err)
