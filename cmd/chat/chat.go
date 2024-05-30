@@ -15,12 +15,16 @@ import (
 	"github.com/spf13/viper"
 )
 
-func APIRequest(slug string, kwargs map[string]string) ([]byte, error) {
+func APIRequest(slug string, kwargs map[string]string, fileContents ...string) ([]byte, error) {
+	var fileContent string
+	if len(fileContents) > 0 {
+		fileContent = fileContents[0]
+	}
 
 	// en route to either of:
 	// 		/api/v1/cli/chat/<str:chatbot>/<str:uid>
 	// 		/api/v1/cli/chat/config/<str:chatbot>/<str:uid>
-	return cmd.APIRequest(fmt.Sprintf("chat/%s", slug), kwargs)
+	return cmd.APIRequest(fmt.Sprintf("chat/%s", slug), kwargs, fileContent)
 
 }
 func ConsoleOutput(bodyJson []byte) {
@@ -68,21 +72,6 @@ smarter chat <command> [flags]
 
 The Smarter API will send the prompt to a deployed ChatBot and
 then echo its response to the console.`,
-	Run: func(cmd *cobra.Command, args []string) {
-
-		prompt := viper.GetString("prompt")
-
-		kwargs := map[string]string{
-			"prompt": prompt,
-		}
-
-		bodyJson, err := APIRequest("chat", kwargs)
-		if err != nil {
-			ErrorOutput(err)
-		} else {
-			ConsoleOutput(bodyJson)
-		}
-	},
 }
 
 func init() {

@@ -4,6 +4,7 @@ Copyright © 2024 Lawrence McDaniel <lawrence@querium.com>
 package chat
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 
@@ -21,6 +22,7 @@ var promptCmd = &cobra.Command{
 The Smarter API will send the prompt to the ChatBot and return its response.`,
 	Run: func(cmd *cobra.Command, args []string) {
 
+		prompt, _ := cmd.Flags().GetString("prompt")
 		chatbot, _ := cmd.Flags().GetString("chatbot")
 		new_session, _ := cmd.Flags().GetBool("new_session")
 		uid := getUniqueID()
@@ -34,9 +36,13 @@ The Smarter API will send the prompt to the ChatBot and return its response.`,
 			"new_session": fmt.Sprintf("%t", new_session),
 		}
 
+		dict := map[string]string{"prompt": prompt}
+		fileContentsBytes, _ := json.Marshal(dict)
+		fileContents := string(fileContentsBytes)
+
 		// this request goes to /api/v1/cli/chat/config/<str:chatbot>/<str:uid>
 		path := fmt.Sprintf("%s/", chatbot)
-		bodyJson, err := APIRequest(path, kwargs)
+		bodyJson, err := APIRequest(path, kwargs, fileContents)
 		if err != nil {
 			ErrorOutput(err)
 		} else {
