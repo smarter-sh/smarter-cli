@@ -27,6 +27,10 @@ The Smarter API will send the prompt to the ChatBot and return its response.`,
 		new_session, _ := cmd.Flags().GetBool("new_session")
 		uid := getUniqueID()
 
+		if prompt == "" {
+			log.Fatalf("The 'prompt' flag is required")
+		}
+
 		if chatbot == "" {
 			log.Fatalf("The 'chatbot' flag is required")
 		}

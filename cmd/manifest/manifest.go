@@ -16,7 +16,7 @@ import (
 func APIRequest(kind string, kwargs map[string]string) ([]byte, error) {
 
 	// en route to /api/v1/cli/manifest/<str:kind>/
-	return cmd.APIRequest("manifest/"+kind+"/", kwargs)
+	return cmd.APIRequest("example_manifest/"+kind+"/", kwargs)
 
 }
 func ConsoleOutput(bodyJson []byte) {
