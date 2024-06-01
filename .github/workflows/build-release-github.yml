@@ -168,6 +168,11 @@ jobs:
       with:
         token: ${{ secrets.PAT }}
 
+    - name: Get version
+      id: vars
+      shell: bash
+      run: echo "::set-output name=version::$(cat VERSION)"
+
     - name: Update Homebrew Tap
       run: |
         git clone https://github.com/smarter-sh/homebrew-tap.git
@@ -176,8 +181,8 @@ jobs:
         # Update the URL and SHA256 in the formula file
         url="https://github.com/smarter-sh/smarter-cli/releases/download/v${{ steps.vars.outputs.version }}/smarter-macos-latest-${{ steps.vars.outputs.version }}"
         sha256=$(curl -L -s $url | shasum -a 256 | cut -d " " -f 1)
-        sed -i '' "s|url \".*\"|url \"$url\"|" smarter.rb
-        sed -i '' "s|sha256 \".*\"|sha256 \"$sha256\"|" smarter.rb
+        sed -i "s|url \".*\"|url \"$url\"|" smarter.rb
+        sed -i "s|sha256 \".*\"|sha256 \"$sha256\"|" smarter.rb
 
         # Commit and push the changes
         git config --global user.name "GitHub Actions"
