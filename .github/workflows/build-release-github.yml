@@ -175,7 +175,7 @@ jobs:
 
     - name: Update Homebrew Tap
       run: |
-        git clone https://github.com/smarter-sh/homebrew-tap.git
+        git clone https://${{ GH_TOKEN }}@github.com/smarter-sh/homebrew-tap.git
         cd homebrew-tap/Formula
 
         # Update the URL and SHA256 in the formula file
