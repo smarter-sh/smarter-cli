@@ -181,8 +181,15 @@ jobs:
         # Update the URL and SHA256 in the formula file
         url="https://github.com/smarter-sh/smarter-cli/releases/download/v${{ steps.vars.outputs.version }}/smarter-macos-latest-${{ steps.vars.outputs.version }}"
         sha256=$(curl -L -s $url | shasum -a 256 | cut -d " " -f 1)
+
+        # 1.) update the formula url
         sed -i "s|url \".*\"|url \"$url\"|" smarter.rb
+
+        # 2.) update the formula sha256
         sed -i "s|sha256 \".*\"|sha256 \"$sha256\"|" smarter.rb
+
+        # 3.) Update the bin.install line with the new version
+        sed -i "s|bin.install \"smarter-macos-latest-.*\" => \"smarter\"|bin.install \"smarter-macos-latest-${{ steps.vars.outputs.version }}\" => \"smarter\"|" smarter.rb
 
         # Commit and push the changes
         git config --global user.name "GitHub Actions"
