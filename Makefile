@@ -8,13 +8,19 @@ else
     $(shell cp ./doc/example-dot-env .env)
 endif
 
-.PHONY: analyze init pre-commit-init pre-commit-run help
+.PHONY: analyze init pre-commit-init pre-commit-run help choco-pack choco-push
 
 # Default target executed when no arguments are given to make.
 all: help
 
 analyze:
 	cloc . --exclude-ext=svg,json,zip --fullpath --not-match-d=smarter/smarter/static/assets/ --vcs=git
+
+choco-pack:
+	choco pack
+
+choco-push: choco-pack
+	choco push smarter.0.0.1.nupkg --source https://push.chocolatey.org/
 
 # initialize local development environment.
 # takes around 5 minutes to complete
