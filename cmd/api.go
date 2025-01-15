@@ -102,6 +102,7 @@ func APIRequest(slug string, kwargs map[string]string, fileContents ...string) (
 	}
 
 	// see https://jazzband.github.io/django-rest-knox/auth/
+	req.Header.Set("User-Agent", "Go-http-client")
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", "Token "+apiKey)
 

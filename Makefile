@@ -32,6 +32,10 @@ init:
 	npm install
 
 
+python-init:
+	python3 -m venv venv
+	source venv/bin/activate
+
 pre-commit-init:
 	pre-commit install
 	pre-commit autoupdate
