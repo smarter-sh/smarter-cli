@@ -1,6 +1,7 @@
 # Smarter Command-line Interface
 
-The Smarter command-line interface for working with Smarter resources. Available on Windows, macOS, Linux and DockerHub.
+The Smarter command-line interface for working with Smarter resources. Runs on Windows, macOS, Linux and DockerHub.
+Download it at [https://smarter.sh/cli/](https://smarter.sh/cli/)
 
 ## Usage
 
@@ -8,9 +9,11 @@ The Smarter command-line interface for working with Smarter resources. Available
 smarter --help
 ```
 
-## Build
+## Developers
 
-### Windows
+### Build
+
+#### Windows
 
 ```powershell
 go get -v -t -d .
@@ -19,7 +22,7 @@ $env:VERSION = $VERSION
 go build -ldflags "-X main.Version=$env:VERSION" -o "./smarter-windows-${env:VERSION}.exe"
 ```
 
-### macOS / Linux
+#### macOS / Linux
 
 ```bash
 go get -v -t -d .
@@ -27,8 +30,7 @@ export VERSION=$(cat VERSION)
 go build -v -ldflags "-X main.Version=$VERSION" -o "./smarter-linux-$VERSION"
 ```
 
-
-## CI/CD
+### CI/CD
 
 The GitHub Actions workflow [.github/workflows/build.yml](./.github/workflows/build.yml) publishes semantically-versioned releases to [https://github.com/smarter-sh/smarter-cli/releases](https://github.com/smarter-sh/smarter-cli/releases) which includes binaries for Windows, macOS, Linux and Docker.
 
@@ -36,7 +38,7 @@ Semantic version numbers are controlled by npm package [semantic-release](https:
 
 Package versions for Go lang, NPM and GitHub Actions are monitored by [Dependabot](https://docs.github.com/en/code-security/dependabot) and [Mergify](https://mergify.com/) and are automatically updated and merged to the [alpha branch](https://github.com/smarter-sh/smarter-cli/tree/alpha) of this repo.
 
-## Cobra
+### Cobra
 
 This cli is built on the [Cobra](https://github.com/spf13/cobra) and [Viper](https://github.com/spf13/viper) frameworks for Go lang. See also:
 
