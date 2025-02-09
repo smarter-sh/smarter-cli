@@ -21,7 +21,7 @@ const (
 )
 
 func fetchAPIKey() string {
-	environment := viper.GetString("config.environment")
+	environment := viper.GetString("environment")
 	apiKey := viper.GetString(fmt.Sprintf("%s.api_key", environment))
 
 	if apiKey == "" {
@@ -42,8 +42,12 @@ Contact support@querium.com if you need help finding your API key`
 }
 
 func getAPIHost() string {
-	environment := viper.GetString("config.environment")
+	environment := viper.GetString("environment")
 	baseURL := fmt.Sprintf("https://%%s.%s", RootDomain)
+
+	if viper.GetBool("verbose") {
+		log.Printf("Environment: %s", environment)
+	}
 
 	switch environment {
 	case "local":
