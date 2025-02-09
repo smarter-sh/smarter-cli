@@ -37,7 +37,7 @@ choco-pack:
 	choco pack
 
 choco-push: choco-pack
-	choco push smarter.0.0.1.nupkg --source https://push.chocolatey.org/
+	choco push smarter.0.1.2.nupkg --source https://push.chocolatey.org/
 
 # initialize local development environment.
 # takes around 5 minutes to complete
