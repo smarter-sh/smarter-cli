@@ -13,6 +13,23 @@ endif
 # Default target executed when no arguments are given to make.
 all: help
 
+######################
+# Go
+######################
+lint:
+	golangci-lint run
+
+test:
+	go test -v ./...
+
+run:
+	make build
+	go run main.go get chatbots --name hr
+
+build:
+	go get -v -t ./...
+	go build -o smarter main.go
+
 analyze:
 	cloc . --exclude-ext=svg,json,zip --fullpath --not-match-d=smarter/smarter/static/assets/ --vcs=git
 
@@ -42,12 +59,6 @@ pre-commit-init:
 
 pre-commit-run:
 	pre-commit run --all-files
-
-lint:
-	golangci-lint run
-
-test:
-	go test -v ./...
 
 release:
 	git commit -m "fix: force a new release" --allow-empty && git push
