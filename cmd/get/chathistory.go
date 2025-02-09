@@ -1,5 +1,5 @@
 /*
-Copyright © 2024 Lawrence McDaniel <Copyright © 2024 Lawrence McDaniel <lpm0073@gmail.com>
+Copyright © 2024 Lawrence McDaniel <lpm0073@gmail.com>
 Website: https://lawrencemcdaniel.com>
 */
 package get
