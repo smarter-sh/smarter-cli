@@ -124,7 +124,7 @@ jobs:
       id: build
       shell: bash
       run: |
-        go build -v -o smarter main.go \
+        go build -v \
         -ldflags "-X main.Version=${{ steps.vars.outputs.version }}" \
         -o ./${{ env.app_name }}-${{ matrix.os }}-${{ steps.vars.outputs.version }}
 
