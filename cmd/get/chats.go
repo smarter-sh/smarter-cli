@@ -22,7 +22,7 @@ The Smarter API will return a list of Chats.`,
 	Run: func(cmd *cobra.Command, args []string) {
 
 		chatbot := viper.GetString("chatbot")
-		session_id := viper.GetString("session_id")
+		session_key := viper.GetString("session_key")
 		today := viper.GetBool("today")
 		yesterday := viper.GetBool("yesterday")
 		this_week := viper.GetBool("this-week")
@@ -31,14 +31,14 @@ The Smarter API will return a list of Chats.`,
 		last_month := viper.GetBool("last-month")
 
 		kwargs := map[string]string{
-			"chatbot":    chatbot,
-			"session_id": session_id,
-			"today":      strconv.FormatBool(today),
-			"yesterday":  strconv.FormatBool(yesterday),
-			"this-week":  strconv.FormatBool(this_week),
-			"last-week":  strconv.FormatBool(last_week),
-			"this-month": strconv.FormatBool(this_month),
-			"last-month": strconv.FormatBool(last_month),
+			"chatbot":     chatbot,
+			"session_key": session_key,
+			"today":       strconv.FormatBool(today),
+			"yesterday":   strconv.FormatBool(yesterday),
+			"this-week":   strconv.FormatBool(this_week),
+			"last-week":   strconv.FormatBool(last_week),
+			"this-month":  strconv.FormatBool(this_month),
+			"last-month":  strconv.FormatBool(last_month),
 		}
 
 		// this request goes to /api/v1/cli/get/chat/
@@ -60,9 +60,9 @@ func init() {
 		log.Fatalf("Error binding flag 'chatbot': %v", err)
 	}
 
-	chatsCmd.Flags().StringP("session_id", "s", "", "Chat session_id")
-	if err := viper.BindPFlag("session_id", chatsCmd.Flags().Lookup("session_id")); err != nil {
-		log.Fatalf("Error binding flag 'session_id': %v", err)
+	chatsCmd.Flags().StringP("session_key", "s", "", "Chat session_key")
+	if err := viper.BindPFlag("session_key", chatsCmd.Flags().Lookup("session_key")); err != nil {
+		log.Fatalf("Error binding flag 'session_key': %v", err)
 	}
 
 	chatsCmd.Flags().Bool("today", false, "Filter for today")

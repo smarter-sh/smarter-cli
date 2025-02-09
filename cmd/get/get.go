@@ -38,6 +38,7 @@ func ConsoleOutput(bodyJson []byte) {
 	}
 	cmd.ConsoleOutput(bodyJson)
 }
+
 func ErrorOutput(err error) {
 	cmd.ErrorOutput(err)
 }

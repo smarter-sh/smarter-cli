@@ -8,17 +8,17 @@ import (
 )
 
 var chatCmd = &cobra.Command{
-	Use:   "chat <session_id>",
+	Use:   "chat <session_key>",
 	Short: "Delete a chat history",
 	Long: `Deletes a chat history:
 
-smarter delete chat <session_id>
+smarter delete chat <session_key>
 
 The Smarter API will permanently delete the chat history with the specified identifier.`,
 	Run: func(cmd *cobra.Command, args []string) {
 
 		kwargs := map[string]string{
-			"session_id": args[0],
+			"session_key": args[0],
 		}
 
 		// this request goes to /api/v1/cli/delete/chat/

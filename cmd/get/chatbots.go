@@ -21,7 +21,20 @@ The Smarter API will return a list of ChatBots in the specified format,
 or a manifest for a specific ChatBot.`,
 	Run: func(cmd *cobra.Command, args []string) {
 
+		// Ensure flags are parsed
+		if err := cmd.Flags().Parse(args); err != nil {
+			log.Fatalf("Error parsing flags: %v", err)
+		}
+
+		// Bind flags after parsing
+		if err := viper.BindPFlags(cmd.Flags()); err != nil {
+			log.Fatalf("Error binding flags: %v", err)
+		}
+
 		name := viper.GetString("name")
+		if viper.GetBool("verbose") {
+			log.Printf("Retrieved name: %s", name)
+		}
 
 		kwargs := map[string]string{
 			"name": name,

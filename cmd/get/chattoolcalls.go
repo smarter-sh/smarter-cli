@@ -12,18 +12,18 @@ import (
 
 var chatToolCalls = &cobra.Command{
 	Use:   "chat-tool-calls",
-	Short: "Retrieve the chat tool calls for a session_id",
-	Long: `Retrieve the chat tool calls for a session_id:
+	Short: "Retrieve the chat tool calls for a session_key",
+	Long: `Retrieve the chat tool calls for a session_key:
 
-smarter get chat-tool-calls [session_id]
+smarter get chat-tool-calls [session_key]
 
-The Smarter API will return the chat tool calls for the session_id.`,
+The Smarter API will return the chat tool calls for the session_key.`,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		session_id, _ := cmd.Flags().GetString("session_id")
+		session_key, _ := cmd.Flags().GetString("session_key")
 
 		kwargs := map[string]string{
-			"session_id": session_id,
+			"session_key": session_key,
 		}
 
 		// this request goes to /api/v1/cli/get/chattoolcall/
@@ -40,12 +40,12 @@ The Smarter API will return the chat tool calls for the session_id.`,
 func init() {
 	getCmd.AddCommand(chatToolCalls)
 
-	chatToolCalls.Flags().StringP("session_id", "s", "", "Chat session_id")
-	if err := chatToolCalls.MarkFlagRequired("session_id"); err != nil {
-		log.Fatalf("Error marking flag 'session_id' as required: %v", err)
+	chatToolCalls.Flags().StringP("session_key", "s", "", "Chat session_key")
+	if err := chatToolCalls.MarkFlagRequired("session_key"); err != nil {
+		log.Fatalf("Error marking flag 'session_key' as required: %v", err)
 	}
-	if err := viper.BindPFlag("session_id", chatToolCalls.Flags().Lookup("session_id")); err != nil {
-		log.Fatalf("Error binding flag 'session_id': %v", err)
+	if err := viper.BindPFlag("session_key", chatToolCalls.Flags().Lookup("session_key")); err != nil {
+		log.Fatalf("Error binding flag 'session_key': %v", err)
 	}
 
 }

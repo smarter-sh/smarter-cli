@@ -8,13 +8,13 @@ import (
 )
 
 var chatHistoryCmd = &cobra.Command{
-	Use:   "chat-history <session_id>",
-	Short: "Returns the logs for a ChatHistory session_id",
+	Use:   "chat-history <session_key>",
+	Short: "Returns the logs for a ChatHistory session_key",
 	Long: `Returns the logs for a ChatHistory:
 
-smarter logs chat-history <session_id>
+smarter logs chat-history <session_key>
 
-The Smarter API will return the logs for a ChatHistory session_id.`,
+The Smarter API will return the logs for a ChatHistory session_key.`,
 	Run: func(cmd *cobra.Command, args []string) {
 
 		name := args[0]
