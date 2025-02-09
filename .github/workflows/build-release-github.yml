@@ -30,10 +30,10 @@ jobs:
         go-version: '1.22'
 
     - name: Get dependencies
-      run: go get -v -t -d ./...
+      run: go get -v -t ./...
 
     - name: Build
-      run: go build -v
+      run: go build -v -o smarter main.go
 
   windows:
     name: Windows
@@ -51,7 +51,7 @@ jobs:
         go-version: '1.22'
 
     - name: Get dependencies
-      run: go get -v -t -d ./...
+      run: go get -v -t ./...
 
     - name: Get version
       id: vars
@@ -62,7 +62,7 @@ jobs:
       id: build
       shell: pwsh
       run: |
-        go build -v -ldflags "-X main.Version=${{ steps.vars.outputs.version }}" -o "./${{ env.app_name }}-windows-${{ steps.vars.outputs.version }}.exe"
+        go build -v -o smarter main.go -ldflags "-X main.Version=${{ steps.vars.outputs.version }}" -o "./${{ env.app_name }}-windows-${{ steps.vars.outputs.version }}.exe"
 
     - name: Delete existing release
       continue-on-error: true
@@ -114,7 +114,7 @@ jobs:
         token: ${{ secrets.PAT }}
 
     - name: Get dependencies
-      run: go get -v -t -d ./...
+      run: go get -v -t ./...
 
     - name: Get version
       id: vars
@@ -124,7 +124,7 @@ jobs:
       id: build
       shell: bash
       run: |
-        go build -v \
+        go build -v -o smarter main.go \
         -ldflags "-X main.Version=${{ steps.vars.outputs.version }}" \
         -o ./${{ env.app_name }}-${{ matrix.os }}-${{ steps.vars.outputs.version }}
 

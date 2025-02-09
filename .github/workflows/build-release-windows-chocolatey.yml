@@ -29,7 +29,7 @@ jobs:
 
     - name: Go Get dependencies
       shell: pwsh
-      run: go get -v -t -d .\...
+      run: go get -v -t .\...
 
     - name: Echo Build Path
       shell: pwsh
