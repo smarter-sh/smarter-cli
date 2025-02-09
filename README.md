@@ -19,7 +19,7 @@ smarter --help
 go get -v -t .
 $VERSION = Get-Content -Path .\VERSION
 $env:VERSION = $VERSION
-go build -v -o smarter main.go -ldflags "-X main.Version=$env:VERSION" -o "./smarter-windows-${env:VERSION}.exe"
+go build -v -ldflags "-X main.Version=$env:VERSION" -o "./smarter-windows-${env:VERSION}.exe"
 ```
 
 #### macOS / Linux
@@ -27,7 +27,7 @@ go build -v -o smarter main.go -ldflags "-X main.Version=$env:VERSION" -o "./sma
 ```bash
 go get -v -t .
 export VERSION=$(cat VERSION)
-go build -v -o smarter main.go -ldflags "-X main.Version=$VERSION" -o "./smarter-linux-$VERSION"
+go build -v -ldflags "-X main.Version=$VERSION" -o "./smarter-linux-$VERSION"
 ```
 
 ### CI/CD
