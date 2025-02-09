@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## v0.1.2 (9-Feb-2025)
+
+- fix: change session_id to session_key [c2145f](https://github.com/smarter-sh/smarter-cli/commit/7942589cf86c20f1997f4405a7066e97dec2145f)
+- fix: send entire json response to console output formatters [7091f3](https://github.com/smarter-sh/smarter-cli/commit/8890bff142fc202389f45c0684c1da53d27091f3)
+- chore: add default values to config on new installs [65b310](https://github.com/smarter-sh/smarter-cli/commit/a2c12caba3802b8a440c443c6c1667dc5165b310)
+- fix: incorrect viper references to environment config setting [5af76a](https://github.com/smarter-sh/smarter-cli/commit/f91a595ddb699372ac8884eb66cc1fba495af76a)
+
+
 ## v0.0.2 MVP (24-May-2024)
 
 - connectivity to any of local, alpha, beta, next, prod (default)
