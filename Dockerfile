@@ -20,7 +20,7 @@ COPY main.go VERSION ./
 RUN chown smarter_user:smarter_user -R .
 
 RUN version=$(cat VERSION) && \
-    CGO_ENABLED=0 GOOS=linux go build -o smarter main.go -ldflags "-X main.Version=${version}" -o ./smarter .
+    CGO_ENABLED=0 GOOS=linux go build -ldflags "-X main.Version=${version}" -o ./smarter .
 
 RUN chown smarter_user:smarter_user -R .
 
