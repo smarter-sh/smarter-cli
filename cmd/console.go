@@ -8,7 +8,6 @@ or tabular formats.
 package cmd
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -51,6 +50,10 @@ type Body struct {
 
 func TableOutput(bodyJson []byte) {
 	var body Body
+
+	if viper.GetBool("verbose") {
+		log.Printf("TableOutput()")
+	}
 
 	err := json.Unmarshal(bodyJson, &body)
 	if err != nil {
@@ -101,16 +104,35 @@ func TableOutput(bodyJson []byte) {
 }
 
 func JsonOutput(bodyJson []byte) {
-	var prettyJSON bytes.Buffer
-	err := json.Indent(&prettyJSON, bodyJson, "", "    ")
+	var prettyJSON []byte
+	var jsonData map[string]interface{}
+
+	err := json.Unmarshal(bodyJson, &jsonData)
 	if err != nil {
-		fmt.Println("JSON parse error: ", err)
-		return
+		log.Fatalf("Error occurred during unmarshalling json: %v", err)
 	}
-	fmt.Println(prettyJSON.String())
+
+	prettyJSON, _ = json.MarshalIndent(jsonData, "", "  ")
+
+	fmt.Println(string(prettyJSON))
 }
 
 func YamlOutput(bodyJson []byte) {
+	var jsonData map[string]interface{}
+
+	if viper.GetBool("verbose") {
+		log.Printf("YamlOutput()")
+	}
+	err := json.Unmarshal(bodyJson, &jsonData)
+	if err != nil {
+		log.Fatalf("Error occurred during unmarshalling json: %v", err)
+	}
+
+	if data, ok := jsonData["data"]; ok {
+		newData, _ := json.Marshal(data)
+		bodyJson = newData
+	}
+
 	bodyYaml, err := yaml.JSONToYAML(bodyJson)
 	if err != nil {
 		ErrorOutput(err)
@@ -121,25 +143,6 @@ func YamlOutput(bodyJson []byte) {
 
 func ConsoleOutput(bodyJson []byte) {
 	outputFormat := viper.GetString("output_format")
-	verbose := viper.GetBool("verbose")
-	var jsonData map[string]interface{}
-
-	err := json.Unmarshal(bodyJson, &jsonData)
-	if err != nil {
-		log.Fatalf("Error occurred during unmarshalling json: %v", err)
-	}
-
-	if verbose {
-		// set bodyJson to jsonData for verbose output
-		bodyJson, _ = json.MarshalIndent(jsonData, "", "  ")
-	} else {
-		// if bodyJson contains a payload dict (named 'data'), extract it
-		// and use it as the bodyJson
-		if data, ok := jsonData["data"]; ok {
-			newData, _ := json.Marshal(data)
-			bodyJson = newData
-		}
-	}
 
 	switch {
 	case outputFormat == "json":
