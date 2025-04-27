@@ -37,7 +37,7 @@ choco-pack:
 	choco pack
 
 choco-push: choco-pack
-	choco push smarter.0.1.2.nupkg --source https://push.chocolatey.org/
+	choco push smarter.0.2.0.nupkg --source https://push.chocolatey.org/
 
 # initialize local development environment.
 # takes around 5 minutes to complete
@@ -70,11 +70,14 @@ release:
 help:
 	@echo '===================================================================='
 	@echo 'analyze                - Analyze the project with cloc'
-	@echo 'docker-init            - starts the smarter cli container'
-	@echo 'docker-build           - Builds a smarter cli Docker container'
-	@echo 'docker-run             - starts a smarter cli shell session in the Docker container'
-	@echo 'docker-prune           - utliity to clean up Docker images, volumes, and builders'
 	@echo 'init                   - Initialize local and Docker environments'
+	@echo 'lint            		  - run all code linters'
+	@echo 'test                   - run all tests'
+	@echo 'run                    - run the main.go file'
+	@echo 'build                  - build the smarter cli'
+	@echo 'choco-pack             - package the smarter cli for chocolatey'
+	@echo 'choco-push             - push the smarter cli package to chocolatey'
 	@echo 'pre-commit-init        - install and configure pre-commit'
 	@echo 'pre-commit-run         - runs all pre-commit hooks on all files'
+	@echo 'release				  - force a new release'
 	@echo '===================================================================='
