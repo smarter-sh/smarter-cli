@@ -38,6 +38,16 @@ Semantic version numbers are controlled by npm package [semantic-release](https:
 
 Package versions for Go lang, NPM and GitHub Actions are monitored by [Dependabot](https://docs.github.com/en/code-security/dependabot) and [Mergify](https://mergify.com/) and are automatically updated and merged to the [alpha branch](https://github.com/smarter-sh/smarter-cli/tree/alpha) of this repo.
 
+### Release
+
+The Smarter cli is available via the following package managers:
+
+- GitHub Releases -- run Github Action Build-Release GitHub, which also publishes to Homebrew and to Ubuntu Apt
+- Homebrew
+- Ubuntu Apt
+- Chocolatey -- run Build-Release Chocolatey
+- Docker Hub -- Build-Release DockerHub
+
 ### Cobra
 
 This cli is built on the [Cobra](https://github.com/spf13/cobra) and [Viper](https://github.com/spf13/viper) frameworks for Go lang. See also:
