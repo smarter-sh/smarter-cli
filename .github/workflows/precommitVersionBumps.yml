@@ -27,7 +27,7 @@ jobs:
           persist-credentials: false
 
       - name: Setup Node.js environment
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: "20.9.0"
 
@@ -49,7 +49,7 @@ jobs:
             ${{ runner.os }}-node
 
       - name: Setup Node.js environment
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: "20.9.0"
 
