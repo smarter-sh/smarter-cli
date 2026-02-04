@@ -51,7 +51,7 @@ func getAPIHost() string {
 
 	switch environment {
 	case "local":
-		return "http://localhost:8000"
+		return "http://localhost:9357"
 	case "alpha":
 		return fmt.Sprintf(baseURL, "alpha")
 	case "beta":

@@ -52,7 +52,7 @@ make         # scaffold a .env file in the root of the repo
 
 make init    # initialize dev environment, build & init docker.
 make build   # builds and configures all docker containers
-make run     # runs all docker containers and starts a local web server on port 8000
+make run     # runs all docker containers and starts a local web server on port 9357
 ```
 
 To preserve your own sanity, don't spend time formatting your Python, Terraform, JS or any other source code because pre-commit invokes automatic code formatting utilities such as black, flake8 and prettier, on all local commits, and these will reformat the code in your commit based on policy configuration files found in the root of this repo.
@@ -61,9 +61,9 @@ Running `docker ps` you should see output similar to the following.
 
 ```console
 CONTAINER ID   IMAGE          COMMAND                  CREATED              STATUS              PORTS                    NAMES
-7570286d11c0   smarter        "watchmedo auto-rest…"   About a minute ago   Up About a minute   0.0.0.0:8000->8000/tcp   smarter-app
-7df77367d1d5   smarter        "bash -c 'watchmedo …"   About a minute ago   Up About a minute   8000/tcp                 smarter-worker
-f3bf3acbd087   smarter        "bash -c 'watchmedo …"   About a minute ago   Up About a minute   8000/tcp                 smarter-beat
+7570286d11c0   smarter        "watchmedo auto-rest…"   About a minute ago   Up About a minute   0.0.0.0:9357->9357/tcp   smarter-app
+7df77367d1d5   smarter        "bash -c 'watchmedo …"   About a minute ago   Up About a minute   9357/tcp                 smarter-worker
+f3bf3acbd087   smarter        "bash -c 'watchmedo …"   About a minute ago   Up About a minute   9357/tcp                 smarter-beat
 7db0374bb2dc   mysql:latest   "docker-entrypoint.s…"   About a minute ago   Up About a minute   3306/tcp, 33060/tcp      smarter-mysql
 33c6673de559   redis:latest   "docker-entrypoint.s…"   About a minute ago   Up About a minute   6379/tcp                 smarter-redis
 ```
