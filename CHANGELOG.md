@@ -1,3 +1,10 @@
+## [0.2.1](https://github.com/smarter-sh/smarter-cli/compare/v0.2.0...v0.2.1) (2026-02-04)
+
+
+### Bug Fixes
+
+* set localhost port to 9357 ([a480b5d](https://github.com/smarter-sh/smarter-cli/commit/a480b5d4384a3591f7bd9a3c12cd254a6b11cbda))
+
 # Change Log
 
 All notable changes to this project will be documented in this file.
