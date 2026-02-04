@@ -4,6 +4,6 @@
     dh $@
 
 override_dh_install:
-    wget -O smarter https://github.com/smarter-sh/smarter-cli/releases/download/v0.1.2/smarter-ubuntu-latest-0.2.0
+    wget -O smarter https://github.com/smarter-sh/smarter-cli/releases/download/v0.2.1/smarter-ubuntu-latest-0.2.1
     chmod +x smarter
     dh_install smarter /usr/bin/

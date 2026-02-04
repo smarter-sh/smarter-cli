@@ -2,12 +2,12 @@ VERIFICATION
 Verification is intended to assist the Chocolatey moderators and community in verifying that this package's contents are trustworthy.
 
 The binary executable in this package is from the official distribution point:
-1. https://github.com/smarter-sh/smarter-cli/releases/download/v0.1.2/smarter-windows-0.2.0
+1. https://github.com/smarter-sh/smarter-cli/releases/download/v0.2.1/smarter-windows-0.2.1
 2. Download this file
 4. This can be compared to the binary included in this package using a checksum calculator.
 
 Alternatively, the binary executable can be built from source:
 1. Go to https://github.com/smarter-sh/smarter-cli/
-2. Clone the repository and checkout to the tag for version 0.2.0
+2. Clone the repository and checkout to the tag for version 0.2.1
 3. Follow the build instructions in the README.md
 4. The resulting 'smarter.exe' should be identical to the one included in this package.
