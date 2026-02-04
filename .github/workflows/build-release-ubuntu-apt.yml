@@ -25,6 +25,12 @@ jobs:
       run: |
         sudo apt-get install -y devscripts dput
 
+    - name: Create original source tarball
+      shell: bash
+      run: |
+        VERSION=$(cat VERSION)
+        tar czf ../smarter-cli_${VERSION}.orig.tar.gz --exclude=debian --exclude=.git .
+
     - name: Build source package
       shell: bash
       run: |
