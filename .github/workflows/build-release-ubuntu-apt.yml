@@ -29,7 +29,9 @@ jobs:
       shell: bash
       run: |
         VERSION=$(cat VERSION)
-        tar czf ../smarter-cli_${VERSION}.orig.tar.gz --exclude=debian --exclude=.git .
+        cd ..
+        tar czf smarter-cli_${VERSION}.orig.tar.gz --exclude=debian --exclude=.git smarter-cli
+        cd smarter-cli
 
     - name: Build source package
       shell: bash
