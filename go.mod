@@ -5,7 +5,7 @@ go 1.21.6
 require (
 	github.com/ghodss/yaml v1.0.0
 	github.com/joho/godotenv v1.5.1
-	github.com/spf13/cobra v1.10.1
+	github.com/spf13/cobra v1.10.2
 	github.com/spf13/viper v1.20.1
 )
 
