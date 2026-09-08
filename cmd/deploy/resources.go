@@ -32,9 +32,9 @@ func init() {
 	// v0.14: Prompt replaces ChatBot as the deployable unit. Pulled from the
 	// shared registry so its Use/APIKind/display text stays in lockstep with
 	// its describe/get/manifest counterparts.
-	prompt, ok := cmd.ByUse(cmd.V14ResourceKinds, "prompt")
+	prompt, ok := cmd.ByUse(cmd.ResourceKinds, "prompt")
 	if !ok {
-		log.Fatal("deploy: \"prompt\" not found in cmd.V14ResourceKinds")
+		log.Fatal("deploy: \"prompt\" not found in cmd.ResourceKinds")
 	}
 	cmd.RegisterResourceCmd(deployCmd, prompt.DeploySpec(), APIRequest, cmd.AdaptOutput(ConsoleOutput), ErrorOutput)
 }

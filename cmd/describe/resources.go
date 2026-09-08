@@ -59,8 +59,8 @@ This will retrieve a manifest for User <username> and write it to my-plugin.yaml
 func init() {
 	cmd.RegisterResources(describeCmd, legacySpecs, APIRequest, ConsoleOutput, ErrorOutput)
 
-	specs := make([]cmd.ResourceSpec, len(cmd.V14ResourceKinds))
-	for i, k := range cmd.V14ResourceKinds {
+	specs := make([]cmd.ResourceSpec, len(cmd.ResourceKinds))
+	for i, k := range cmd.ResourceKinds {
 		specs[i] = k.DescribeSpec()
 	}
 	cmd.RegisterResources(describeCmd, specs, APIRequest, ConsoleOutput, ErrorOutput)
