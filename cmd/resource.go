@@ -179,3 +179,19 @@ func RegisterResourceCmd(parent *cobra.Command, spec ResourceSpec, request Reque
 	parent.AddCommand(leaf)
 	return leaf
 }
+
+// RegisterResources registers every spec in specs onto parent via
+// RegisterResourceCmd, sharing the same request/output/onErr wiring. Verb
+// packages call this once from init() instead of hand-rolling the loop.
+func RegisterResources(parent *cobra.Command, specs []ResourceSpec, request RequestFunc, output OutputFunc, onErr ErrFunc) {
+	for _, spec := range specs {
+		RegisterResourceCmd(parent, spec, request, output, onErr)
+	}
+}
+
+// AdaptOutput wraps a no-argument success callback (e.g. a verb's
+// ConsoleOutput() that just prints "deployed."/"deleted.") as an OutputFunc,
+// for verbs whose ConsoleOutput doesn't take the response body.
+func AdaptOutput(f func()) OutputFunc {
+	return func(_ []byte) { f() }
+}
