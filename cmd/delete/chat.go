@@ -1,62 +1,38 @@
 /*
-Copyright © 2024 Lawrence McDaniel <lawrence@querium.com>
+Copyright © 2024 Lawrence McDaniel <lpm0073@gmail.com>
+Website: https://lawrencemcdaniel.com>
 */
 package delete
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
-	"sigs.k8s.io/yaml"
 )
 
-// chatCmd represents the chat command
 var chatCmd = &cobra.Command{
-	Use:   "chat",
+	Use:   "chat <session_key>",
 	Short: "Delete a chat history",
-	Long: `Delete a chat history:
+	Long: `Deletes a chat history:
 
-smarter delete chat -id
+smarter delete chat <session_key>
 
 The Smarter API will permanently delete the chat history with the specified identifier.`,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		jsonFlagValue := viper.GetBool("json")
-		yamlFlagValue := viper.GetBool("yaml")
+		kwargs := map[string]string{
+			"session_key": args[0],
+		}
 
-		bodyJson, err := GetAPI("chat")
+		// this request goes to /api/v1/cli/delete/chat/
+		_, err := APIRequest("chat", kwargs)
 		if err != nil {
-			panic(err)
+			ErrorOutput(err)
 		} else {
-			switch {
-			case jsonFlagValue:
-				fmt.Println(string(bodyJson))
-			case yamlFlagValue:
-				bodyYaml, err := yaml.JSONToYAML(bodyJson)
-				if err != nil {
-					panic(err)
-				} else {
-					fmt.Println(string(bodyYaml))
-				}
-			default:
-				fmt.Println(string(bodyJson))
-			}
+			ConsoleOutput()
 		}
 
 	},
 }
 
 func init() {
-	DeleteCmd.AddCommand(chatCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// chatCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// chatCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	deleteCmd.AddCommand(chatCmd)
 }

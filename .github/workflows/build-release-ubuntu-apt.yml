@@ -1,0 +1,57 @@
+###############################################################################
+# Build and release to Ubuntu APT repository
+# https://launchpad.net/~lpm0073/+archive/ubuntu/smarter-cli
+###############################################################################
+name: Build-Release Ubuntu APT
+
+on:
+  workflow_dispatch:
+
+env:
+    container_name: smarter-cli
+    account: lpm0073
+    ppa: smarter-cli
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v5
+
+    - name: Install packaging tools
+      shell: bash
+      run: |
+        sudo apt-get install -y devscripts dput
+
+    - name: Create original source tarball
+      shell: bash
+      run: |
+        VERSION=$(cat VERSION)
+        cd ..
+        tar czf smarter-cli_${VERSION}.orig.tar.gz --exclude=debian --exclude=.git smarter-cli
+        cd smarter-cli
+
+    - name: Build source package
+      shell: bash
+      run: |
+        debuild -S -sa
+
+    - name: Install Launchpad CLI client
+      shell: bash
+      run: |
+        sudo snap install launchpad
+
+    - name: Get version
+      id: vars
+      shell: pwsh
+      run: echo "::set-output name=version::$(Get-Content -Path VERSION)"
+
+    - name: Publish to PPA
+      shell: bash
+      run: |
+        echo $LAUNCHPAD_TOKEN | launchpad login :robot:
+            dput ppa:${{ env.account }}/${{ env.ppa }} smarter_${{ env.steps.vars.outputs.version }}_source.changes
+      env:
+        LAUNCHPAD_TOKEN: ${{ secrets.LAUNCHPAD_TOKEN }}

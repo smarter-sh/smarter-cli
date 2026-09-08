@@ -1,58 +1,60 @@
 /*
-Copyright © 2024 Lawrence McDaniel <lawrence@querium.com>
+Copyright © 2024 Lawrence McDaniel <lpm0073@gmail.com>
+Website: https://lawrencemcdaniel.com>
 */
 package manifest
 
 import (
 	"encoding/json"
+	"log"
 
-	"github.com/QueriumCorp/smarter-cli/cmd"
+	"github.com/smarter-sh/smarter-cli/cmd"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
-func getFilePath(slug string) (string, error) {
+func APIRequest(kind string, kwargs map[string]string) ([]byte, error) {
 
-	bodyBytes, err := cmd.GetAPIResponse(slug)
-	if err != nil {
-		return "", err
-	} else {
-		var body map[string]interface{}
-		err = json.Unmarshal(bodyBytes, &body)
-		if err != nil {
-			return "", err
-		}
-
-		if filepath, ok := body["filepath"].(string); ok {
-			return filepath, nil
-		} else {
-			panic("filepath not found or not a string")
-		}
-	}
+	// en route to /api/v1/cli/manifest/<str:kind>/
+	return cmd.APIRequest("example_manifest/"+kind+"/", kwargs)
 
 }
+func ConsoleOutput(bodyJson []byte) {
+	jsonFlagValue := viper.GetBool("json")
+	yamlFlagValue := viper.GetBool("yaml")
+	if !jsonFlagValue && !yamlFlagValue {
+		viper.Set("yaml", true)
+	}
+	var data map[string]interface{}
+	err := json.Unmarshal(bodyJson, &data)
+	if err != nil {
+		log.Fatalf("Error occurred during unmarshalling. %v", err)
+	}
 
-// manifestCmd represents the manifest command
+	value, ok := data["data"]
+	if ok {
+		bodyJson, err = json.Marshal(value)
+		if err != nil {
+			log.Fatalf("Error occurred during marshalling. %v", err)
+		}
+	}
+	cmd.ConsoleOutput(bodyJson)
+}
+func ErrorOutput(err error) {
+	cmd.ErrorOutput(err)
+}
+
 var manifestCmd = &cobra.Command{
-	Use:   "manifest",
+	Use:   "manifest <kind> [flags]",
 	Short: "Generate an example manifest for the resource kind",
 	Long: `Generate an example manifest for the resource kind. For example:
 
-	smarter manifest plugin > my-plugin.yaml
+	smarter manifest <kind> [flags] > my-plugin.yaml
 
-This will generate an example manifest for a plugin resource and write it to my-plugin.yaml in the current working directory.`,
+This will generate an example manifest for the specified kind of resource and write it to my-plugin.yaml in the current working directory.`,
 }
 
 func init() {
 	cmd.RootCmd.AddCommand(manifestCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// manifestCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// manifestCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

@@ -1,23 +1,25 @@
 /*
-Copyright © 2024 Lawrence McDaniel <lawrence@querium.com>
+Copyright © 2024 Lawrence McDaniel <lpm0073@gmail.com>
+Website: https://lawrencemcdaniel.com>
 */
 package cmd
 
 import (
 	"fmt"
+	"io"
+	"log"
+	"os"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"sigs.k8s.io/yaml"
 )
 
-// applyCmd represents the apply command
 var applyCmd = &cobra.Command{
-	Use:   "apply",
+	Use:   "apply -f <manifest.yaml> --dry-run",
 	Short: "Apply a Smarter manifest",
 	Long: `Apply a Smarter manifest:
 
-smarter apply -f <manifest.yaml> --json --yaml --dry-run
+smarter apply -f <manifest.yaml> --dry-run
 
 The Smarter API will apply the manifest to the Smarter account,
 migrating the resource to the new state. The --json and --yaml
@@ -25,26 +27,23 @@ flags will output the manifest in the specified format. The
 --dry-run flag will simulate the apply without making any changes.`,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		jsonFlagValue := viper.GetBool("json")
-		yamlFlagValue := viper.GetBool("yaml")
-
-		bodyJson, err := GetAPIResponse("apply")
+		filename := viper.GetString("filename")
+		file, err := os.Open(filename)
 		if err != nil {
-			panic(err)
+			log.Fatalf("Failed opening file: %s", err)
+		}
+		defer file.Close()
+		byteValue, _ := io.ReadAll(file)
+		fileContents := string(byteValue)
+
+		kwargs := map[string]string{}
+
+		// this request goes to /api/v1/cli/apply/
+		_, err = APIRequest("apply", kwargs, fileContents)
+		if err != nil {
+			ErrorOutput(err)
 		} else {
-			switch {
-			case jsonFlagValue:
-				fmt.Println(string(bodyJson))
-			case yamlFlagValue:
-				bodyYaml, err := yaml.JSONToYAML(bodyJson)
-				if err != nil {
-					panic(err)
-				} else {
-					fmt.Println(string(bodyYaml))
-				}
-			default:
-				fmt.Println(string(bodyJson))
-			}
+			fmt.Println("manifest applied.")
 		}
 
 	},
@@ -62,4 +61,8 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// applyCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	applyCmd.Flags().StringP("filename", "f", "", "Path and filename of the manifest to apply")
+	if err := viper.BindPFlag("filename", applyCmd.Flags().Lookup("filename")); err != nil {
+		log.Fatalf("Error binding flag: %v", err)
+	}
 }

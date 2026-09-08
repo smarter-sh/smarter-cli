@@ -1,0 +1,12 @@
+[
+    {
+        "name": "Test /api/v1/cli/manifest/plugin/",
+        "inputURL": "manifest/plugin/",
+        "inputParams": {}
+    },
+    {
+        "name": "Test /api/v1/cli/get/plugins/",
+        "inputURL": "get/plugins/",
+        "inputParams": {"n": "10"}
+    }
+]

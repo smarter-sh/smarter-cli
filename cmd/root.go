@@ -1,5 +1,7 @@
 /*
-Copyright © 2024 Lawrence McDaniel lawrence@querium.com
+Copyright © 2024 Lawrence McDaniel Copyright © 2024 Lawrence McDaniel <lpm0073@gmail.com>
+Website: https://lawrencemcdaniel.com
+Website: https://lawrencemcdaniel.com
 */
 package cmd
 
@@ -18,17 +20,14 @@ import (
 var cfgFile string
 var Version string
 
-// RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
 	Use:   "smarter",
 	Short: "A command-line interface for working with Smarter resources",
 	Long: `A command-line interface for working with Smarter resources.
 Using the smarter cli, you can create Smarter plugins, add these to a ChatBot,
 and deploy the ChatBot to a custom URL. You can interact with the ChatBot
-on the command line, view chat log data, and manage your Smarter account.`,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	// Run: func(cmd *cobra.Command, args []string) { },
+on the command line, view chat log data, and manage your Smarter account.
+Support: https://smarter.sh and support@smarter.sh.`,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -46,27 +45,31 @@ var validEnvironments = []string{"local", "alpha", "beta", "next", "prod"}
 
 func init() {
 	cobra.OnInitialize(initConfig)
-	initConfig()
 
-	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.smarter.yaml)")
+	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.smarter/config.yaml)")
 
 	// Add the --environment flag
-	// Set up a global --environment flag and bind this to viper.
 	RootCmd.PersistentFlags().StringVar(&environment, "environment", "", "environment to use: local, alpha, beta, next, prod. Default is prod")
 	if err := viper.BindPFlag("environment", RootCmd.PersistentFlags().Lookup("environment")); err != nil {
 		log.Fatalf("Error binding flag: %v", err)
 	}
 
-	// Add the --json toggle
-	RootCmd.PersistentFlags().BoolP("json", "j", false, "output in JSON format")
-	if err := viper.BindPFlag("json", RootCmd.PersistentFlags().Lookup("json")); err != nil {
+	// Add the --api_key flag
+	RootCmd.PersistentFlags().String("api_key", "", "Smarter API key to use")
+	if err := viper.BindPFlag("api_key", RootCmd.PersistentFlags().Lookup("api_key")); err != nil {
+		log.Fatalf("Error binding flag: %v", err)
+	}
+
+	// Add the --verbose toggle
+	RootCmd.PersistentFlags().BoolP("verbose", "v", false, "verbose output")
+	if err := viper.BindPFlag("verbose", RootCmd.PersistentFlags().Lookup("verbose")); err != nil {
 		log.Fatalf("Error binding toggle: %v", err)
 	}
 
-	// Add the --yaml toggle
-	RootCmd.PersistentFlags().BoolP("yaml", "y", false, "output in YAML format")
-	if err := viper.BindPFlag("yaml", RootCmd.PersistentFlags().Lookup("yaml")); err != nil {
-		log.Fatalf("Error binding toggle: %v", err)
+	// Add the --output_format flag
+	RootCmd.PersistentFlags().StringP("output_format", "o", "json", "output format: json, yaml")
+	if err := viper.BindPFlag("output_format", RootCmd.PersistentFlags().Lookup("output_format")); err != nil {
+		log.Fatalf("Error binding flag: %v", err)
 	}
 
 	// Bind the flag value validators
@@ -79,29 +82,25 @@ func init() {
 		}
 		return nil
 	}
-
 }
 
 func validateOutputToggles() error {
-	jsonOutput := viper.GetBool("json")
-	yamlOutput := viper.GetBool("yaml")
-	output_format := viper.GetString("config.output_format")
+	outputFormat := viper.GetString("output_format")
 
-	if jsonOutput && yamlOutput {
-		return errors.New("cannot specify both --json and --yaml")
-	}
-	if !jsonOutput && !yamlOutput {
-		// check the config file
-		if output_format == "json" {
-			viper.Set("json", true)
-		} else {
-			if output_format != "yaml" {
-				viper.Set("yaml", true)
-			}
+	// table is used internally for get() commands
+	validFormats := []string{"json", "yaml", "tabular"}
+	isValidFormat := false
+	for _, format := range validFormats {
+		if outputFormat == format {
+			isValidFormat = true
+			break
 		}
 	}
-	return nil
 
+	if !isValidFormat {
+		log.Fatalf("Invalid output format: %v. Valid formats are 'json' or 'yaml'", outputFormat)
+	}
+	return nil
 }
 
 func validateEnvironmentFlag() error {
@@ -118,7 +117,6 @@ func validateEnvironmentFlag() error {
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
-
 	home, err := os.UserHomeDir()
 	cobra.CheckErr(err)
 	configDir := filepath.Join(home, ".smarter")
@@ -132,6 +130,7 @@ func initConfig() {
 		viper.AddConfigPath(configDir)
 		viper.SetConfigType("yaml")
 		viper.SetConfigName("config")
+		viper.SetEnvPrefix("config")
 	}
 
 	viper.AutomaticEnv() // read in environment variables that match
@@ -141,12 +140,17 @@ func initConfig() {
 	if err := viper.ReadInConfig(); err != nil {
 		defaultConfig := map[string]interface{}{
 			"account_number": "",
-			"username":       "",
-			"api_key":        "",
-			"environment":    "",
-			"output_format":  "",
+			"environment":    "prod",
+			"output_format":  "yaml",
 		}
 		viper.SetDefault("config", defaultConfig)
+		envConfig := map[string]interface{}{
+			"api_key": "",
+		}
+		viper.SetDefault("local", envConfig)
+		viper.SetDefault("alpha", envConfig)
+		viper.SetDefault("beta", envConfig)
+		viper.SetDefault("prod", envConfig)
 
 		if _, err := os.Stat(configDir); os.IsNotExist(err) {
 			if err := os.Mkdir(configDir, 0755); err != nil {
@@ -161,6 +165,37 @@ func initConfig() {
 		err := viper.SafeWriteConfigAs(configFile)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "Failed to write default config file:", err)
+		}
+	} else {
+		if viper.GetBool("verbose") {
+			log.Printf("Using config file: %s", viper.ConfigFileUsed())
+		}
+	}
+
+	// Set the environment from the config file if not set by flag
+	if viper.GetString("environment") == "" {
+		environment = viper.GetString("config.environment")
+		if environment == "" {
+			environment = "prod"
+			log.Printf("No environment set. Defaulting to: %s", environment)
+		}
+		viper.Set("environment", environment)
+	}
+
+	if viper.GetBool("verbose") {
+		log.Printf("Environment set to: %s", environment)
+	}
+
+	// If the api_key flag was not passed on the command line then get the it from the appropriate environment section
+	if viper.GetString("api_key") == "" {
+		api_key := viper.GetString(fmt.Sprintf("%s.api_key", environment))
+		if api_key == "" {
+			log.Fatalf("No api_key found for environment: %s", environment)
+		} else {
+			viper.Set("api_key", api_key)
+			if viper.GetBool("verbose") {
+				log.Printf("API key set to: %s****", api_key[len(api_key)-4:])
+			}
 		}
 	}
 }

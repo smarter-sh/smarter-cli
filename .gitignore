@@ -1,3 +1,9 @@
+# build artifacts
+smarter
+
+# test data
+test_data
+
 # npm
 node_modules
 package-lock.json

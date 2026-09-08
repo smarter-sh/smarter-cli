@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>smarter</id>
+    <version>0.2.0</version>
+    <title>Smarter CLI</title>
+    <authors>Lawrence McDaniel</authors>
+    <owners>Querium Corp.</owners>
+    <summary>Smarter Command-line Interface</summary>
+    <description>The Smarter command-line interface...</description>
+    <projectUrl>https://smarter.sh/</projectUrl>
+    <iconUrl>https://smarter.sh/wp-content/uploads/2024/04/Smarter_crop.png</iconUrl>
+    <licenseUrl>https://github.com/smarter-sh/smarter-cli/blob/main/LICENSE</licenseUrl>
+    <packageSourceUrl>https://github.com/smarter-sh/smarter-cli/tree/main/chocolatey/smarter</packageSourceUrl>
+    <docsUrl>https://smarter.sh/</docsUrl>
+    <mailingListUrl>https://www.querium.com/contact/</mailingListUrl>
+    <bugTrackerUrl>https://github.com/smarter-sh/smarter-cli/issues/</bugTrackerUrl>
+    <projectSourceUrl>https://github.com/smarter-sh/smarter-cli/</projectSourceUrl>
+    <releaseNotes>https://github.com/smarter-sh/smarter-cli/blob/main/CHANGELOG.md/</releaseNotes>
+    <tags>go golang smarter cli tool</tags>
+  </metadata>
+  <files>
+    <file src="build\windows\smarter.exe" target="bin" />
+    <file src="..\..\LICENSE" />
+    <file src="..\..\VERIFICATION.txt" />
+  </files>
+</package>

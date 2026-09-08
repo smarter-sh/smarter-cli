@@ -1,0 +1,64 @@
+name: Build-Release Chocolatey
+
+on:
+  workflow_dispatch:
+
+env:
+  app_name: smarter
+
+jobs:
+  build:
+    name: Build
+    runs-on: windows-latest
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v5
+
+    - name: Set up Go
+      uses: actions/setup-go@v6
+      with:
+        go-version: '1.22'
+
+    - name: Cache Go dependencies
+      uses: actions/cache@v4
+      with:
+        path: ~\go\pkg\mod
+        key: ${{ runner.os }}-go-${{ hashFiles('**\go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-
+
+    - name: Go Get dependencies
+      shell: pwsh
+      run: go get -v -t .\...
+
+    - name: Echo Build Path
+      shell: pwsh
+      run: |
+        echo ${{ github.workspace }}\chocolatey\smarter\build\windows\smarter.exe
+
+    - name: Go Build
+      shell: pwsh
+      run: |
+        go build -v -o ${{ github.workspace }}\chocolatey\smarter\build\windows\smarter.exe
+
+    - name: Echo Built Path
+      shell: pwsh
+      run: |
+        Get-ChildItem -Force -Recurse ${{ github.workspace }}\chocolatey\smarter\build\windows\ | Select-Object FullName, Length
+
+    - name: Pack Chocolatey package
+      run: |
+        choco pack .\chocolatey\smarter\smarter.nuspec
+      shell: pwsh
+
+    - name: Get version
+      id: vars
+      shell: pwsh
+      run: echo "::set-output name=version::$(Get-Content -Path VERSION)"
+
+    - name: Push Chocolatey package
+      shell: pwsh
+      run: |
+        choco push ${{ env.app_name }}.${{ steps.vars.outputs.version }}.nupkg --source https://push.chocolatey.org/ --api-key $env:CHOCO_API_KEY
+      env:
+        CHOCO_API_KEY: ${{ secrets.CHOCO_API_KEY }}

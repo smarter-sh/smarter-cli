@@ -11,8 +11,19 @@ jobs:
       issues: write
       pull-requests: write
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24.10"
+
+      - name: Install npm dependencies
+        run: npm install
+
       - name: "Auto-assign issue"
-        uses: pozil/auto-assign-issue@v1
+        uses: pozil/auto-assign-issue@v2
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           assignees: lpm0073

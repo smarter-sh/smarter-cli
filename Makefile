@@ -8,13 +8,36 @@ else
     $(shell cp ./doc/example-dot-env .env)
 endif
 
-.PHONY: analyze init pre-commit-init pre-commit-run help
+.PHONY: analyze init pre-commit-init pre-commit-run help choco-pack choco-push
 
 # Default target executed when no arguments are given to make.
 all: help
 
+######################
+# Go
+######################
+lint:
+	golangci-lint run
+
+test:
+	go test -v ./...
+
+run:
+	make build
+	go run main.go get chatbots --name hr
+
+build:
+	go get -v -t ./...
+	go build -o smarter main.go
+
 analyze:
 	cloc . --exclude-ext=svg,json,zip --fullpath --not-match-d=smarter/smarter/static/assets/ --vcs=git
+
+choco-pack:
+	choco pack
+
+choco-push: choco-pack
+	choco push smarter.0.2.1.nupkg --source https://push.chocolatey.org/
 
 # initialize local development environment.
 # takes around 5 minutes to complete
@@ -26,43 +49,19 @@ init:
 	npm install
 
 
+python-init:
+	python3 -m venv venv
+	source venv/bin/activate
+
 pre-commit-init:
 	pre-commit install
 	pre-commit autoupdate
-	pre-commit run --all-files
 
 pre-commit-run:
 	pre-commit run --all-files
 
-lint:
-	golangci-lint run
-
-# ---------------------------------------------------------
-# Docker
-# ---------------------------------------------------------
-docker-check:
-	@docker ps >/dev/null 2>&1 || { echo >&2 "This project requires Docker but it's not running.  Aborting."; exit 1; }
-
-docker-init:
-	make docker-check && \
-	echo "Building Docker images..." && \
-	docker-compose up -d && \
-	echo "Docker and Smarter CLI are initialized." && \
-	docker ps
-
-docker-build:
-	make docker-check && \
-	docker-compose build
-
-docker-run:
-	make docker-check && \
-	docker-compose up
-
-docker-prune:
-	make docker-check && \
-	docker system prune -a && \
-	docker volume prune -f && \
-	docker builder prune -a -f
+release:
+	git commit -m "fix: force a new release" --allow-empty && git push
 
 ######################
 # HELP
@@ -71,11 +70,14 @@ docker-prune:
 help:
 	@echo '===================================================================='
 	@echo 'analyze                - Analyze the project with cloc'
-	@echo 'docker-init            - starts the smarter cli container'
-	@echo 'docker-build           - Builds a smarter cli Docker container'
-	@echo 'docker-run             - starts a smarter cli shell session in the Docker container'
-	@echo 'docker-prune           - utliity to clean up Docker images, volumes, and builders'
 	@echo 'init                   - Initialize local and Docker environments'
+	@echo 'lint            		  - run all code linters'
+	@echo 'test                   - run all tests'
+	@echo 'run                    - run the main.go file'
+	@echo 'build                  - build the smarter cli'
+	@echo 'choco-pack             - package the smarter cli for chocolatey'
+	@echo 'choco-push             - push the smarter cli package to chocolatey'
 	@echo 'pre-commit-init        - install and configure pre-commit'
 	@echo 'pre-commit-run         - runs all pre-commit hooks on all files'
+	@echo 'release				  - force a new release'
 	@echo '===================================================================='

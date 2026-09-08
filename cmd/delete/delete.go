@@ -1,41 +1,40 @@
 /*
-Copyright © 2024 Lawrence McDaniel <lawrence@querium.com>
+Copyright © 2024 Lawrence McDaniel <lpm0073@gmail.com>
+Website: https://lawrencemcdaniel.com>
 */
 package delete
 
 import (
-	"github.com/QueriumCorp/smarter-cli/cmd"
+	"fmt"
+
+	"github.com/smarter-sh/smarter-cli/cmd"
 
 	"github.com/spf13/cobra"
 )
 
-func GetAPI(slug string) ([]byte, error) {
+func APIRequest(kind string, kwargs map[string]string) ([]byte, error) {
 
-	return cmd.GetAPIResponse(slug)
+	// en route to /api/v1/cli/delete/<str:kind>
+	return cmd.APIRequest("delete/"+kind+"/", kwargs)
 
 }
+func ConsoleOutput() {
+	fmt.Println("deleted.")
+}
+func ErrorOutput(err error) {
+	cmd.ErrorOutput(err)
+}
 
-// DeleteCmd represents the delete command
-var DeleteCmd = &cobra.Command{
-	Use:   "delete",
+var deleteCmd = &cobra.Command{
+	Use:   "delete <kind> <name>",
 	Short: "Permanently delete a Smarter resource",
 	Long: `Permanently delete a Smarter resource:
 
-smarter delete <kind> --dry-run
+smarter delete <kind> <name> --dry-run
 
 The Smarter API will permanently delete the resource.`,
 }
 
 func init() {
-	cmd.RootCmd.AddCommand(DeleteCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// DeleteCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// DeleteCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	cmd.RootCmd.AddCommand(deleteCmd)
 }

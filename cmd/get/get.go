@@ -1,42 +1,73 @@
 /*
-Copyright © 2024 Lawrence McDaniel <lawrence@querium.com>
+Copyright © 2024 Lawrence McDaniel <lpm0073@gmail.com>
+Website: https://lawrencemcdaniel.com>
 */
 package get
 
 import (
-	"github.com/QueriumCorp/smarter-cli/cmd"
+	"log"
+	"strconv"
+
+	"github.com/smarter-sh/smarter-cli/cmd"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
-func GetAPI(slug string) ([]byte, error) {
+func APIRequest(kind string, kwargs map[string]string) ([]byte, error) {
 
-	return cmd.GetAPIResponse(slug)
+	i := viper.GetInt("i")
+	asc := viper.GetBool("asc")
+	desc := viper.GetBool("desc")
+	common_kwargs := map[string]string{
+		"i":    strconv.Itoa(i),
+		"asc":  strconv.FormatBool(asc),
+		"desc": strconv.FormatBool(desc),
+	}
+	for key, value := range common_kwargs {
+		kwargs[key] = value
+	}
+
+	// en route to /api/v1/cli/get/<str:kind>/
+	return cmd.APIRequest("get/"+kind+"/", kwargs)
 
 }
 
-// GetCmd represents the get command
-var GetCmd = &cobra.Command{
-	Use:   "get",
-	Short: "Generate a list of Smarter resources or a manifest for a specific resource",
-	Long: `Generate a list of Smarter resources or a manifest for a specific resource:
+func ConsoleOutput(bodyJson []byte) {
+	if !viper.IsSet("output_format") {
+		viper.Set("output_format", "tabular")
+	}
+	cmd.ConsoleOutput(bodyJson)
+}
 
-smarter get <kind> --name --json --yaml --csv --xml -n 10 --asc --desc
+func ErrorOutput(err error) {
+	cmd.ErrorOutput(err)
+}
+
+var getCmd = &cobra.Command{
+	Use:   "get",
+	Short: "Generate a list of Smarter resources",
+	Long: `Generate a list of Smarter resources:
+
+smarter get [kind] [flags]
 
 The Smarter API will return a list of resources in the specified format,
 or a manifest for a specific resource.`,
 }
 
 func init() {
-	cmd.RootCmd.AddCommand(GetCmd)
+	cmd.RootCmd.AddCommand(getCmd)
 
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// GetCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// GetCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	getCmd.PersistentFlags().Int("i", 10, "Number of resources to retrieve")
+	if err := viper.BindPFlag("i", getCmd.PersistentFlags().Lookup("i")); err != nil {
+		log.Fatalf("Error binding flag: %v", err)
+	}
+	getCmd.PersistentFlags().Bool("asc", false, "Sort results in ascending order")
+	if err := viper.BindPFlag("asc", getCmd.PersistentFlags().Lookup("asc")); err != nil {
+		log.Fatalf("Error binding flag: %v", err)
+	}
+	getCmd.PersistentFlags().Bool("desc", false, "Sort results in descending order")
+	if err := viper.BindPFlag("desc", getCmd.PersistentFlags().Lookup("desc")); err != nil {
+		log.Fatalf("Error binding flag: %v", err)
+	}
 }
