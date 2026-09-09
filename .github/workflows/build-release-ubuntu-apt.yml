@@ -25,6 +25,14 @@ jobs:
       run: |
         sudo apt-get install -y devscripts dput
 
+    - name: Update debian changelog
+      shell: bash
+      run: |
+        VERSION=$(cat VERSION)
+        export DEBEMAIL="lawrence@querium.com"
+        export DEBFULLNAME="Lawrence McDaniel"
+        dch --newversion "${VERSION}-1" --distribution unstable --force-distribution "Release ${VERSION}"
+
     - name: Create original source tarball
       shell: bash
       run: |
