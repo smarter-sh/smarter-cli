@@ -23,7 +23,8 @@ jobs:
     - name: Install packaging tools
       shell: bash
       run: |
-        sudo apt-get install -y devscripts dput
+        sudo apt-get update
+        sudo apt-get install -y devscripts dput build-essential debhelper
 
     - name: Update debian changelog
       shell: bash

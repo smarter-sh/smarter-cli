@@ -2,7 +2,7 @@ Source: smarter-cli
 Section: utils
 Priority: extra
 Maintainer: Lawrence McDaniel <lawrence@querium.com>
-Build-Depends: debhelper (= 12)
+Build-Depends: debhelper (>= 12)
 Standards-Version: 3.9.8
 Homepage: https://smarter.sh/
 Vcs-Git: https://github.com/smarter-sh/smarter-cli
