@@ -60,6 +60,7 @@ sudo mv ./smarter-* /usr/local/bin/smarter
 
 ```bash
 brew tap smarter-sh/tap https://github.com/smarter-sh/homebrew-tap
+brew trust smarter-sh/tap
 brew install smarter
 ```
 
