@@ -55,6 +55,7 @@ jobs:
         tar czf smarter-cli_${VERSION}.orig.tar.gz --exclude=debian --exclude=.git smarter-cli
         cd smarter-cli
 
+    # see https://launchpad.net/~lpm0073
     - name: Build source package
       shell: bash
       run: |
@@ -68,4 +69,4 @@ jobs:
     - name: Publish to PPA
       shell: bash
       run: |
-        dput ppa:${{ env.account }}/${{ env.ppa }} smarter-cli_${{ steps.vars.outputs.version }}-1_source.changes
+        dput ppa:${{ env.account }}/${{ env.ppa }} ../smarter-cli_${{ steps.vars.outputs.version }}-1_source.changes
