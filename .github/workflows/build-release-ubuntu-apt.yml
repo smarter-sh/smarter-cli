@@ -27,11 +27,23 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y devscripts dput build-essential debhelper
 
+    - name: Import GPG key
+      shell: bash
+      run: |
+        echo "$GPG_PRIVATE_KEY" | gpg --batch --import
+        mkdir -p ~/.gnupg
+        echo "allow-loopback-pinentry" >> ~/.gnupg/gpg-agent.conf
+        gpgconf --kill gpg-agent
+        echo "priming gpg-agent passphrase cache" | gpg --batch --yes --pinentry-mode loopback --passphrase "$GPG_PASSPHRASE" --local-user lpm0073@gmail.com --clearsign > /dev/null
+      env:
+        GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+        GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+
     - name: Update debian changelog
       shell: bash
       run: |
         VERSION=$(cat VERSION)
-        export DEBEMAIL="lawrence@querium.com"
+        export DEBEMAIL="lpm0073@gmail.com"
         export DEBFULLNAME="Lawrence McDaniel"
         dch --newversion "${VERSION}-1" --distribution unstable --force-distribution "Release ${VERSION}"
 
@@ -48,11 +60,6 @@ jobs:
       run: |
         debuild -S -sa
 
-    - name: Install Launchpad CLI client
-      shell: bash
-      run: |
-        sudo snap install launchpad
-
     - name: Get version
       id: vars
       shell: pwsh
@@ -61,7 +68,4 @@ jobs:
     - name: Publish to PPA
       shell: bash
       run: |
-        echo $LAUNCHPAD_TOKEN | launchpad login :robot:
-            dput ppa:${{ env.account }}/${{ env.ppa }} smarter_${{ env.steps.vars.outputs.version }}_source.changes
-      env:
-        LAUNCHPAD_TOKEN: ${{ secrets.LAUNCHPAD_TOKEN }}
+        dput ppa:${{ env.account }}/${{ env.ppa }} smarter-cli_${{ steps.vars.outputs.version }}-1_source.changes

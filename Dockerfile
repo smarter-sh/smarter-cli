@@ -3,7 +3,7 @@
 ###############################################################################
 FROM golang:latest
 
-LABEL maintainer="Lawrence McDaniel <lawrence@querium.com>"
+LABEL maintainer="Lawrence McDaniel <lpm0073@gmail.com>"
 
 # Create a non-root user to run the application
 RUN adduser --disabled-password --gecos '' smarter_user

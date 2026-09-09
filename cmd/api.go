@@ -38,7 +38,7 @@ func verifyApiKey() error {
 	if apiKey == "" {
 		errMsg := `api_key is missing. Please set the API key using the command:
 smarter configure --api_key <api_key string>
-Contact support@querium.com if you need help finding your API key`
+Contact lpm0073@gmail.com if you need help finding your API key`
 		return errors.New(errMsg)
 	}
 	return nil
