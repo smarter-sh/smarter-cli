@@ -1,9 +1,10 @@
 #!/usr/bin/make -f
 
 %:
-    dh $@
+	dh $@
 
 override_dh_install:
-    wget -O smarter https://github.com/smarter-sh/smarter-cli/releases/download/v0.2.1/smarter-ubuntu-latest-0.2.1
-    chmod +x smarter
-    dh_install smarter /usr/bin/
+	VERSION=$$(cat $(CURDIR)/VERSION); \
+	wget -O smarter https://github.com/smarter-sh/smarter-cli/releases/download/v$$VERSION/smarter-ubuntu-latest-$$VERSION
+	chmod +x smarter
+	dh_install smarter /usr/bin/
