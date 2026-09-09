@@ -28,4 +28,5 @@ RUN chown smarter_user:smarter_user -R .
 WORKDIR /
 ENV PATH="/cli:${PATH}"
 USER smarter_user
-CMD ["/bin/sh", "-c", "while :; do sleep 10; done"]
+ENTRYPOINT ["/cli/smarter"]
+CMD ["--help"]

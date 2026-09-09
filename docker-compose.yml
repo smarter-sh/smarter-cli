@@ -10,6 +10,7 @@ services:
     user: smarter_user
     build: .
     image: smarter_cli
-    command: ["/bin/sh", "-c", "while :; do sleep 10; done"]
+    entrypoint: ["/bin/sh", "-c"]
+    command: ["while :; do sleep 10; done"]
     mem_limit: 500m
     cpus: "0.50"
