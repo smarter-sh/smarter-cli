@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
+
+# [0.3.0](https://github.com/smarter-sh/smarter-cli/compare/v0.2.1...v0.3.0) (2026-09-09)
+
+
+### Features
+
+* add full set of unit tests ([83feff3](https://github.com/smarter-sh/smarter-cli/commit/83feff3ac2e851ed79818db986d3229a0de086fc))
+* add missing resource kinds ([602c12d](https://github.com/smarter-sh/smarter-cli/commit/602c12d1ae9acf9ae0b583989cad0ec82656e284))
+* refactor to generalize resource treatment ([141c2fd](https://github.com/smarter-sh/smarter-cli/commit/141c2fd4e6996c617ad606cd3e26a6d670157dcf))
+
 ## [0.2.1](https://github.com/smarter-sh/smarter-cli/compare/v0.2.0...v0.2.1) (2026-02-04)
 
 
