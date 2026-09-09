@@ -53,9 +53,12 @@ Returns version information about this software.`,
 			combinedJson, err := json.Marshal(bodyJsonMap)
 			if err != nil {
 				ErrorOutput(err)
+				return
 			}
 
-			ConsoleOutput(combinedJson)
+			if err := ConsoleOutput(combinedJson); err != nil {
+				ErrorOutput(err)
+			}
 		}
 
 	},

@@ -25,8 +25,10 @@ including the status of all services and resources by region.`,
 		bodyJson, err := APIRequest("status", kwargs)
 		if err != nil {
 			ErrorOutput(err)
-		} else {
-			ConsoleOutput(bodyJson)
+			return
+		}
+		if err := ConsoleOutput(bodyJson); err != nil {
+			ErrorOutput(err)
 		}
 	},
 }

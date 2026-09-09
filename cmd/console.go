@@ -49,16 +49,15 @@ type Body struct {
 	Message string `json:"message"`
 }
 
-func TableOutput(bodyJson []byte) {
+func TableOutput(bodyJson []byte) error {
 	var body Body
 
 	if viper.GetBool("verbose") {
 		log.Printf("TableOutput()")
 	}
 
-	err := json.Unmarshal(bodyJson, &body)
-	if err != nil {
-		log.Fatalf("Error parsing JSON: %v", err)
+	if err := json.Unmarshal(bodyJson, &body); err != nil {
+		return fmt.Errorf("failed parsing JSON: %w", err)
 	}
 
 	w := new(tabwriter.Writer)
@@ -91,7 +90,7 @@ func TableOutput(bodyJson []byte) {
 			if title.Type == "DateTimeField" {
 				t, err := time.Parse(time.RFC3339, value.(string))
 				if err != nil {
-					log.Fatalf("Error parsing date: %v", err)
+					return fmt.Errorf("failed parsing date: %w", err)
 				}
 				values[i] = t.Format("2006-Jan-02 15:04")
 			} else {
@@ -102,58 +101,63 @@ func TableOutput(bodyJson []byte) {
 	}
 
 	w.Flush()
+	return nil
 }
 
-func JsonOutput(bodyJson []byte) {
-	var prettyJSON []byte
+func JsonOutput(bodyJson []byte) error {
 	var jsonData map[string]interface{}
 
-	err := json.Unmarshal(bodyJson, &jsonData)
-	if err != nil {
-		log.Fatalf("Error occurred during unmarshalling json: %v", err)
+	if err := json.Unmarshal(bodyJson, &jsonData); err != nil {
+		return fmt.Errorf("failed unmarshalling JSON: %w", err)
 	}
 
-	prettyJSON, _ = json.MarshalIndent(jsonData, "", "  ")
+	prettyJSON, err := json.MarshalIndent(jsonData, "", "  ")
+	if err != nil {
+		return fmt.Errorf("failed formatting JSON: %w", err)
+	}
 
 	fmt.Println(string(prettyJSON))
+	return nil
 }
 
-func YamlOutput(bodyJson []byte) {
+func YamlOutput(bodyJson []byte) error {
 	var jsonData map[string]interface{}
 
 	if viper.GetBool("verbose") {
 		log.Printf("YamlOutput()")
 	}
-	err := json.Unmarshal(bodyJson, &jsonData)
-	if err != nil {
-		log.Fatalf("Error occurred during unmarshalling json: %v", err)
+	if err := json.Unmarshal(bodyJson, &jsonData); err != nil {
+		return fmt.Errorf("failed unmarshalling JSON: %w", err)
 	}
 
 	if data, ok := jsonData["data"]; ok {
-		newData, _ := json.Marshal(data)
+		newData, err := json.Marshal(data)
+		if err != nil {
+			return fmt.Errorf("failed marshalling data: %w", err)
+		}
 		bodyJson = newData
 	}
 
 	bodyYaml, err := yaml.JSONToYAML(bodyJson)
 	if err != nil {
-		ErrorOutput(err)
-	} else {
-		fmt.Println(string(bodyYaml))
+		return fmt.Errorf("failed converting JSON to YAML: %w", err)
 	}
+	fmt.Println(string(bodyYaml))
+	return nil
 }
 
-func ConsoleOutput(bodyJson []byte) {
+func ConsoleOutput(bodyJson []byte) error {
 	outputFormat := viper.GetString("output_format")
 
-	switch {
-	case outputFormat == "json":
-		JsonOutput(bodyJson)
-	case outputFormat == "yaml":
-		YamlOutput(bodyJson)
-	case outputFormat == "tabular":
-		TableOutput(bodyJson)
+	switch outputFormat {
+	case "json":
+		return JsonOutput(bodyJson)
+	case "yaml":
+		return YamlOutput(bodyJson)
+	case "tabular":
+		return TableOutput(bodyJson)
 	default:
-		JsonOutput(bodyJson)
+		return JsonOutput(bodyJson)
 	}
 }
 
