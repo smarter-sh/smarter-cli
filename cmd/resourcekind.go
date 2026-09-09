@@ -19,6 +19,7 @@ type ResourceKind struct {
 	APIKind       string // the "kind" path segment sent to the Smarter API
 	Display       string // human-readable singular name, e.g. "ApiConnection"
 	DisplayPlural string // human-readable plural name, e.g. "ApiConnections"
+	Deployable    bool   // whether this kind gets "deploy"/"undeploy" commands
 }
 
 // DescribeSpec builds this kind's "describe <name>" ResourceSpec.
@@ -79,6 +80,22 @@ func (k ResourceKind) DeploySpec() ResourceSpec {
 smarter deploy %s <name> [flags]
 
 The Smarter API will deploy the %s.`, a, k.Display, k.Singular, k.Display),
+		APIKind: k.APIKind,
+		NameArg: NameArgSpec{Mode: NameArgPositional, Kwarg: "name"},
+	}
+}
+
+// UndeploySpec builds this kind's "undeploy <name>" ResourceSpec.
+func (k ResourceKind) UndeploySpec() ResourceSpec {
+	a := Article(k.Display)
+	return ResourceSpec{
+		Use:   k.Singular + " <name>",
+		Short: fmt.Sprintf("Undo %s %s deployment", a, k.Display),
+		Long: fmt.Sprintf(`Undo %s %s deployment. For example:
+
+smarter undeploy %s <name>
+
+This will reverse the effect of having deployed the %s.`, a, k.Display, k.Singular, k.Display),
 		APIKind: k.APIKind,
 		NameArg: NameArgSpec{Mode: NameArgPositional, Kwarg: "name"},
 	}

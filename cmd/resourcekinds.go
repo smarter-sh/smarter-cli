@@ -9,6 +9,11 @@ package cmd
 // verb package (describe/get/manifest/deploy) generates its own leaf
 // ResourceSpecs from this list instead of maintaining a parallel copy of the
 // Use/APIKind/display text.
+//
+// There should be a 1:1 mapping of these kinds against those in these
+// two Python enum classes:
+// - https://github.com/smarter-sh/smarter/blob/main/smarter/smarter/apps/api/v1/manifests/enum.py#L53
+// - https://github.com/smarter-sh/smarter/blob/main/smarter/smarter/lib/journal/enum.py#L56
 
 var ResourceKinds = []ResourceKind{
 	{Singular: "apiconnection", Plural: "apiconnections", APIKind: "ApiConnection", Display: "ApiConnection", DisplayPlural: "ApiConnections"},
@@ -22,7 +27,7 @@ var ResourceKinds = []ResourceKind{
 	{Singular: "llmhost", Plural: "llmhosts", APIKind: "LLMHost", Display: "LLMHost", DisplayPlural: "LLMHosts"},
 	{Singular: "mcpclient", Plural: "mcpclients", APIKind: "MCPClient", Display: "MCPClient", DisplayPlural: "MCPClients"},
 	{Singular: "orchestrator", Plural: "orchestrators", APIKind: "Orchestrator", Display: "Orchestrator", DisplayPlural: "Orchestrators"},
-	{Singular: "prompt", Plural: "prompts", APIKind: "Prompt", Display: "Prompt", DisplayPlural: "Prompts"},
+	{Singular: "prompt", Plural: "prompts", APIKind: "Prompt", Display: "Prompt", DisplayPlural: "Prompts", Deployable: true},
 	{Singular: "promptconfig", Plural: "promptconfigs", APIKind: "PromptConfig", Display: "PromptConfig", DisplayPlural: "PromptConfigs"},
 	{Singular: "provider", Plural: "providers", APIKind: "Provider", Display: "Provider", DisplayPlural: "Providers"},
 	{Singular: "proxy", Plural: "proxies", APIKind: "Proxy", Display: "Proxy", DisplayPlural: "Proxies"},
