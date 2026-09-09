@@ -16,231 +16,159 @@ import (
 	"github.com/spf13/viper"
 )
 
-// Account Number
-//
-// This section contains code related to account_number configuration.
-func validateAccountNumber(accountNumber string) error {
-	regex, err := regexp.Compile(`^\d{4}-\d{4}-\d{4}$`)
-	if err != nil {
-		return err
-	}
+var (
+	accountNumberPattern = regexp.MustCompile(`^\d{4}-\d{4}-\d{4}$`)
+	apiKeyPattern        = regexp.MustCompile(`^[a-fA-F0-9]{64}$`)
+	usernamePattern      = regexp.MustCompile(`^[a-zA-Z0-9_]+$`)
+)
 
-	if !regex.MatchString(accountNumber) {
+func validateAccountNumber(v string) error {
+	if !accountNumberPattern.MatchString(v) {
 		return fmt.Errorf("invalid account number. Smarter account numbers use the format, 1234-5678-9012")
 	}
-
 	return nil
 }
 
-func getAccountNumber() string {
-	fmt.Println("getAccountNumber()")
-	accountNumber := viper.Get("account_number").(string)
-	reader := bufio.NewReader(os.Stdin)
-	valid := false
-
-	for !valid {
-		if accountNumber == "" {
-			fmt.Print("account_number: ")
-		} else {
-			fmt.Printf("account_number (%s): ", accountNumber)
-		}
-		input, _ := reader.ReadString('\n')
-		input = strings.TrimSpace(input)
-		if input != "" {
-			err := validateAccountNumber(input)
-			if err != nil {
-				fmt.Println(err)
-			} else {
-				if accountNumber != input {
-					accountNumber = input
-					viper.Set("config.account_number", accountNumber)
-					fmt.Println("Account number set to", accountNumber)
-				}
-				valid = true
-			}
-		}
-	}
-	return accountNumber
-}
-
-func setAccountNumber(accountNumber string) {
-	if accountNumber != "" {
-		err := validateAccountNumber(accountNumber)
-		if err != nil {
-			fmt.Println(err)
-		} else {
-			viper.Set("config.account_number", accountNumber)
-			fmt.Println("Account number set to", accountNumber)
-		}
-	}
-}
-
-// Api Key
-//
-// This section contains code related to api_key configuration.
-func validateApiKey(apiKey string) error {
-	regex, err := regexp.Compile(`^[a-fA-F0-9]{64}$`)
-	if err != nil {
-		return err
-	}
-
-	if !regex.MatchString(apiKey) {
+func validateApiKey(v string) error {
+	if !apiKeyPattern.MatchString(v) {
 		return fmt.Errorf("invalid API key. API keys should be 64 hexadecimal characters")
 	}
-
 	return nil
 }
 
-func getApiKey() string {
-	fmt.Println("getApiKey()")
-	apiKey := viper.Get("config.api_key").(string)
-	if apiKey == "" {
-		apiKey = viper.Get("api_key").(string)
-	}
-	reader := bufio.NewReader(os.Stdin)
-	valid := false
-
-	for !valid {
-		if apiKey == "" {
-			fmt.Print("api_key: ")
-		} else {
-			fmt.Printf("api_key (%s): ", apiKey)
-		}
-		input, _ := reader.ReadString('\n')
-		input = strings.TrimSpace(input)
-		if input != "" {
-			err := validateApiKey(input)
-			if err != nil {
-				fmt.Println("Invalid API key. API keys should be a 64-character hash string.")
-			} else {
-				if apiKey != input {
-					apiKey = input
-					viper.Set("config.api_key", apiKey)
-					fmt.Println("API key set to", apiKey)
-				}
-				valid = true
-			}
-		}
-	}
-	return apiKey
-}
-
-func setApiKey(apiKey string) {
-	if apiKey != "" {
-		err := validateApiKey(apiKey)
-		if err != nil {
-			fmt.Println(err)
-		} else {
-			viper.Set("config.api_key", apiKey)
-			fmt.Println("API key set to", apiKey)
-		}
-	}
-}
-
-// Username
-//
-// This section contains code related to username configuration.
-func validateUsername(username string) error {
-	regex, err := regexp.Compile(`^[a-zA-Z0-9_]+$`)
-	if err != nil {
-		return err
-	}
-
-	if !regex.MatchString(username) {
+func validateUsername(v string) error {
+	if !usernamePattern.MatchString(v) {
 		return fmt.Errorf("invalid username. Usernames should only contain alphanumeric characters and underscores")
 	}
-
 	return nil
 }
 
-func getUsername() string {
-	fmt.Println("getUsername()")
-	username := viper.Get("username").(string)
-	reader := bufio.NewReader(os.Stdin)
-	if username == "" {
-		fmt.Print("username: ")
-	} else {
-		fmt.Printf("username (%s): ", username)
-	}
-	input, _ := reader.ReadString('\n')
-	input = strings.TrimSpace(input)
-	if input != "" {
-		err := validateUsername(input)
-		if err != nil {
-			fmt.Println("Invalid username. Please input your username for the Smarter web console https://platform.smarter.sh. Please try again.")
-			return getUsername()
-		}
-		if username != input {
-			username = input
-			viper.Set("config.username", username)
-			fmt.Println("Username set to", username)
-		}
-	}
-	return username
-}
-
-func setUsername(username string) {
-	err := validateUsername(username)
-	if err != nil {
-		fmt.Println(err)
-	} else {
-		viper.Set("config.username", username)
-		fmt.Println("Username set to", username)
-	}
-}
-
-// Output Format
-//
-// This section contains code related to output_format configuration.
-func validateOutputFormat(format string) error {
-	lowerFormat := strings.ToLower(format)
-
-	if lowerFormat != "json" && lowerFormat != "yaml" {
+func validateOutputFormat(v string) error {
+	switch strings.ToLower(v) {
+	case "json", "yaml":
+		return nil
+	default:
 		return fmt.Errorf("invalid output format. Output format should be either 'json' or 'yaml'")
 	}
-
-	return nil
 }
 
-func getOutputFormat() string {
-	fmt.Println("getOutputFormat()")
-	outputFormat := viper.Get("output_format").(string)
-	reader := bufio.NewReader(os.Stdin)
-	valid := false
+// configField describes one configurable value: how to validate it, which
+// viper key it lives at, and whether it's sensitive enough to hide from
+// terminal echo.
+type configField struct {
+	label       string
+	flagName    string
+	key         string // viper key that is read from and written to
+	fallbackKey string // secondary viper key to check when key is unset (optional)
+	mask        bool
+	validate    func(string) error
+}
 
-	for !valid {
-		if outputFormat == "" {
-			fmt.Print("output_format: ")
+func (f configField) currentValue() string {
+	if v := viper.GetString(f.key); v != "" {
+		return v
+	}
+	if f.fallbackKey != "" {
+		return viper.GetString(f.fallbackKey)
+	}
+	return ""
+}
+
+func (f configField) display(value string) string {
+	if f.mask {
+		return "********"
+	}
+	return value
+}
+
+// configFields lists the values the configure command manages, in prompt
+// order. api_key is stored per-environment (e.g. "alpha.api_key") to match
+// how fetchAPIKey() and initConfig() read it in api.go and root.go.
+func configFields() []configField {
+	environment := viper.GetString("environment")
+	return []configField{
+		{
+			label:    "account_number",
+			flagName: "account_number",
+			key:      "config.account_number",
+			validate: validateAccountNumber,
+		},
+		{
+			label:       "api_key",
+			flagName:    "api_key",
+			key:         fmt.Sprintf("%s.api_key", environment),
+			fallbackKey: "api_key",
+			mask:        true,
+			validate:    validateApiKey,
+		},
+		{
+			label:    "username",
+			flagName: "username",
+			key:      "config.username",
+			validate: validateUsername,
+		},
+		{
+			label:    "output_format",
+			flagName: "output_format",
+			key:      "output_format",
+			validate: validateOutputFormat,
+		},
+	}
+}
+
+// promptField interactively prompts for a field's value, re-prompting on
+// invalid input. Pressing enter accepts the current value shown in
+// parentheses; if there's no current value, it keeps asking. On EOF (e.g.
+// stdin is closed or non-interactive), it falls back to the current value
+// if one exists, or returns an error rather than looping forever.
+func promptField(reader *bufio.Reader, f configField) (string, error) {
+	current := f.currentValue()
+
+	for {
+		if current == "" {
+			fmt.Printf("%s: ", f.label)
 		} else {
-			fmt.Printf("output_format (%s): ", outputFormat)
+			fmt.Printf("%s (%s): ", f.label, f.display(current))
 		}
-		input, _ := reader.ReadString('\n')
+
+		input, err := reader.ReadString('\n')
 		input = strings.TrimSpace(input)
-		if input != "" {
-			err := validateOutputFormat(input)
-			if err != nil {
-				fmt.Println("Invalid output format. Allowed values are 'json' and 'yaml'.")
-			} else {
-				if outputFormat != input {
-					outputFormat = input
-					viper.Set("config.output_format", outputFormat)
-					fmt.Println("Output format set to", outputFormat)
-				}
-				valid = true
+		if err != nil {
+			if current != "" {
+				fmt.Println()
+				return current, nil
 			}
+			return "", fmt.Errorf("no %s provided", f.label)
 		}
+
+		if input == "" {
+			if current != "" {
+				return current, nil
+			}
+			continue
+		}
+
+		if err := f.validate(input); err != nil {
+			fmt.Println(err)
+			continue
+		}
+
+		if input != current {
+			viper.Set(f.key, input)
+			fmt.Printf("%s set to %s\n", f.label, f.display(input))
+		}
+		return input, nil
 	}
-	return outputFormat
 }
 
-func setOutputFormat(outputFormat string) {
-	err := validateOutputFormat(outputFormat)
-	if err != nil {
-		fmt.Println(err)
-	} else {
-		viper.Set("config.output_format", outputFormat)
-		fmt.Println("Output format set to", outputFormat)
+// applyField validates and stores a value supplied via command-line flag.
+func applyField(f configField, value string) error {
+	if err := f.validate(value); err != nil {
+		return err
 	}
+	viper.Set(f.key, value)
+	fmt.Printf("%s set to %s\n", f.label, f.display(value))
+	return nil
 }
 
 var configureCmd = &cobra.Command{
@@ -252,41 +180,28 @@ smarter configure
 
 Set your account_number, username, api_key and application options.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		accountNumber, _ := cmd.Flags().GetString("account_number")
-		apiKey, _ := cmd.Flags().GetString("api_key")
-		username, _ := cmd.Flags().GetString("username")
-		outputFormat, _ := cmd.Flags().GetString("output_format")
+		fields := configFields()
 
 		if cmd.Flags().NFlag() > 0 {
-			if accountNumber != "" {
-				setAccountNumber(accountNumber)
-			}
-			if apiKey != "" {
-				setApiKey(apiKey)
-			}
-			if username != "" {
-				setUsername(username)
-			}
-			if outputFormat != "" {
-				setOutputFormat(outputFormat)
+			for _, field := range fields {
+				value, _ := cmd.Flags().GetString(field.flagName)
+				if value == "" {
+					continue
+				}
+				if err := applyField(field, value); err != nil {
+					fmt.Println(err)
+				}
 			}
 		} else {
-			if accountNumber == "" {
-				getAccountNumber()
-			}
-			if apiKey == "" {
-				getApiKey()
-			}
-			if username == "" {
-				getUsername()
-			}
-			if outputFormat == "" {
-				getOutputFormat()
+			reader := bufio.NewReader(os.Stdin)
+			for _, field := range fields {
+				if _, err := promptField(reader, field); err != nil {
+					log.Fatalf("configure: %v", err)
+				}
 			}
 		}
 
-		err := viper.WriteConfig()
-		if err != nil {
+		if err := viper.WriteConfig(); err != nil {
 			log.Fatalf("Error writing config: %v", err)
 		}
 	},
