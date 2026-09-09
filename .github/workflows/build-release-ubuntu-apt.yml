@@ -58,7 +58,7 @@ jobs:
     - name: Build source package
       shell: bash
       run: |
-        debuild -S -sa
+        debuild -kFB3400542F8EEE85986FA02258F2087CD4DA3ADD -S -sa
 
     - name: Get version
       id: vars
