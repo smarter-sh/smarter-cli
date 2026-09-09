@@ -44,15 +44,15 @@ jobs:
       run: |
         Get-ChildItem -Force -Recurse ${{ github.workspace }}\chocolatey\smarter\build\windows\ | Select-Object FullName, Length
 
-    - name: Pack Chocolatey package
-      run: |
-        choco pack .\chocolatey\smarter\smarter.nuspec
-      shell: pwsh
-
     - name: Get version
       id: vars
       shell: pwsh
       run: echo "::set-output name=version::$(Get-Content -Path VERSION)"
+
+    - name: Pack Chocolatey package
+      run: |
+        choco pack .\chocolatey\smarter\smarter.nuspec --version ${{ steps.vars.outputs.version }}
+      shell: pwsh
 
     - name: Push Chocolatey package
       shell: pwsh
