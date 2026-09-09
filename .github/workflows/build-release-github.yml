@@ -1,3 +1,36 @@
+###############################################################################
+# Build and release to GitHub Releases + Homebrew Tap
+# https://github.com/smarter-sh/smarter-cli/releases
+#
+# This workflow builds the `smarter` CLI binary for Windows, macOS, and
+# Linux, publishes them as assets on a new GitHub Release tagged from the
+# VERSION file, then updates the smarter-sh/homebrew-tap formula to point at
+# the new macOS asset.
+#
+# Required repo/org secrets
+# --------------------------
+#   PAT   A GitHub Personal Access Token (classic or fine-grained) used in
+#         place of the default GITHUB_TOKEN because this workflow needs to
+#         reach *outside* this repo:
+#           - checks out this repo (all jobs)
+#           - creates/deletes the release and uploads its assets
+#             (windows, mac_linux jobs)
+#           - clones smarter-sh/homebrew-tap and pushes an updated formula
+#             (homebrew job)
+#         Needs `repo` scope (or Contents: Read/Write on both smarter-cli
+#         and homebrew-tap for a fine-grained token).
+#
+# If PAT ever needs to be (re)created, e.g. it expired or was rotated:
+#
+#   1. Generate a new token at https://github.com/settings/tokens with
+#      `repo` scope (or a fine-grained token scoped to smarter-sh/smarter-cli
+#      and smarter-sh/homebrew-tap with Contents: Read and write).
+#
+#   2. Push it to GitHub as a repo secret (requires the gh CLI,
+#      authenticated):
+#        gh secret set PAT --repo lpm0073/smarter-cli
+#          # (prompts for the token value interactively)
+###############################################################################
 name: Build-Release GitHub
 
 on:

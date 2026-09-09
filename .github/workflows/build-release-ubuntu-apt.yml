@@ -1,6 +1,52 @@
 ###############################################################################
 # Build and release to Ubuntu APT repository
 # https://launchpad.net/~lpm0073/+archive/ubuntu/smarter-cli
+#
+# This workflow builds a Debian source package from this repo, signs it with
+# a GPG key registered on the lpm0073 Launchpad account, and uploads it via
+# dput to the smarter-cli PPA, where Launchpad's build farm compiles the
+# .deb for each supported Ubuntu release.
+#
+# Required repo/org secrets
+# --------------------------
+#   GPG_PRIVATE_KEY  ASCII-armored *private* key, imported at runtime by the
+#                     "Import GPG key" step and used (via its fingerprint,
+#                     hardcoded in the "Build source package" step below) to
+#                     sign the .dsc/.changes files that debuild produces.
+#   GPG_PASSPHRASE    The passphrase that protects GPG_PRIVATE_KEY. Used to
+#                     unlock the key in gpg-agent's loopback-pinentry cache
+#                     so debuild can sign non-interactively.
+#
+# These two values are NOT derived from anything else in this repo — they
+# come from a GPG keypair you generate locally and register with Launchpad.
+# If the secrets ever need to be (re)created, e.g. the key expired or was
+# rotated, the steps are:
+#
+#   1. Generate a new key (skip if reusing an existing one):
+#        gpg --full-generate-key
+#      Use the same name/email as DEBFULLNAME/DEBEMAIL below (Lawrence
+#      McDaniel / lpm0073@gmail.com) so the signature matches the changelog.
+#
+#   2. Find its fingerprint (this is the value hardcoded after -k in the
+#      "Build source package" step, e.g. FB3400542F8EEE85986FA02258F2087CD4DA3ADD):
+#        gpg --list-secret-keys --keyid-format=long lpm0073@gmail.com
+#
+#   3. Register the *public* key with Launchpad so it will accept uploads
+#      signed by it (Launchpad emails an encrypted nonce to confirm you
+#      hold the private key):
+#        gpg --armor --export <FINGERPRINT> > pubkey.asc
+#        # upload pubkey.asc at https://launchpad.net/~lpm0073/+editpgpkeys
+#        gpg --decrypt   # paste the confirmation email body when prompted
+#
+#   4. Export the *private* key and push it + the passphrase to GitHub as
+#      Actions secrets (requires the gh CLI, authenticated):
+#        gpg --armor --export-secret-keys <FINGERPRINT> \
+#          | gh secret set GPG_PRIVATE_KEY --repo lpm0073/smarter-cli
+#        gh secret set GPG_PASSPHRASE --repo lpm0073/smarter-cli
+#          # (prompts for the passphrase value interactively)
+#
+#   5. Update the hardcoded fingerprint in the "Build source package" step
+#      below to match the new key.
 ###############################################################################
 name: Build-Release Ubuntu APT
 
@@ -56,6 +102,24 @@ jobs:
         cd smarter-cli
 
     # see https://launchpad.net/~lpm0073
+    #
+    # debuild -k<KEYID> -S -sa
+    #   debuild   wraps dpkg-buildpackage + lintian to build the Debian source
+    #             package from the debian/ control files and the orig tarball
+    #             created in the "Create original source tarball" step above.
+    #   -k<KEYID> GPG key used to sign the resulting .dsc and .changes files.
+    #             KEYID here (FB3400542F8EEE85986FA02258F2087CD4DA3ADD) is the
+    #             fingerprint of the private key imported in the "Import GPG
+    #             key" step (line 30 above) from the GPG_PRIVATE_KEY secret.
+    #             It is hardcoded rather than derived because it must exactly
+    #             match the public key already registered against the
+    #             lpm0073 Launchpad account/PPA — Launchpad rejects uploads
+    #             signed by a key it doesn't recognize for that account.
+    #   -S        build a source-only package (no .deb binaries), which is
+    #             what Launchpad's PPA build farm expects to receive.
+    #   -sa       force-include the .orig.tar.gz in the upload; required so
+    #             the first upload of a given upstream version carries the
+    #             full source, not just a delta against a previous revision.
     - name: Build source package
       shell: bash
       run: |

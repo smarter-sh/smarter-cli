@@ -1,3 +1,28 @@
+###############################################################################
+# Build and release to the Chocolatey Community Repository
+# https://community.chocolatey.org/packages/smarter
+#
+# This workflow builds the `smarter` CLI binary for Windows, packs it into a
+# Chocolatey package using chocolatey/smarter/smarter.nuspec, and pushes it
+# to the Chocolatey community feed.
+#
+# Required repo/org secrets
+# --------------------------
+#   CHOCO_API_KEY   The API key for the Chocolatey.org account that owns the
+#                    `smarter` package. Used by `choco push` to authenticate
+#                    the upload.
+#
+# If CHOCO_API_KEY ever needs to be (re)created, e.g. it expired or was
+# rotated:
+#
+#   1. Sign in at https://community.chocolatey.org and generate/copy the API
+#      key from your account profile (https://community.chocolatey.org/account).
+#
+#   2. Push it to GitHub as a repo secret (requires the gh CLI,
+#      authenticated):
+#        gh secret set CHOCO_API_KEY --repo lpm0073/smarter-cli
+#          # (prompts for the key value interactively)
+###############################################################################
 name: Build-Release Chocolatey
 
 on:

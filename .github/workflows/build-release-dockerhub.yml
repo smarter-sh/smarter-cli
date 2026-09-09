@@ -1,3 +1,32 @@
+###############################################################################
+# Build and release to Docker Hub
+# https://hub.docker.com/r/mcdaniel0073/smarter-cli
+#
+# This workflow builds a multi-tag Docker image for the `smarter` CLI from
+# the repo's Dockerfile and pushes it to Docker Hub, tagged `latest`, the
+# triggering commit SHA, and the version in the VERSION file.
+#
+# Required repo/org secrets
+# --------------------------
+#   DOCKERHUB_USERNAME   Docker Hub account (mcdaniel0073) used to log in.
+#   DOCKERHUB_TOKEN       An access token for that account, used as the
+#                          password for `docker/login-action`.
+#
+# If DOCKERHUB_TOKEN ever needs to be (re)created, e.g. it expired or was
+# revoked:
+#
+#   1. Sign in to https://hub.docker.com as mcdaniel0073, then generate a
+#      new access token at Account Settings > Security > Access Tokens
+#      (Read & Write scope is sufficient).
+#
+#   2. Push it to GitHub as a repo secret (requires the gh CLI,
+#      authenticated):
+#        gh secret set DOCKERHUB_TOKEN --repo lpm0073/smarter-cli
+#          # (prompts for the token value interactively)
+#
+#   DOCKERHUB_USERNAME only needs to change if the publishing account
+#   changes; set it the same way with `gh secret set DOCKERHUB_USERNAME`.
+###############################################################################
 name: Build-Release DockerHub
 
 on:

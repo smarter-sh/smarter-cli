@@ -9,6 +9,45 @@ Download it at [https://smarter.sh/cli/](https://smarter.sh/cli/)
 smarter --help
 ```
 
+## Installation
+
+### GitHub Releases
+
+Download the binary for your platform from the [releases page](https://github.com/smarter-sh/smarter-cli/releases), then make it executable and put it on your `PATH`.
+
+```bash
+chmod +x ./smarter-*
+sudo mv ./smarter-* /usr/local/bin/smarter
+```
+
+### Homebrew (macOS / Linux)
+
+```bash
+brew tap smarter-sh/tap https://github.com/smarter-sh/homebrew-tap
+brew install smarter
+```
+
+### Ubuntu APT
+
+```bash
+sudo add-apt-repository ppa:lpm0073/smarter-cli
+sudo apt-get update
+sudo apt-get install smarter-cli
+```
+
+### Chocolatey (Windows)
+
+```powershell
+choco install smarter
+```
+
+### Docker Hub
+
+```bash
+docker pull mcdaniel0073/smarter-cli:latest
+docker run --rm mcdaniel0073/smarter-cli:latest --help
+```
+
 ## Developers
 
 ### Build
