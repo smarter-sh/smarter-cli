@@ -16,11 +16,13 @@ func APIRequest(kind string, kwargs map[string]string) ([]byte, error) {
 	return cmd.APIRequest("describe/"+kind+"/", kwargs)
 
 }
+
+// ConsoleOutput adapts cmd.ConsoleOutput's error return to the OutputFunc
+// signature RegisterResources expects.
 func ConsoleOutput(bodyJson []byte) {
-	cmd.ConsoleOutput(bodyJson)
-}
-func ErrorOutput(err error) {
-	cmd.ErrorOutput(err)
+	if err := cmd.ConsoleOutput(bodyJson); err != nil {
+		cmd.ErrorOutput(err)
+	}
 }
 
 var describeCmd = &cobra.Command{

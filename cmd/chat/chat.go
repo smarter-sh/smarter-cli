@@ -34,10 +34,6 @@ func ConsoleOutput(bodyJson []byte) {
 	}
 	cmd.ConsoleOutput(bodyJson)
 }
-func ErrorOutput(err error) {
-	cmd.ErrorOutput(err)
-}
-
 func getUniqueID() string {
 	interfaces, err := net.Interfaces()
 	if err != nil {

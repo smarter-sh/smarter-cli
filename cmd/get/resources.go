@@ -114,11 +114,11 @@ or a manifest for a specific User.`,
 }
 
 func init() {
-	cmd.RegisterResources(getCmd, legacySpecs, APIRequest, ConsoleOutput, ErrorOutput)
+	cmd.RegisterResources(getCmd, legacySpecs, APIRequest, ConsoleOutput, cmd.ErrorOutput)
 
 	specs := make([]cmd.ResourceSpec, len(cmd.ResourceKinds))
 	for i, k := range cmd.ResourceKinds {
 		specs[i] = k.GetSpec()
 	}
-	cmd.RegisterResources(getCmd, specs, APIRequest, ConsoleOutput, ErrorOutput)
+	cmd.RegisterResources(getCmd, specs, APIRequest, ConsoleOutput, cmd.ErrorOutput)
 }

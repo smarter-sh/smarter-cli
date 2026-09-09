@@ -64,11 +64,11 @@ This will generate an example manifest for a user and write it to my-plugin.yaml
 }
 
 func init() {
-	cmd.RegisterResources(manifestCmd, legacySpecs, APIRequest, ConsoleOutput, ErrorOutput)
+	cmd.RegisterResources(manifestCmd, legacySpecs, APIRequest, ConsoleOutput, cmd.ErrorOutput)
 
 	specs := make([]cmd.ResourceSpec, len(cmd.ResourceKinds))
 	for i, k := range cmd.ResourceKinds {
 		specs[i] = k.ManifestSpec()
 	}
-	cmd.RegisterResources(manifestCmd, specs, APIRequest, ConsoleOutput, ErrorOutput)
+	cmd.RegisterResources(manifestCmd, specs, APIRequest, ConsoleOutput, cmd.ErrorOutput)
 }

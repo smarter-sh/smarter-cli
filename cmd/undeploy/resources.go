@@ -25,7 +25,7 @@ This will reverse the effect of having deployed the ChatBot.`,
 }
 
 func init() {
-	cmd.RegisterResources(undeployCmd, legacySpecs, APIRequest, cmd.AdaptOutput(ConsoleOutput), ErrorOutput)
+	cmd.RegisterResources(undeployCmd, legacySpecs, APIRequest, cmd.AdaptOutput(ConsoleOutput), cmd.ErrorOutput)
 
 	// v0.14: only kinds flagged Deployable (e.g. Prompt, which replaces
 	// ChatBot as the deployable unit) get an "undeploy" leaf command. Pulled
@@ -37,5 +37,5 @@ func init() {
 			specs = append(specs, k.UndeploySpec())
 		}
 	}
-	cmd.RegisterResources(undeployCmd, specs, APIRequest, cmd.AdaptOutput(ConsoleOutput), ErrorOutput)
+	cmd.RegisterResources(undeployCmd, specs, APIRequest, cmd.AdaptOutput(ConsoleOutput), cmd.ErrorOutput)
 }

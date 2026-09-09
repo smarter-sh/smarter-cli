@@ -25,7 +25,7 @@ The Smarter API will deploy the ChatBot.`,
 }
 
 func init() {
-	cmd.RegisterResources(deployCmd, legacySpecs, APIRequest, cmd.AdaptOutput(ConsoleOutput), ErrorOutput)
+	cmd.RegisterResources(deployCmd, legacySpecs, APIRequest, cmd.AdaptOutput(ConsoleOutput), cmd.ErrorOutput)
 
 	// Only kinds flagged Deployable (e.g. Prompt, which replaces
 	// ChatBot as the deployable unit) get a "deploy" leaf command. Pulled
@@ -37,5 +37,5 @@ func init() {
 			specs = append(specs, k.DeploySpec())
 		}
 	}
-	cmd.RegisterResources(deployCmd, specs, APIRequest, cmd.AdaptOutput(ConsoleOutput), ErrorOutput)
+	cmd.RegisterResources(deployCmd, specs, APIRequest, cmd.AdaptOutput(ConsoleOutput), cmd.ErrorOutput)
 }

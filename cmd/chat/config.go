@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/smarter-sh/smarter-cli/cmd"
 	"github.com/spf13/cobra"
 )
 
@@ -22,10 +23,10 @@ smarter chat config --chatbot <chatbot> [--new_session]
 The Smarter API will return a dict of the configuration that is provided
 to the React chat application in the Smarter web console. This is the same
 dict that is returned by the /chatapp/<chatbot>/config/ endpoint.`,
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(c *cobra.Command, args []string) {
 
-		chatbot, _ := cmd.Flags().GetString("chatbot")
-		new_session, _ := cmd.Flags().GetBool("new_session")
+		chatbot, _ := c.Flags().GetString("chatbot")
+		newSession, _ := c.Flags().GetBool("new_session")
 		uid := getUniqueID()
 
 		if chatbot == "" {
@@ -34,14 +35,14 @@ dict that is returned by the /chatapp/<chatbot>/config/ endpoint.`,
 
 		kwargs := map[string]string{
 			"uid":         uid,
-			"new_session": fmt.Sprintf("%t", new_session),
+			"new_session": fmt.Sprintf("%t", newSession),
 		}
 
 		// this request goes to /api/v1/cli/chat/config/<str:chatbot>/<str:uid>
 		path := fmt.Sprintf("config/%s/", chatbot)
 		bodyJson, err := APIRequest(path, kwargs)
 		if err != nil {
-			ErrorOutput(err)
+			cmd.ErrorOutput(err)
 		} else {
 			ConsoleOutput(bodyJson)
 		}

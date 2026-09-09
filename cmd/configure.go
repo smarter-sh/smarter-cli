@@ -20,6 +20,7 @@ var (
 	accountNumberPattern = regexp.MustCompile(`^\d{4}-\d{4}-\d{4}$`)
 	apiKeyPattern        = regexp.MustCompile(`^[a-fA-F0-9]{64}$`)
 	usernamePattern      = regexp.MustCompile(`^[a-zA-Z0-9_]+$`)
+	domainPattern        = regexp.MustCompile(`^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?)+$`)
 )
 
 func validateAccountNumber(v string) error {
@@ -39,6 +40,13 @@ func validateApiKey(v string) error {
 func validateUsername(v string) error {
 	if !usernamePattern.MatchString(v) {
 		return fmt.Errorf("invalid username. Usernames should only contain alphanumeric characters and underscores")
+	}
+	return nil
+}
+
+func validateRootDomain(v string) error {
+	if !domainPattern.MatchString(v) {
+		return fmt.Errorf("invalid root domain. Expected a domain name, e.g. platform.smarter.sh")
 	}
 	return nil
 }
@@ -87,6 +95,12 @@ func (f configField) display(value string) string {
 func configFields() []configField {
 	environment := viper.GetString("environment")
 	return []configField{
+		{
+			label:    "root_domain",
+			flagName: "root_domain",
+			key:      "config.root_domain",
+			validate: validateRootDomain,
+		},
 		{
 			label:    "account_number",
 			flagName: "account_number",
@@ -211,6 +225,7 @@ func init() {
 	RootCmd.AddCommand(configureCmd)
 
 	// Flags
+	configureCmd.Flags().StringP("root_domain", "r", "", "Smarter platform root domain (e.g. platform.smarter.sh)")
 	configureCmd.Flags().StringP("account_number", "a", "", "Smarter account number")
 	configureCmd.Flags().StringP("api_key", "k", "", "Smarter cli secret key (64-character hash)")
 	configureCmd.Flags().StringP("username", "u", "", "username (how you login to the Smarter web console)")

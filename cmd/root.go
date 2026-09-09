@@ -126,23 +126,26 @@ func initConfig() {
 
 	viper.AutomaticEnv() // read in environment variables that match
 
+	// Set defaults unconditionally so that they backfill missing keys in an
+	// existing config file as well as seed a brand-new one.
+	defaultConfig := map[string]interface{}{
+		"account_number": "",
+		"environment":    "prod",
+		"output_format":  "yaml",
+		"root_domain":    "platform.smarter.sh",
+	}
+	viper.SetDefault("config", defaultConfig)
+	envConfig := map[string]interface{}{
+		"api_key": "",
+	}
+	viper.SetDefault("local", envConfig)
+	viper.SetDefault("alpha", envConfig)
+	viper.SetDefault("beta", envConfig)
+	viper.SetDefault("prod", envConfig)
+
 	// If a config file is found, read it in. Otherwise,
 	// create a default config file.
 	if err := viper.ReadInConfig(); err != nil {
-		defaultConfig := map[string]interface{}{
-			"account_number": "",
-			"environment":    "prod",
-			"output_format":  "yaml",
-		}
-		viper.SetDefault("config", defaultConfig)
-		envConfig := map[string]interface{}{
-			"api_key": "",
-		}
-		viper.SetDefault("local", envConfig)
-		viper.SetDefault("alpha", envConfig)
-		viper.SetDefault("beta", envConfig)
-		viper.SetDefault("prod", envConfig)
-
 		if _, err := os.Stat(configDir); os.IsNotExist(err) {
 			if err := os.Mkdir(configDir, 0755); err != nil {
 				log.Fatal(err)

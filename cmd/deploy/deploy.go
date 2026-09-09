@@ -21,9 +21,6 @@ func APIRequest(kind string, kwargs map[string]string) ([]byte, error) {
 func ConsoleOutput() {
 	fmt.Println("deployed.")
 }
-func ErrorOutput(err error) {
-	cmd.ErrorOutput(err)
-}
 
 var deployCmd = &cobra.Command{
 	Use:   "deploy <kind> <name>",

@@ -1,3 +1,7 @@
+/*
+Copyright © 2024 Lawrence McDaniel <lpm0073@gmail.com>
+Website: https://lawrencemcdaniel.com>
+*/
 package cmd
 
 import (
@@ -16,7 +20,6 @@ import (
 )
 
 const (
-	RootDomain  = "platform.smarter.sh"
 	ApiBasePath = "/api/v1/cli/"
 )
 
@@ -43,7 +46,8 @@ Contact support@querium.com if you need help finding your API key`
 
 func getAPIHost() string {
 	environment := viper.GetString("environment")
-	baseURL := fmt.Sprintf("https://%%s.%s", RootDomain)
+	rootDomain := viper.GetString("config.root_domain")
+	baseURL := fmt.Sprintf("https://%%s.%s", rootDomain)
 
 	if viper.GetBool("verbose") {
 		log.Printf("Environment: %s", environment)
@@ -59,7 +63,7 @@ func getAPIHost() string {
 	case "next":
 		return fmt.Sprintf(baseURL, "next")
 	case "prod":
-		return fmt.Sprintf("https://%s", RootDomain)
+		return fmt.Sprintf("https://%s", rootDomain)
 	default:
 		panic(fmt.Sprintf("invalid environment: %s", environment))
 	}
@@ -74,8 +78,8 @@ func APIRequest(slug string, kwargs map[string]string, fileContents ...string) (
 	}
 	apiKey := fetchAPIKey()
 	apiHost := getAPIHost()
-	url_path := path.Clean("/" + ApiBasePath + slug)
-	urlOrig := strings.ToLower(apiHost + url_path)
+	urlPath := path.Clean("/" + ApiBasePath + slug)
+	urlOrig := strings.ToLower(apiHost + urlPath)
 	if !strings.HasSuffix(urlOrig, "/") {
 		urlOrig += "/"
 	}

@@ -93,5 +93,5 @@ will replace the deleted user.`,
 }
 
 func init() {
-	cmd.RegisterResources(deleteCmd, legacySpecs, APIRequest, cmd.AdaptOutput(ConsoleOutput), ErrorOutput)
+	cmd.RegisterResources(deleteCmd, legacySpecs, APIRequest, cmd.AdaptOutput(ConsoleOutput), cmd.ErrorOutput)
 }

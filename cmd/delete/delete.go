@@ -21,9 +21,6 @@ func APIRequest(kind string, kwargs map[string]string) ([]byte, error) {
 func ConsoleOutput() {
 	fmt.Println("deleted.")
 }
-func ErrorOutput(err error) {
-	cmd.ErrorOutput(err)
-}
 
 var deleteCmd = &cobra.Command{
 	Use:   "delete <kind> <name>",
