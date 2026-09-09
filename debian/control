@@ -1,4 +1,4 @@
-Source: smarter
+Source: smarter-cli
 Section: utils
 Priority: extra
 Maintainer: Lawrence McDaniel <lawrence@querium.com>
