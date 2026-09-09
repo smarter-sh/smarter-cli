@@ -19,12 +19,12 @@ func APIRequest(kind string, kwargs map[string]string) ([]byte, error) {
 	i := viper.GetInt("i")
 	asc := viper.GetBool("asc")
 	desc := viper.GetBool("desc")
-	common_kwargs := map[string]string{
+	commonKwargs := map[string]string{
 		"i":    strconv.Itoa(i),
 		"asc":  strconv.FormatBool(asc),
 		"desc": strconv.FormatBool(desc),
 	}
-	for key, value := range common_kwargs {
+	for key, value := range commonKwargs {
 		kwargs[key] = value
 	}
 
@@ -37,11 +37,9 @@ func ConsoleOutput(bodyJson []byte) {
 	if !viper.IsSet("output_format") {
 		viper.Set("output_format", "tabular")
 	}
-	cmd.ConsoleOutput(bodyJson)
-}
-
-func ErrorOutput(err error) {
-	cmd.ErrorOutput(err)
+	if err := cmd.ConsoleOutput(bodyJson); err != nil {
+		cmd.ErrorOutput(err)
+	}
 }
 
 var getCmd = &cobra.Command{

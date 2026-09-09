@@ -56,6 +56,24 @@ This cli is built on the [Cobra](https://github.com/spf13/cobra) and [Viper](htt
 - [The Cobra Generator README](https://github.com/spf13/cobra-cli/blob/main/README.md)
 - [The Cobra User Guide](https://github.com/spf13/cobra/blob/main/site/content/user_guide.md).
 
+### Pre-commit
+
+```console
+brew install pre-commit
+brew install golangci-lint
+go install golang.org/x/tools/cmd/goimports@latest
+
+pre-commit install
+pre-commit autoupdate
+pre-commit run --all-files
+```
+
+### Tests
+
+```console
+go test ./... -v 2>&1 | tail -30
+```
+
 ## Contributing
 
 Please see [./doc/CONTRIBUTING.md](./doc/CONTRIBUTING.md)

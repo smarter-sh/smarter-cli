@@ -5,46 +5,18 @@ Website: https://lawrencemcdaniel.com>
 package get
 
 import (
-	"fmt"
-
 	"github.com/smarter-sh/smarter-cli/cmd"
 )
 
-// spec builds the common "get <use> [flags]" list shape shared by most
-// resources: an optional --name filter flag and a templated Short/Long.
-func spec(use, kind, singular, plural string) cmd.ResourceSpec {
-	return cmd.ResourceSpec{
-		Use:   use,
-		Short: fmt.Sprintf("Retrieve a list of %s", plural),
-		Long: fmt.Sprintf(`Retrieve a list of %s:
-
-smarter get %s [flags]
-
-The Smarter API will return a list of %s in the specified format,
-or a manifest for a specific %s.`, plural, use, plural, singular),
-		APIKind: kind,
-		NameArg: cmd.NameArgSpec{Mode: cmd.NameArgFlag, Kwarg: "name", Shorthand: "n", Usage: fmt.Sprintf("Name of the %s", singular)},
-	}
-}
-
-var resourceSpecs = []cmd.ResourceSpec{
+// legacySpecs are resources whose shape (custom flags, non-"name" identifying
+// parameter, or organic Short/Long text) pre-dates the v0.14 ResourceKind
+// template and doesn't fit it, so they're kept as explicit ResourceSpecs.
+var legacySpecs = []cmd.ResourceSpec{
 	{
 		Use:     "account",
 		Short:   "Retrieve your Account manifest",
 		Long:    "Retrieve your Account manifest:\n\nsmarter get account [flags]\n\nThe Smarter API will your Account manifest.",
 		APIKind: "Account",
-	},
-	{
-		Use:   "apikeys",
-		Short: "Retrieve a list of SmarterAuthTokens",
-		Long: `Retrieves a list of SmarterAuthTokens:
-
-smarter get apikey [flags]
-
-The Smarter API will return a list of apikeys in the specified format,
-or a manifest for a specific apikey.`,
-		APIKind: "SmarterAuthToken",
-		NameArg: cmd.NameArgSpec{Mode: cmd.NameArgFlag, Kwarg: "name", Shorthand: "n", Usage: "SmarterAuthToken name"},
 	},
 	{
 		Use:   "chatbots",
@@ -139,25 +111,14 @@ or a manifest for a specific User.`,
 		APIKind: "User",
 		NameArg: cmd.NameArgSpec{Mode: cmd.NameArgFlag, Kwarg: "username", Shorthand: "u", Usage: "Smarter username"},
 	},
-
-	// v0.14 resources. apiconnections/sqlconnections supersede the old
-	// PluginDataApiConnection/PluginDataSqlConnection kinds; the API kind
-	// strings below are best-guess placeholders pending backend confirmation.
-	spec("apiconnections", "ApiConnection", "ApiConnection", "ApiConnections"),
-	spec("sqlconnections", "SqlConnection", "SqlConnection", "SqlConnections"),
-	spec("apiplugins", "ApiPlugin", "ApiPlugin", "ApiPlugins"),
-	spec("sqlplugins", "SqlPlugin", "SqlPlugin", "SqlPlugins"),
-	spec("llmclients", "LlmClient", "LlmClient", "LlmClients"),
-	spec("prompts", "Prompt", "Prompt", "Prompts"),
-	spec("promptconfigs", "PromptConfig", "PromptConfig", "PromptConfigs"),
-	spec("providers", "Provider", "Provider", "Providers"),
-	spec("proxies", "Proxy", "Proxy", "Proxies"),
-	spec("secrets", "secret", "Secret", "Secrets"),
-	spec("vectorstores", "Vectorstore", "Vectorstore", "Vectorstores"),
 }
 
 func init() {
-	for _, s := range resourceSpecs {
-		cmd.RegisterResourceCmd(getCmd, s, APIRequest, ConsoleOutput, ErrorOutput)
+	cmd.RegisterResources(getCmd, legacySpecs, APIRequest, ConsoleOutput, cmd.ErrorOutput)
+
+	specs := make([]cmd.ResourceSpec, len(cmd.ResourceKinds))
+	for i, k := range cmd.ResourceKinds {
+		specs[i] = k.GetSpec()
 	}
+	cmd.RegisterResources(getCmd, specs, APIRequest, ConsoleOutput, cmd.ErrorOutput)
 }

@@ -1,7 +1,6 @@
 /*
-Copyright © 2024 Lawrence McDaniel Copyright © 2024 Lawrence McDaniel <lpm0073@gmail.com>
-Website: https://lawrencemcdaniel.com
-Website: https://lawrencemcdaniel.com
+Copyright © 2024 Lawrence McDaniel <lpm0073@gmail.com>
+Website: https://lawrencemcdaniel.com>
 */
 package cmd
 
@@ -50,27 +49,19 @@ func init() {
 
 	// Add the --environment flag
 	RootCmd.PersistentFlags().StringVar(&environment, "environment", "", "environment to use: local, alpha, beta, next, prod. Default is prod")
-	if err := viper.BindPFlag("environment", RootCmd.PersistentFlags().Lookup("environment")); err != nil {
-		log.Fatalf("Error binding flag: %v", err)
-	}
+	mustBindPFlag("environment", RootCmd.PersistentFlags().Lookup("environment"))
 
 	// Add the --api_key flag
 	RootCmd.PersistentFlags().String("api_key", "", "Smarter API key to use")
-	if err := viper.BindPFlag("api_key", RootCmd.PersistentFlags().Lookup("api_key")); err != nil {
-		log.Fatalf("Error binding flag: %v", err)
-	}
+	mustBindPFlag("api_key", RootCmd.PersistentFlags().Lookup("api_key"))
 
 	// Add the --verbose toggle
 	RootCmd.PersistentFlags().BoolP("verbose", "v", false, "verbose output")
-	if err := viper.BindPFlag("verbose", RootCmd.PersistentFlags().Lookup("verbose")); err != nil {
-		log.Fatalf("Error binding toggle: %v", err)
-	}
+	mustBindPFlag("verbose", RootCmd.PersistentFlags().Lookup("verbose"))
 
 	// Add the --output_format flag
 	RootCmd.PersistentFlags().StringP("output_format", "o", "json", "output format: json, yaml")
-	if err := viper.BindPFlag("output_format", RootCmd.PersistentFlags().Lookup("output_format")); err != nil {
-		log.Fatalf("Error binding flag: %v", err)
-	}
+	mustBindPFlag("output_format", RootCmd.PersistentFlags().Lookup("output_format"))
 
 	// Bind the flag value validators
 	RootCmd.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
@@ -135,23 +126,26 @@ func initConfig() {
 
 	viper.AutomaticEnv() // read in environment variables that match
 
+	// Set defaults unconditionally so that they backfill missing keys in an
+	// existing config file as well as seed a brand-new one.
+	defaultConfig := map[string]interface{}{
+		"account_number": "",
+		"environment":    "prod",
+		"output_format":  "yaml",
+		"root_domain":    "platform.smarter.sh",
+	}
+	viper.SetDefault("config", defaultConfig)
+	envConfig := map[string]interface{}{
+		"api_key": "",
+	}
+	viper.SetDefault("local", envConfig)
+	viper.SetDefault("alpha", envConfig)
+	viper.SetDefault("beta", envConfig)
+	viper.SetDefault("prod", envConfig)
+
 	// If a config file is found, read it in. Otherwise,
 	// create a default config file.
 	if err := viper.ReadInConfig(); err != nil {
-		defaultConfig := map[string]interface{}{
-			"account_number": "",
-			"environment":    "prod",
-			"output_format":  "yaml",
-		}
-		viper.SetDefault("config", defaultConfig)
-		envConfig := map[string]interface{}{
-			"api_key": "",
-		}
-		viper.SetDefault("local", envConfig)
-		viper.SetDefault("alpha", envConfig)
-		viper.SetDefault("beta", envConfig)
-		viper.SetDefault("prod", envConfig)
-
 		if _, err := os.Stat(configDir); os.IsNotExist(err) {
 			if err := os.Mkdir(configDir, 0755); err != nil {
 				log.Fatal(err)

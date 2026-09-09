@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/smarter-sh/smarter-cli/cmd"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -21,11 +22,11 @@ var promptCmd = &cobra.Command{
 	smarter chat prompt --chatbot <chatbot> [--new_session]
 
 The Smarter API will send the prompt to the ChatBot and return its response.`,
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(c *cobra.Command, args []string) {
 
-		prompt, _ := cmd.Flags().GetString("prompt")
-		chatbot, _ := cmd.Flags().GetString("chatbot")
-		new_session, _ := cmd.Flags().GetBool("new_session")
+		prompt, _ := c.Flags().GetString("prompt")
+		chatbot, _ := c.Flags().GetString("chatbot")
+		newSession, _ := c.Flags().GetBool("new_session")
 		uid := getUniqueID()
 
 		if prompt == "" {
@@ -38,7 +39,7 @@ The Smarter API will send the prompt to the ChatBot and return its response.`,
 
 		kwargs := map[string]string{
 			"uid":         uid,
-			"new_session": fmt.Sprintf("%t", new_session),
+			"new_session": fmt.Sprintf("%t", newSession),
 		}
 
 		dict := map[string]string{"prompt": prompt}
@@ -49,7 +50,7 @@ The Smarter API will send the prompt to the ChatBot and return its response.`,
 		path := fmt.Sprintf("%s/", chatbot)
 		bodyJson, err := APIRequest(path, kwargs, fileContents)
 		if err != nil {
-			ErrorOutput(err)
+			cmd.ErrorOutput(err)
 		} else {
 			ConsoleOutput(bodyJson)
 		}

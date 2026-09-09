@@ -24,8 +24,10 @@ configured api_key.`,
 		bodyJson, err := APIRequest("whoami", kwargs)
 		if err != nil {
 			ErrorOutput(err)
-		} else {
-			ConsoleOutput(bodyJson)
+			return
+		}
+		if err := ConsoleOutput(bodyJson); err != nil {
+			ErrorOutput(err)
 		}
 	},
 }

@@ -1,6 +1,6 @@
 default_language_version:
   # default language version for each language
-  golang: '1.22'
+  golang: '1.27'
 repos:
   - repo: https://github.com/dnephin/pre-commit-golang
     rev: v0.5.1
@@ -9,8 +9,9 @@ repos:
       - id: go-vet
       - id: go-imports
       - id: golangci-lint
+      - id: go-unit-tests
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
+    rev: v6.0.0
     hooks:
       - id: check-added-large-files
       - id: check-case-conflict
@@ -31,7 +32,7 @@ repos:
       - id: check-merge-conflict
       - id: debug-statements
   - repo: https://github.com/alessandrojcm/commitlint-pre-commit-hook
-    rev: v9.20.0
+    rev: v9.25.0
     hooks:
       - id: commitlint
         stages: [commit-msg]
@@ -50,6 +51,7 @@ ci:
       go-vet,
       go-imports,
       golangci-lint,
+      go-unit-tests,
       commitlint,
     ]
   submodules: false
