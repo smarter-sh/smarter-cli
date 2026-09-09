@@ -12,12 +12,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Check out code
-      uses: actions/checkout@v5
+      uses: actions/checkout@v7
       with:
         token: ${{ secrets.PAT }}
 
     - name: Setup Node.js environment
-      uses: actions/setup-node@v6
+      uses: actions/setup-node@v7
       with:
         node-version: "24.10"
 
@@ -25,9 +25,7 @@ jobs:
       run: npm install
 
     - name: Set up Go
-      uses: actions/setup-go@v6
-      with:
-        go-version: '1.22'
+      uses: actions/checkout@v7
 
     - name: Get dependencies
       run: go get -v -t ./...
@@ -41,14 +39,12 @@ jobs:
     runs-on: windows-latest
     steps:
     - name: Check out code
-      uses: actions/checkout@v5
+      uses: actions/checkout@v7
       with:
         token: ${{ secrets.PAT }}
 
     - name: Set up Go
-      uses: actions/setup-go@v6
-      with:
-        go-version: '1.22'
+      uses: actions/checkout@v7
 
     - name: Get dependencies
       run: go get -v -t ./...
@@ -100,16 +96,14 @@ jobs:
     strategy:
       matrix:
         os: [macos-latest, ubuntu-latest]
-        go: ['1.22']
+        go: ['1.27']
 
     steps:
     - name: Set up Go
-      uses: actions/setup-go@v6
-      with:
-        go-version: ${{ matrix.go }}
+      uses: actions/checkout@v7
 
     - name: Check out code
-      uses: actions/checkout@v5
+      uses: actions/checkout@v7
       with:
         token: ${{ secrets.PAT }}
 
@@ -164,7 +158,7 @@ jobs:
     steps:
 
     - name: Check out code
-      uses: actions/checkout@v5
+      uses: actions/checkout@v7
       with:
         token: ${{ secrets.PAT }}
 
