@@ -3,6 +3,14 @@
 %:
 	dh $@
 
+override_dh_auto_configure:
+
+override_dh_auto_build:
+
+override_dh_auto_test:
+
+override_dh_auto_clean:
+
 override_dh_install:
 	VERSION=$$(cat $(CURDIR)/VERSION); \
 	wget -O smarter https://github.com/smarter-sh/smarter-cli/releases/download/v$$VERSION/smarter-ubuntu-latest-$$VERSION
