@@ -39,7 +39,9 @@ func ConsoleOutput(bodyJson []byte) {
 			log.Fatalf("Error occurred during marshalling. %v", err)
 		}
 	}
-	cmd.ConsoleOutput(bodyJson)
+	if err := cmd.ConsoleOutput(bodyJson); err != nil {
+		cmd.ErrorOutput(err)
+	}
 }
 
 var manifestCmd = &cobra.Command{

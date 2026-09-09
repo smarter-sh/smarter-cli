@@ -44,7 +44,23 @@ Contact support@querium.com if you need help finding your API key`
 	return nil
 }
 
+// apiHostOverride, when non-empty, is returned by getAPIHost instead of the
+// environment-derived host. It exists so tests can point APIRequest at an
+// httptest.Server without a live network dependency.
+var apiHostOverride string
+
+// SetAPIHostOverride overrides the host used by APIRequest. Pass "" to clear
+// the override and resume deriving the host from the environment/root_domain
+// config. For use by tests only.
+func SetAPIHostOverride(host string) {
+	apiHostOverride = host
+}
+
 func getAPIHost() string {
+	if apiHostOverride != "" {
+		return apiHostOverride
+	}
+
 	environment := viper.GetString("environment")
 	rootDomain := viper.GetString("config.root_domain")
 	baseURL := fmt.Sprintf("https://%%s.%s", rootDomain)
@@ -127,7 +143,11 @@ func APIRequest(slug string, kwargs map[string]string, fileContents ...string) (
 	if err != nil {
 		ErrorOutput(err)
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if cerr := resp.Body.Close(); cerr != nil {
+			ErrorOutput(cerr)
+		}
+	}()
 
 	if verbose {
 		respDump, err := httputil.DumpResponse(resp, false)

@@ -21,7 +21,9 @@ func readManifest(filename string) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("failed opening manifest file: %w", err)
 	}
-	defer file.Close()
+	defer func() {
+		_ = file.Close()
+	}()
 
 	byteValue, err := io.ReadAll(file)
 	if err != nil {

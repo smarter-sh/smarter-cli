@@ -37,7 +37,9 @@ func ConsoleOutput(bodyJson []byte) {
 	if !viper.IsSet("output_format") {
 		viper.Set("output_format", "tabular")
 	}
-	cmd.ConsoleOutput(bodyJson)
+	if err := cmd.ConsoleOutput(bodyJson); err != nil {
+		cmd.ErrorOutput(err)
+	}
 }
 
 var getCmd = &cobra.Command{

@@ -69,14 +69,18 @@ func TableOutput(bodyJson []byte) error {
 	for i, title := range titles {
 		titleNames[i] = title.Name
 	}
-	fmt.Fprintln(w, strings.Join(titleNames, "\t"))
+	if _, err := fmt.Fprintln(w, strings.Join(titleNames, "\t")); err != nil {
+		return fmt.Errorf("failed writing table titles: %w", err)
+	}
 
 	// print dashed line
 	dashes := make([]string, len(titles))
 	for i, title := range titles {
 		dashes[i] = strings.Repeat("-", len(title.Name))
 	}
-	fmt.Fprintln(w, strings.Join(dashes, "\t"))
+	if _, err := fmt.Fprintln(w, strings.Join(dashes, "\t")); err != nil {
+		return fmt.Errorf("failed writing table separator: %w", err)
+	}
 
 	// print data rows
 	for _, item := range body.Data.Data.Items {
@@ -97,10 +101,14 @@ func TableOutput(bodyJson []byte) error {
 				values[i] = fmt.Sprint(value)
 			}
 		}
-		fmt.Fprintln(w, strings.Join(values, "\t"))
+		if _, err := fmt.Fprintln(w, strings.Join(values, "\t")); err != nil {
+			return fmt.Errorf("failed writing table row: %w", err)
+		}
 	}
 
-	w.Flush()
+	if err := w.Flush(); err != nil {
+		return fmt.Errorf("failed flushing table writer: %w", err)
+	}
 	return nil
 }
 
