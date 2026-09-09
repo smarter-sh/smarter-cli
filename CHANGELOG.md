@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 
 
+## [0.3.1](https://github.com/smarter-sh/smarter-cli/compare/v0.3.0...v0.3.1) (2026-09-09)
+
+
+### Bug Fixes
+
+* package error ([cc03fda](https://github.com/smarter-sh/smarter-cli/commit/cc03fda188e8f68454748cda641ecea67dd9c0cf))
+
 # [0.3.0](https://github.com/smarter-sh/smarter-cli/compare/v0.2.1...v0.3.0) (2026-09-09)
 
 
