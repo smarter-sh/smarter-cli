@@ -66,12 +66,16 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v7
 
-    - name: Install packaging tools
-      shell: bash
+    - name: Install Debian packaging dependencies
       run: |
-        sudo grep -rl "dl.google.com/linux/chrome" /etc/apt/sources.list.d/ 2>/dev/null | xargs -r sudo rm -f
+        sudo grep -rl "dl.google.com/linux/chrome" /etc/apt/sources.list.d/ 2>/dev/null \
+          | xargs -r sudo rm -f || true
         sudo apt-get update
-        sudo apt-get install -y devscripts dput build-essential debhelper
+        sudo apt-get install -y \
+          devscripts \
+          dput \
+          build-essential \
+          debhelper
 
     - name: Import GPG key
       shell: bash
