@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 
 
+# [0.4.0](https://github.com/smarter-sh/smarter-cli/compare/v0.3.1...v0.4.0) (2026-10-02)
+
+
+### Features
+
+* add new v0.16 resources - budget, llmhostcompute, websearchplugin ([b65fcb5](https://github.com/smarter-sh/smarter-cli/commit/b65fcb53853d137591dcb047b158055606cbd945))
+
 ## [0.3.1](https://github.com/smarter-sh/smarter-cli/compare/v0.3.0...v0.3.1) (2026-09-09)
 
 
