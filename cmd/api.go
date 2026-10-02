@@ -57,32 +57,32 @@ func SetAPIHostOverride(host string) {
 }
 
 func getAPIHost() string {
+
 	if apiHostOverride != "" {
 		return apiHostOverride
 	}
-
 	environment := viper.GetString("environment")
 	rootDomain := viper.GetString("config.root_domain")
-	baseURL := fmt.Sprintf("https://%%s.%s", rootDomain)
-
 	if viper.GetBool("verbose") {
 		log.Printf("Environment: %s", environment)
 	}
-
 	switch environment {
 	case "local":
 		return "http://localhost:9357"
-	case "alpha":
-		return fmt.Sprintf(baseURL, "alpha")
-	case "beta":
-		return fmt.Sprintf(baseURL, "beta")
-	case "next":
-		return fmt.Sprintf(baseURL, "next")
+	case "alpha", "beta", "next":
+		return fmt.Sprintf("https://%s.%s", environment, rootDomain)
 	case "prod":
 		return fmt.Sprintf("https://%s", rootDomain)
 	default:
-		panic(fmt.Sprintf("invalid environment: %s", environment))
+		return panicString(fmt.Sprintf("invalid environment: %s", environment))
 	}
+
+}
+
+func panicString(message string) string {
+
+	panic(message)
+
 }
 
 func APIRequest(slug string, kwargs map[string]string, fileContents ...string) ([]byte, error) {
