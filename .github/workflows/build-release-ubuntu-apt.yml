@@ -52,6 +52,16 @@ name: Build-Release Ubuntu APT
 
 on:
   workflow_dispatch:
+    inputs:
+      distribution:
+        # Launchpad builds only for an Ubuntu series it knows (e.g. noble,
+        # resolute); a Debian name such as "unstable" is rejected with
+        # "Unable to find distroseries". The cli is a static Go binary, so one
+        # series is enough: copy the built package to other series from the
+        # PPA's "Copy packages" page.
+        description: Ubuntu series to build for
+        required: true
+        default: noble
 
 env:
     container_name: smarter-cli
@@ -95,7 +105,7 @@ jobs:
         VERSION=$(cat VERSION)
         export DEBEMAIL="lpm0073@gmail.com"
         export DEBFULLNAME="Lawrence McDaniel"
-        dch --newversion "${VERSION}-1" --distribution unstable --force-distribution "Release ${VERSION}"
+        dch --newversion "${VERSION}-1" --distribution "${{ inputs.distribution }}" --force-distribution "Release ${VERSION}"
 
     - name: Create original source tarball
       shell: bash
