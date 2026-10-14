@@ -4,11 +4,12 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+	"time"
 )
 
 // testAPIKey is a syntactically valid (64 hex char) placeholder API key used
 // throughout the test config fixture below.
-const testAPIKey = "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcd"
+const testAPIKey = "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
 
 const testConfigYAML = `config:
   account_number: "1234-5678-9012"
@@ -33,6 +34,15 @@ prod:
 // api_key, which would corrupt the developer's real home directory or crash
 // the test binary.
 func TestMain(m *testing.M) {
+	// retries don't wait in tests; TestAPIRequestRetries records the delays.
+	sleep = func(time.Duration) {}
+
+	// a developer's SMARTER_* variables must not change the tests' outcome.
+	for _, name := range SmarterEnvironmentVariables {
+		if err := os.Unsetenv(name); err != nil {
+			panic(err)
+		}
+	}
 	dir, err := os.MkdirTemp("", "smarter-cli-test-home")
 	if err != nil {
 		panic(err)

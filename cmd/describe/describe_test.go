@@ -66,7 +66,7 @@ func TestDescribeRegistersLegacyAndGeneratedKinds(t *testing.T) {
 		got[strings.Fields(c.Use)[0]] = true
 	}
 
-	for _, legacyName := range []string{"account", "chatbot", "plugin", "user"} {
+	for _, legacyName := range []string{"account", "plugin", "user"} {
 		if !got[legacyName] {
 			t.Errorf("expected legacy describe command %q to be registered", legacyName)
 		}
@@ -77,7 +77,7 @@ func TestDescribeRegistersLegacyAndGeneratedKinds(t *testing.T) {
 		}
 	}
 
-	wantCount := 4 + len(cmd.ResourceKinds)
+	wantCount := 3 + len(cmd.ResourceKinds)
 	if len(describeCmd.Commands()) != wantCount {
 		t.Errorf("describe has %d subcommands, want %d", len(describeCmd.Commands()), wantCount)
 	}

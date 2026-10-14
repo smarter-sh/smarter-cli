@@ -23,13 +23,18 @@ func captureStdout(t *testing.T, fn func()) string {
 		t.Fatalf("os.Pipe() error = %v", err)
 	}
 	os.Stdout = w
+	// restore stdout even when fn panics, e.g. through a test's exit hook:
+	// the test binary prints its coverage to os.Stdout when it ends.
+	restore := func() {
+		if os.Stdout == w {
+			os.Stdout = old
+			_ = w.Close()
+		}
+	}
+	defer restore()
 
 	fn()
-
-	if err := w.Close(); err != nil {
-		t.Fatalf("w.Close() error = %v", err)
-	}
-	os.Stdout = old
+	restore()
 
 	var buf bytes.Buffer
 	if _, err := io.Copy(&buf, r); err != nil {
@@ -191,5 +196,42 @@ func TestConsoleOutputDispatchesOnFormat(t *testing.T) {
 				t.Errorf("output = %q, want it to contain %q", out, tc.want)
 			}
 		})
+	}
+}
+
+func TestDataOutputPrintsTheDataMember(t *testing.T) {
+	withViperValue(t, "output_format", nil)
+	out := captureStdout(t, func() {
+		if err := DataOutput([]byte(`{"data":{"kind":"Secret"},"message":"ok"}`), "yaml"); err != nil {
+			t.Fatalf("DataOutput() error = %v", err)
+		}
+	})
+	if !strings.Contains(out, "kind: Secret") || strings.Contains(out, "message") {
+		t.Errorf("output = %q, want the data member alone, as the default format", out)
+	}
+	if err := DataOutput([]byte(`not json`), "json"); err == nil {
+		t.Error("DataOutput(not json) = nil, want an error")
+	}
+}
+
+func TestTableOutputShowsANonStringDateAsIs(t *testing.T) {
+	body := `{"data":{"data":{"titles":[{"name":"created","type":"DateTimeField"}],"items":[{"created":12}]}}}`
+	out := captureStdout(t, func() {
+		if err := TableOutput([]byte(body)); err != nil {
+			t.Fatalf("TableOutput() error = %v", err)
+		}
+	})
+	if !strings.Contains(out, "12") {
+		t.Errorf("output = %q, want the value as is", out)
+	}
+}
+
+func TestSetExitFuncRestoresOsExit(t *testing.T) {
+	called := false
+	SetExitFunc(func(int) { called = true })
+	ErrorOutput(errors.New("boom"))
+	SetExitFunc(nil)
+	if !called {
+		t.Error("ErrorOutput didn't call the replaced exit function")
 	}
 }

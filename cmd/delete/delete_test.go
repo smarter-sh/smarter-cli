@@ -41,11 +41,11 @@ func TestAPIRequestRoutesUnderDeletePrefix(t *testing.T) {
 	})
 	defer srv.Close()
 
-	if _, err := APIRequest("chatbot", map[string]string{"name": "foo"}); err != nil {
+	if _, err := APIRequest("LLMClient", map[string]string{"name": "foo"}); err != nil {
 		t.Fatalf("APIRequest() error = %v", err)
 	}
-	if gotPath != "/api/v1/cli/delete/chatbot/" {
-		t.Errorf("path = %q, want /api/v1/cli/delete/chatbot/", gotPath)
+	if gotPath != "/api/v1/cli/delete/llmclient/" {
+		t.Errorf("path = %q, want /api/v1/cli/delete/llmclient/", gotPath)
 	}
 }
 
@@ -57,14 +57,10 @@ func TestConsoleOutputPrintsDeleted(t *testing.T) {
 }
 
 func TestDeleteCmdRegistersExpectedLeafCommands(t *testing.T) {
-	want := map[string]string{
-		"apiconnection": "PluginDataApiConnection",
-		"apikey":        "SmarterAuthToken",
-		"chat":          "chat",
-		"chatbot":       "chatbot",
-		"plugin":        "plugin",
-		"sqlconnection": "PluginDataSqlConnection",
-		"user":          "user",
+	// the legacy plugin and user commands, and one per registered kind
+	want := map[string]bool{"plugin": true, "user": true}
+	for _, k := range cmd.ResourceKinds {
+		want[k.Singular] = true
 	}
 
 	got := map[string]bool{}
@@ -81,7 +77,7 @@ func TestDeleteCmdRegistersExpectedLeafCommands(t *testing.T) {
 	}
 }
 
-func TestDeleteChatbotEndToEnd(t *testing.T) {
+func TestDeleteLLMClientEndToEnd(t *testing.T) {
 	var gotPath, gotQuery string
 	srv := newMockAPIServer(t, func(w http.ResponseWriter, r *http.Request) {
 		gotPath = r.URL.Path
@@ -91,15 +87,15 @@ func TestDeleteChatbotEndToEnd(t *testing.T) {
 	})
 	defer srv.Close()
 
-	cmd.RootCmd.SetArgs([]string{"delete", "chatbot", "my-bot"})
+	cmd.RootCmd.SetArgs([]string{"delete", "llmclient", "my-bot"})
 	out := captureStdout(t, func() {
 		if err := cmd.RootCmd.Execute(); err != nil {
 			t.Fatalf("Execute() error = %v", err)
 		}
 	})
 
-	if gotPath != "/api/v1/cli/delete/chatbot/" {
-		t.Errorf("path = %q, want /api/v1/cli/delete/chatbot/", gotPath)
+	if gotPath != "/api/v1/cli/delete/llmclient/" {
+		t.Errorf("path = %q, want /api/v1/cli/delete/llmclient/", gotPath)
 	}
 	if !strings.Contains(gotQuery, "name=my-bot") {
 		t.Errorf("query = %q, want it to contain name=my-bot", gotQuery)

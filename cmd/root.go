@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"path/filepath"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -17,7 +16,9 @@ import (
 )
 
 var cfgFile string
-var Version string
+
+// Version is the cli's version, set by main from its -ldflags value.
+var Version = "local.dev"
 
 var RootCmd = &cobra.Command{
 	Use:   "smarter",
@@ -33,9 +34,8 @@ Support: https://smarter.sh and support@smarter.sh.`,
 // This is called by main.main(). It only needs to happen once to the RootCmd.
 func Execute(version string) {
 	Version = version
-	err := RootCmd.Execute()
-	if err != nil {
-		os.Exit(1)
+	if err := RootCmd.Execute(); err != nil {
+		exitFunc(1)
 	}
 }
 
@@ -60,8 +60,16 @@ func init() {
 	mustBindPFlag("verbose", RootCmd.PersistentFlags().Lookup("verbose"))
 
 	// Add the --output_format flag
-	RootCmd.PersistentFlags().StringP("output_format", "o", "json", "output format: json, yaml")
+	RootCmd.PersistentFlags().StringP("output_format", "o", "json", "output format: json, yaml, tabular")
 	mustBindPFlag("output_format", RootCmd.PersistentFlags().Lookup("output_format"))
+
+	// Add the --timeout flag
+	RootCmd.PersistentFlags().Duration("timeout", DefaultTimeout, "how long to wait for the Smarter API, e.g. 30s or 5m")
+	mustBindPFlag("timeout", RootCmd.PersistentFlags().Lookup("timeout"))
+
+	// Add the --max_retries flag
+	RootCmd.PersistentFlags().Int("max_retries", DefaultMaxRetries, "how many times to resend a request that failed for a transient reason")
+	mustBindPFlag("max_retries", RootCmd.PersistentFlags().Lookup("max_retries"))
 
 	// Bind the flag value validators
 	RootCmd.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
@@ -71,27 +79,37 @@ func init() {
 		if err := validateOutputToggles(); err != nil {
 			return err
 		}
-		return nil
+		if err := validateTabular(cmd); err != nil {
+			return err
+		}
+		return validateSmarterEnvironment()
 	}
 }
 
 func validateOutputToggles() error {
 	outputFormat := viper.GetString("output_format")
 
-	// table is used internally for get() commands
-	validFormats := []string{"json", "yaml", "tabular"}
-	isValidFormat := false
-	for _, format := range validFormats {
+	// tabular is used by the get commands
+	for _, format := range []string{"json", "yaml", "tabular"} {
 		if outputFormat == format {
-			isValidFormat = true
-			break
+			return nil
 		}
 	}
+	return fmt.Errorf("invalid output format: %v. Valid formats are 'json', 'yaml' or 'tabular'", outputFormat)
+}
 
-	if !isValidFormat {
-		log.Fatalf("Invalid output format: %v. Valid formats are 'json' or 'yaml'", outputFormat)
+// validateTabular rejects -o tabular outside the get commands: only get
+// responses have the titles and items of a table.
+func validateTabular(cmd *cobra.Command) error {
+	if viper.GetString("output_format") != "tabular" {
+		return nil
 	}
-	return nil
+	for c := cmd; c != nil; c = c.Parent() {
+		if c.Name() == "get" && c.Parent() == RootCmd {
+			return nil
+		}
+	}
+	return fmt.Errorf("the tabular output format is only available for get commands; use json or yaml")
 }
 
 func validateEnvironmentFlag() error {
@@ -107,20 +125,23 @@ func validateEnvironmentFlag() error {
 }
 
 // initConfig reads in config file and ENV variables if set.
+//
+// It never exits: a missing api_key is reported by the first command that
+// needs one (verifyApiKey), so that "smarter configure" and "smarter version"
+// work on a fresh install. The SMARTER_* variables that it needs are applied
+// first (applySmarterEnvironment).
 func initConfig() {
-	home, err := os.UserHomeDir()
+	applySmarterEnvironment()
+	configFile, err := configFilePath()
 	cobra.CheckErr(err)
-	configDir := filepath.Join(home, ".smarter")
-	configFile := filepath.Join(configDir, "config.yaml")
 
 	if cfgFile != "" {
 		// Use config file from the flag.
 		viper.SetConfigFile(cfgFile)
 	} else {
 		// Search config in .smarter directory in home directory with name "config" (without extension).
-		viper.AddConfigPath(configDir)
+		viper.SetConfigFile(configFile)
 		viper.SetConfigType("yaml")
-		viper.SetConfigName("config")
 		viper.SetEnvPrefix("config")
 	}
 
@@ -128,42 +149,33 @@ func initConfig() {
 
 	// Set defaults unconditionally so that they backfill missing keys in an
 	// existing config file as well as seed a brand-new one.
-	defaultConfig := map[string]interface{}{
+	viper.SetDefault("config", map[string]interface{}{
 		"account_number": "",
 		"environment":    "prod",
 		"output_format":  "yaml",
 		"root_domain":    "platform.smarter.sh",
+		"username":       "",
+	})
+	for _, env := range validEnvironments {
+		viper.SetDefault(env, map[string]interface{}{"api_key": ""})
 	}
-	viper.SetDefault("config", defaultConfig)
-	envConfig := map[string]interface{}{
-		"api_key": "",
-	}
-	viper.SetDefault("local", envConfig)
-	viper.SetDefault("alpha", envConfig)
-	viper.SetDefault("beta", envConfig)
-	viper.SetDefault("prod", envConfig)
 
-	// If a config file is found, read it in. Otherwise,
-	// create a default config file.
+	// If a config file is found, read it in. Otherwise, create one.
 	if err := viper.ReadInConfig(); err != nil {
-		if _, err := os.Stat(configDir); os.IsNotExist(err) {
-			if err := os.Mkdir(configDir, 0755); err != nil {
-				log.Fatal(err)
-			}
+		if _, statErr := os.Stat(configFile); !os.IsNotExist(statErr) {
+			fmt.Fprintf(os.Stderr, "Failed to read config file %s: %v\n", configFile, err)
+		} else {
 			fmt.Fprintln(os.Stderr, strings.Repeat("*", 80))
 			fmt.Fprintln(os.Stderr, "Welcome to the Smarter CLI!")
-			fmt.Fprintln(os.Stderr, "Please note your smarter configuration path:", configDir)
+			fmt.Fprintln(os.Stderr, "Please note your smarter configuration file:", configFile)
+			fmt.Fprintln(os.Stderr, "Set your credentials with: smarter configure")
 			fmt.Fprintln(os.Stderr, strings.Repeat("*", 80))
+			if err := writeConfigFile(configFile); err != nil {
+				fmt.Fprintln(os.Stderr, "Failed to write default config file:", err)
+			}
 		}
-
-		err := viper.SafeWriteConfigAs(configFile)
-		if err != nil {
-			fmt.Fprintln(os.Stderr, "Failed to write default config file:", err)
-		}
-	} else {
-		if viper.GetBool("verbose") {
-			log.Printf("Using config file: %s", viper.ConfigFileUsed())
-		}
+	} else if viper.GetBool("verbose") {
+		log.Printf("Using config file: %s", viper.ConfigFileUsed())
 	}
 
 	// Set the environment from the config file if not set by flag
@@ -171,25 +183,14 @@ func initConfig() {
 		environment = viper.GetString("config.environment")
 		if environment == "" {
 			environment = "prod"
-			log.Printf("No environment set. Defaulting to: %s", environment)
 		}
 		viper.Set("environment", environment)
 	}
 
 	if viper.GetBool("verbose") {
-		log.Printf("Environment set to: %s", environment)
-	}
-
-	// If the api_key flag was not passed on the command line then get the it from the appropriate environment section
-	if viper.GetString("api_key") == "" {
-		api_key := viper.GetString(fmt.Sprintf("%s.api_key", environment))
-		if api_key == "" {
-			log.Fatalf("No api_key found for environment: %s", environment)
-		} else {
-			viper.Set("api_key", api_key)
-			if viper.GetBool("verbose") {
-				log.Printf("API key set to: %s****", api_key[len(api_key)-4:])
-			}
+		log.Printf("Environment set to: %s", viper.GetString("environment"))
+		if apiKey := fetchAPIKey(); apiKey != "" {
+			log.Printf("API key set to: %s", maskSecret(apiKey))
 		}
 	}
 }

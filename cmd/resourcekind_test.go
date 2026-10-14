@@ -104,6 +104,45 @@ func TestUndeploySpec(t *testing.T) {
 	}
 }
 
+func TestDeleteSpec(t *testing.T) {
+	spec := sampleKind().DeleteSpec()
+
+	if spec.Use != "widget <name>" || spec.APIKind != "Widget" {
+		t.Errorf("spec = %+v", spec)
+	}
+	if spec.NameArg.Mode != NameArgPositional || spec.NameArg.Kwarg != "name" {
+		t.Errorf("NameArg = %+v", spec.NameArg)
+	}
+	if !strings.Contains(spec.Long, "smarter delete widget") {
+		t.Errorf("Long = %q, want an example invocation", spec.Long)
+	}
+}
+
+func TestLogsSpec(t *testing.T) {
+	spec := sampleKind().LogsSpec()
+
+	if spec.Use != "widget <name>" || spec.APIKind != "Widget" {
+		t.Errorf("spec = %+v", spec)
+	}
+	if !strings.Contains(spec.Long, "smarter logs widget") {
+		t.Errorf("Long = %q, want an example invocation", spec.Long)
+	}
+}
+
+func TestJSONSchemaSpec(t *testing.T) {
+	spec := sampleKind().JSONSchemaSpec()
+
+	if spec.Use != "widget" || spec.APIKind != "Widget" {
+		t.Errorf("spec = %+v", spec)
+	}
+	if spec.NameArg.Mode != NameArgNone {
+		t.Errorf("NameArg = %+v, want none", spec.NameArg)
+	}
+	if !strings.Contains(spec.Long, "smarter json-schema widget") {
+		t.Errorf("Long = %q, want an example invocation", spec.Long)
+	}
+}
+
 func TestByUse(t *testing.T) {
 	kinds := []ResourceKind{sampleKind(), {Singular: "gadget", APIKind: "Gadget"}}
 

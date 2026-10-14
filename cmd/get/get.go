@@ -6,7 +6,6 @@ package get
 
 import (
 	"log"
-	"strconv"
 
 	"github.com/smarter-sh/smarter-cli/cmd"
 
@@ -15,18 +14,6 @@ import (
 )
 
 func APIRequest(kind string, kwargs map[string]string) ([]byte, error) {
-
-	i := viper.GetInt("i")
-	asc := viper.GetBool("asc")
-	desc := viper.GetBool("desc")
-	commonKwargs := map[string]string{
-		"i":    strconv.Itoa(i),
-		"asc":  strconv.FormatBool(asc),
-		"desc": strconv.FormatBool(desc),
-	}
-	for key, value := range commonKwargs {
-		kwargs[key] = value
-	}
 
 	// en route to /api/v1/cli/get/<str:kind>/
 	return cmd.APIRequest("get/"+kind+"/", kwargs)
@@ -57,15 +44,13 @@ func init() {
 	cmd.RootCmd.AddCommand(getCmd)
 
 	getCmd.PersistentFlags().Int("i", 10, "Number of resources to retrieve")
-	if err := viper.BindPFlag("i", getCmd.PersistentFlags().Lookup("i")); err != nil {
-		log.Fatalf("Error binding flag: %v", err)
-	}
 	getCmd.PersistentFlags().Bool("asc", false, "Sort results in ascending order")
-	if err := viper.BindPFlag("asc", getCmd.PersistentFlags().Lookup("asc")); err != nil {
-		log.Fatalf("Error binding flag: %v", err)
-	}
 	getCmd.PersistentFlags().Bool("desc", false, "Sort results in descending order")
-	if err := viper.BindPFlag("desc", getCmd.PersistentFlags().Lookup("desc")); err != nil {
-		log.Fatalf("Error binding flag: %v", err)
+	// The Smarter API ignores these: each kind returns its resources in a fixed
+	// order, up to a fixed number. They stay accepted, so that old scripts run.
+	for _, name := range []string{"i", "asc", "desc"} {
+		if err := getCmd.PersistentFlags().MarkDeprecated(name, "the Smarter API ignores it"); err != nil {
+			log.Fatalf("Error deprecating flag: %v", err)
+		}
 	}
 }

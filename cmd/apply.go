@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"strconv"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -40,8 +39,8 @@ var applyCmd = &cobra.Command{
 smarter apply -f <manifest.yaml> [--dry-run]
 
 The Smarter API will apply the manifest to the Smarter account, migrating
-the resource to the new state. The --dry-run flag simulates the apply
-without making any changes.`,
+the resource to the new state. The --dry-run flag validates the manifest
+instead, as smarter validate does, and changes nothing.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fileContents, err := readManifest(viper.GetString("filename"))
 		if err != nil {
@@ -49,20 +48,28 @@ without making any changes.`,
 			return
 		}
 
-		dryRun := viper.GetBool("dry_run")
-		kwargs := map[string]string{
-			"dry_run": strconv.FormatBool(dryRun),
+		// The platform's apply has no dry run, so --dry-run validates instead:
+		// /api/v1/cli/validate/ checks the manifest as apply does first,
+		// without saving it.
+		if viper.GetBool("dry_run") {
+			bodyJson, err := APIRequest("validate", map[string]string{}, fileContents)
+			if err == nil {
+				err = reportValidation(bodyJson)
+			}
+			if err != nil {
+				ErrorOutput(err)
+				return
+			}
+			fmt.Println("(dry run: the manifest was validated, and nothing was applied)")
+			return
 		}
 
 		// this request goes to /api/v1/cli/apply/
-		_, err = APIRequest("apply", kwargs, fileContents)
-		if err != nil {
+		if _, err := APIRequest("apply", map[string]string{}, fileContents); err != nil {
 			ErrorOutput(err)
-		} else if dryRun {
-			fmt.Println("manifest applied. (dry run, no changes were made)")
-		} else {
-			fmt.Println("manifest applied.")
+			return
 		}
+		fmt.Println("manifest applied.")
 	},
 }
 

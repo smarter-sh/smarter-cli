@@ -39,11 +39,11 @@ func TestAPIRequestRoutesUnderLogsPrefix(t *testing.T) {
 	})
 	defer srv.Close()
 
-	if _, err := APIRequest("ChatBot", map[string]string{}); err != nil {
+	if _, err := APIRequest("LLMClient", map[string]string{}); err != nil {
 		t.Fatalf("APIRequest() error = %v", err)
 	}
-	if gotPath != "/api/v1/cli/logs/chatbot/" {
-		t.Errorf("path = %q, want /api/v1/cli/logs/chatbot/", gotPath)
+	if gotPath != "/api/v1/cli/logs/llmclient/" {
+		t.Errorf("path = %q, want /api/v1/cli/logs/llmclient/", gotPath)
 	}
 }
 
@@ -58,7 +58,10 @@ func TestConsoleOutputRendersBody(t *testing.T) {
 }
 
 func TestLogsRegistersExpectedLeafCommands(t *testing.T) {
-	want := []string{"chat", "chatbot", "chat-history"}
+	want := []string{"plugin"}
+	for _, k := range cmd.ResourceKinds {
+		want = append(want, k.Singular)
+	}
 	got := map[string]bool{}
 	for _, c := range logsCmd.Commands() {
 		got[strings.Fields(c.Use)[0]] = true
@@ -73,7 +76,7 @@ func TestLogsRegistersExpectedLeafCommands(t *testing.T) {
 	}
 }
 
-func TestLogsChatbotEndToEnd(t *testing.T) {
+func TestLogsLLMClientEndToEnd(t *testing.T) {
 	var gotPath, gotQuery string
 	srv := newMockAPIServer(t, func(w http.ResponseWriter, r *http.Request) {
 		gotPath = r.URL.Path
@@ -84,15 +87,15 @@ func TestLogsChatbotEndToEnd(t *testing.T) {
 	defer srv.Close()
 	withViperValue(t, "output_format", "json")
 
-	cmd.RootCmd.SetArgs([]string{"logs", "chatbot", "my-bot"})
+	cmd.RootCmd.SetArgs([]string{"logs", "llmclient", "my-bot"})
 	out := captureStdout(t, func() {
 		if err := cmd.RootCmd.Execute(); err != nil {
 			t.Fatalf("Execute() error = %v", err)
 		}
 	})
 
-	if gotPath != "/api/v1/cli/logs/chatbot/" {
-		t.Errorf("path = %q, want /api/v1/cli/logs/chatbot/", gotPath)
+	if gotPath != "/api/v1/cli/logs/llmclient/" {
+		t.Errorf("path = %q, want /api/v1/cli/logs/llmclient/", gotPath)
 	}
 	if !strings.Contains(gotQuery, "name=my-bot") {
 		t.Errorf("query = %q, want it to contain name=my-bot", gotQuery)

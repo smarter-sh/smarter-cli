@@ -6,6 +6,7 @@ package chat
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 
@@ -16,44 +17,45 @@ import (
 
 var promptCmd = &cobra.Command{
 	Use:   "prompt",
-	Short: "Prompt a ChatBot and echo its response to the console",
-	Long: `Prompts a ChatBot and echos its response to the console:
+	Short: "Prompt an LLMClient and echo its response to the console",
+	Long: `Prompts an LLMClient and echos its response to the console:
 
-	smarter chat prompt --chatbot <chatbot> [--new_session]
+	smarter chat prompt --llmclient <name> --prompt <text> [--new_session]
 
-The Smarter API will send the prompt to the ChatBot and return its response.`,
+The Smarter API will send the prompt to the LLMClient and return its response.
+Prompts from this machine share a session until --new_session starts another.`,
 	Run: func(c *cobra.Command, args []string) {
 
 		prompt, _ := c.Flags().GetString("prompt")
-		chatbot, _ := c.Flags().GetString("chatbot")
-		newSession, _ := c.Flags().GetBool("new_session")
-		uid := getUniqueID()
-
 		if prompt == "" {
-			log.Fatalf("The 'prompt' flag is required")
+			cmd.ErrorOutput(errors.New("the 'prompt' flag is required"))
+			return
 		}
-
-		if chatbot == "" {
-			log.Fatalf("The 'chatbot' flag is required")
+		name, err := llmClientName(c)
+		if err != nil {
+			cmd.ErrorOutput(err)
+			return
 		}
+		newSession, _ := c.Flags().GetBool("new_session")
 
 		kwargs := map[string]string{
-			"uid":         uid,
+			"uid":         getUniqueID(),
 			"new_session": fmt.Sprintf("%t", newSession),
 		}
 
-		dict := map[string]string{"prompt": prompt}
-		fileContentsBytes, _ := json.Marshal(dict)
-		fileContents := string(fileContentsBytes)
-
-		// this request goes to /api/v1/cli/chat/config/<str:chatbot>/<str:uid>
-		path := fmt.Sprintf("%s/", chatbot)
-		bodyJson, err := APIRequest(path, kwargs, fileContents)
+		fileContentsBytes, err := json.Marshal(map[string]string{"prompt": prompt})
 		if err != nil {
 			cmd.ErrorOutput(err)
-		} else {
-			ConsoleOutput(bodyJson)
+			return
 		}
+
+		// this request goes to /api/v1/cli/prompt/<str:name>/
+		bodyJson, err := APIRequest(fmt.Sprintf("%s/", name), kwargs, string(fileContentsBytes))
+		if err != nil {
+			cmd.ErrorOutput(err)
+			return
+		}
+		ConsoleOutput(bodyJson)
 
 	},
 }
@@ -61,7 +63,7 @@ The Smarter API will send the prompt to the ChatBot and return its response.`,
 func init() {
 	chatCmd.AddCommand(promptCmd)
 
-	promptCmd.PersistentFlags().StringP("prompt", "p", "", "A prompt to send to the ChatBot")
+	promptCmd.PersistentFlags().StringP("prompt", "p", "", "A prompt to send to the LLMClient")
 	if err := viper.BindPFlag("prompt", promptCmd.PersistentFlags().Lookup("prompt")); err != nil {
 		log.Fatalf("Error binding flag: %v", err)
 	}

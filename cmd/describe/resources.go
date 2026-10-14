@@ -10,6 +10,9 @@ import (
 
 // legacySpecs are resources whose Short/Long text pre-dates the v0.14
 // ResourceKind template and is preserved verbatim rather than regenerated.
+//
+// The ChatBot and chat history kinds were removed: the platform's cli api has
+// no broker for them since v0.14 (LLMClient replaced ChatBot).
 var legacySpecs = []cmd.ResourceSpec{
 	{
 		Use:   "account",
@@ -20,17 +23,6 @@ var legacySpecs = []cmd.ResourceSpec{
 
 This will generate an example manifest for an account and write it to my-plugin.yaml in the current working directory.`,
 		APIKind: "account",
-	},
-	{
-		Use:   "chatbot <name>",
-		Short: "Retrieve a ChatBot manifest by name",
-		Long: `Retrieves a manifest for a chatbot. For example:
-
-	smarter describe chatbot <name> > my-plugin.yaml
-
-This will generate a manifest for a chatbot named <name> and write it to my-plugin.yaml in the current working directory.`,
-		APIKind: "chatbot",
-		NameArg: cmd.NameArgSpec{Mode: cmd.NameArgPositional, Kwarg: "name"},
 	},
 	{
 		Use:   "plugin <name>",
@@ -52,7 +44,7 @@ This will retrieve the manifest for a plugin named <name> and write it to my-plu
 
 This will retrieve a manifest for User <username> and write it to my-plugin.yaml in the current working directory.`,
 		APIKind: "user",
-		NameArg: cmd.NameArgSpec{Mode: cmd.NameArgPositional, Kwarg: "username"},
+		NameArg: cmd.NameArgSpec{Mode: cmd.NameArgPositional, Kwarg: "username", Param: "name"},
 	},
 }
 

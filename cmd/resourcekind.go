@@ -19,7 +19,7 @@ type ResourceKind struct {
 	APIKind       string // the "kind" path segment sent to the Smarter API
 	Display       string // human-readable singular name, e.g. "ApiConnection"
 	DisplayPlural string // human-readable plural name, e.g. "ApiConnections"
-	Deployable    bool   // whether this kind gets "deploy"/"undeploy" commands
+	Deployable    bool   // whether this kind's broker implements deploy and undeploy
 }
 
 // DescribeSpec builds this kind's "describe <name>" ResourceSpec.
@@ -98,6 +98,53 @@ smarter undeploy %s <name>
 This will reverse the effect of having deployed the %s.`, a, k.Display, k.Singular, k.Display),
 		APIKind: k.APIKind,
 		NameArg: NameArgSpec{Mode: NameArgPositional, Kwarg: "name"},
+	}
+}
+
+// DeleteSpec builds this kind's "delete <name>" ResourceSpec.
+func (k ResourceKind) DeleteSpec() ResourceSpec {
+	a := Article(k.Display)
+	return ResourceSpec{
+		Use:   k.Singular + " <name>",
+		Short: fmt.Sprintf("Delete %s %s", a, k.Display),
+		Long: fmt.Sprintf(`Deletes %s %s:
+
+smarter delete %s <name>
+
+The Smarter API will permanently delete the %s with the specified name.`, a, k.Display, k.Singular, k.Display),
+		APIKind: k.APIKind,
+		NameArg: NameArgSpec{Mode: NameArgPositional, Kwarg: "name"},
+	}
+}
+
+// LogsSpec builds this kind's "logs <name>" ResourceSpec.
+func (k ResourceKind) LogsSpec() ResourceSpec {
+	a := Article(k.Display)
+	return ResourceSpec{
+		Use:   k.Singular + " <name>",
+		Short: fmt.Sprintf("Returns the logs for %s %s", a, k.Display),
+		Long: fmt.Sprintf(`Returns the logs for %s %s:
+
+smarter logs %s <name>
+
+The Smarter API will return the logs for the %s with the specified name.`, a, k.Display, k.Singular, k.Display),
+		APIKind: k.APIKind,
+		NameArg: NameArgSpec{Mode: NameArgPositional, Kwarg: "name"},
+	}
+}
+
+// JSONSchemaSpec builds this kind's "json-schema" ResourceSpec.
+func (k ResourceKind) JSONSchemaSpec() ResourceSpec {
+	a := Article(k.Display)
+	return ResourceSpec{
+		Use:   k.Singular,
+		Short: fmt.Sprintf("Retrieve the JSON Schema of %s %s manifest", a, k.Display),
+		Long: fmt.Sprintf(`Retrieves the JSON Schema that the Smarter API validates %s %s manifest against. For example:
+
+	smarter json-schema %s > %s.schema.json
+
+Editors such as VS Code can use the schema to check and complete manifests.`, a, k.Display, k.Singular, k.Singular),
+		APIKind: k.APIKind,
 	}
 }
 

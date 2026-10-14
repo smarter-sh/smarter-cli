@@ -10,6 +10,9 @@ import (
 
 // legacySpecs are resources whose Short/Long text pre-dates the v0.14
 // ResourceKind template and is preserved verbatim rather than regenerated.
+//
+// The ChatBot and chat history kinds were removed: the platform's cli api has
+// no broker for them since v0.14 (LLMClient replaced ChatBot).
 var legacySpecs = []cmd.ResourceSpec{
 	{
 		Use:   "account",
@@ -20,26 +23,6 @@ var legacySpecs = []cmd.ResourceSpec{
 
 This will generate an example manifest for an Account and write it to my-plugin.yaml in the current working directory.`,
 		APIKind: "Account",
-	},
-	{
-		Use:   "chat [flags]",
-		Short: "Generate an example manifest for a chat session.",
-		Long: `Generates an example manifest for a chat session. For example:
-
-	smarter manifest chat [flags] > my-plugin.yaml
-
-This will generate an example manifest a chat session and write it to my-plugin.yaml in the current working directory.`,
-		APIKind: "chat",
-	},
-	{
-		Use:   "chatbot [flags]",
-		Short: "Generate an example manifest for a ChatBot",
-		Long: `Generates an example manifest for a ChatBot resource. For example:
-
-	smarter manifest chatbot [flags] > my-plugin.yaml
-
-This will generate an example manifest for a chatbot and write it to my-plugin.yaml in the current working directory.`,
-		APIKind: "chatbot",
 	},
 	{
 		Use:   "plugin [flags]",

@@ -22,13 +22,13 @@ func TestChatConfigCommandSuccess(t *testing.T) {
 	// (Command.Root().ExecuteC()) whenever the receiver has a parent, so
 	// args must be set on cmd.RootCmd - configCmd.SetArgs would be silently
 	// ignored in favor of whatever RootCmd's own args are.
-	cmd.RootCmd.SetArgs([]string{"chat", "config", "--chatbot", "my-bot"})
+	cmd.RootCmd.SetArgs([]string{"chat", "config", "--llmclient", "my-bot"})
 	if err := cmd.RootCmd.Execute(); err != nil {
 		t.Fatalf("Execute() error = %v", err)
 	}
 
-	if !strings.HasPrefix(gotPath, "/api/v1/cli/chat/config/my-bot/") {
-		t.Errorf("path = %q, want it to start with /api/v1/cli/chat/config/my-bot/", gotPath)
+	if !strings.HasPrefix(gotPath, "/api/v1/cli/prompt/config/my-bot/") {
+		t.Errorf("path = %q, want it to start with /api/v1/cli/prompt/config/my-bot/", gotPath)
 	}
 }
 

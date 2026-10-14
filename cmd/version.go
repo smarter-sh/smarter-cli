@@ -7,7 +7,6 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -36,15 +35,15 @@ Returns version information about this software.`,
 			ErrorOutput(err)
 		} else {
 			var localVersionMap map[string]interface{}
-			err := json.Unmarshal(localVersion, &localVersionMap)
-			if err != nil {
-				log.Fatalf("Failed to unmarshal local version: %v", err)
+			if err := json.Unmarshal(localVersion, &localVersionMap); err != nil {
+				ErrorOutput(fmt.Errorf("failed to unmarshal local version: %w", err))
+				return
 			}
 
 			var bodyJsonMap map[string]interface{}
-			err = json.Unmarshal(bodyJson, &bodyJsonMap)
-			if err != nil {
-				log.Fatalf("Failed to unmarshal body JSON: %v", err)
+			if err := json.Unmarshal(bodyJson, &bodyJsonMap); err != nil {
+				ErrorOutput(fmt.Errorf("failed to unmarshal body JSON: %w", err))
+				return
 			}
 
 			for k, v := range localVersionMap {

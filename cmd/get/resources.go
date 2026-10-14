@@ -11,77 +11,15 @@ import (
 // legacySpecs are resources whose shape (custom flags, non-"name" identifying
 // parameter, or organic Short/Long text) pre-dates the v0.14 ResourceKind
 // template and doesn't fit it, so they're kept as explicit ResourceSpecs.
+//
+// The ChatBot and chat history kinds were removed: the platform's cli api has
+// no broker for them since v0.14 (LLMClient replaced ChatBot).
 var legacySpecs = []cmd.ResourceSpec{
 	{
 		Use:     "account",
 		Short:   "Retrieve your Account manifest",
 		Long:    "Retrieve your Account manifest:\n\nsmarter get account [flags]\n\nThe Smarter API will your Account manifest.",
 		APIKind: "Account",
-	},
-	{
-		Use:   "chatbots",
-		Short: "Retrieve a list of ChatBots",
-		Long: `Retrieve a list of ChatBots:
-
-smarter get chatbots [flags]
-
-The Smarter API will return a list of ChatBots in the specified format,
-or a manifest for a specific ChatBot.`,
-		APIKind: "Chatbot",
-		NameArg: cmd.NameArgSpec{Mode: cmd.NameArgFlag, Kwarg: "name", Shorthand: "n", Usage: "Name of the chatbot"},
-	},
-	{
-		Use:   "chat-history",
-		Short: "Retrieve the chat history for a session_key",
-		Long: `Retrieve the chat history for a session_key:
-
-smarter get chat-history [session_key]
-
-The Smarter API will return the chat history for the session_key.`,
-		APIKind: "ChatHistory",
-		NameArg: cmd.NameArgSpec{Mode: cmd.NameArgFlag, Kwarg: "session_key", Shorthand: "s", Usage: "Chat session_key", Required: true},
-	},
-	{
-		Use:   "chat-plugin-usage",
-		Short: "Retrieve the chat plugin usage for a session_key",
-		Long: `Retrieve the chat plugin usage for a session_key:
-
-smarter get chat-plugin-usage [session_key]
-
-The Smarter API will return the chat plugin usage for the session_key.`,
-		APIKind: "ChatPluginUsage",
-		NameArg: cmd.NameArgSpec{Mode: cmd.NameArgFlag, Kwarg: "session_key", Shorthand: "s", Usage: "Chat session_key", Required: true},
-	},
-	{
-		Use:   "chats",
-		Short: "Retrieve a list of Chats",
-		Long: `Retrieves a list of Chats:
-
-smarter get chats [flags]
-
-The Smarter API will return a list of Chats.`,
-		APIKind: "Chat",
-		Flags: []cmd.FlagSpec{
-			{Name: "chatbot", Shorthand: "c", Kind: cmd.FlagString, Usage: "Name of the chatbot"},
-			{Name: "session_key", Shorthand: "s", Kind: cmd.FlagString, Usage: "Chat session_key"},
-			{Name: "today", Kind: cmd.FlagBool, Usage: "Filter for today"},
-			{Name: "yesterday", Kind: cmd.FlagBool, Usage: "Filter for yesterday"},
-			{Name: "this-week", Kind: cmd.FlagBool, Usage: "Filter for this week"},
-			{Name: "last-week", Kind: cmd.FlagBool, Usage: "Filter for last week"},
-			{Name: "this-month", Kind: cmd.FlagBool, Usage: "Filter for this month"},
-			{Name: "last-month", Kind: cmd.FlagBool, Usage: "Filter for last month"},
-		},
-	},
-	{
-		Use:   "chat-tool-calls",
-		Short: "Retrieve the chat tool calls for a session_key",
-		Long: `Retrieve the chat tool calls for a session_key:
-
-smarter get chat-tool-calls [session_key]
-
-The Smarter API will return the chat tool calls for the session_key.`,
-		APIKind: "ChatToolCall",
-		NameArg: cmd.NameArgSpec{Mode: cmd.NameArgFlag, Kwarg: "session_key", Shorthand: "s", Usage: "Chat session_key", Required: true},
 	},
 	{
 		Use:   "plugins",
@@ -96,7 +34,7 @@ or a manifest for a specific Plugin.`,
 		APIKind: "Plugin",
 		NameArg: cmd.NameArgSpec{Mode: cmd.NameArgFlag, Kwarg: "name", Shorthand: "n", Usage: "Name of the plugin"},
 		Flags: []cmd.FlagSpec{
-			{Name: "class", Shorthand: "c", Kind: cmd.FlagString, Usage: "Plugin class: static, sql, api", Choices: []string{"static", "sql", "api"}},
+			{Name: "class", Shorthand: "c", Kind: cmd.FlagString, Usage: "Plugin class: static, sql, api", Deprecated: "the Smarter API ignores it; use the kind's own command, e.g. get sqlplugins or get apiplugins"},
 		},
 	},
 	{
@@ -109,7 +47,7 @@ smarter get users [flags]
 The Smarter API will return a list of Users in the specified format,
 or a manifest for a specific User.`,
 		APIKind: "User",
-		NameArg: cmd.NameArgSpec{Mode: cmd.NameArgFlag, Kwarg: "username", Shorthand: "u", Usage: "Smarter username"},
+		NameArg: cmd.NameArgSpec{Mode: cmd.NameArgFlag, Kwarg: "username", Param: "name", Shorthand: "u", Usage: "Smarter username"},
 	},
 }
 

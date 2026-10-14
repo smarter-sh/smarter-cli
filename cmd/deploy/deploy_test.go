@@ -39,11 +39,11 @@ func TestAPIRequestRoutesUnderDeployPrefix(t *testing.T) {
 	})
 	defer srv.Close()
 
-	if _, err := APIRequest("chatbot", map[string]string{}); err != nil {
+	if _, err := APIRequest("LLMClient", map[string]string{}); err != nil {
 		t.Fatalf("APIRequest() error = %v", err)
 	}
-	if gotPath != "/api/v1/cli/deploy/chatbot/" {
-		t.Errorf("path = %q, want /api/v1/cli/deploy/chatbot/", gotPath)
+	if gotPath != "/api/v1/cli/deploy/llmclient/" {
+		t.Errorf("path = %q, want /api/v1/cli/deploy/llmclient/", gotPath)
 	}
 }
 
@@ -54,18 +54,16 @@ func TestConsoleOutputPrintsDeployed(t *testing.T) {
 	}
 }
 
-// TestDeployOnlyRegistersDeployableKinds guards the v0.14 rule described in
-// deploy/resources.go: of the generated ResourceKind specs, only kinds
-// flagged Deployable (currently just "prompt") get a deploy leaf command,
-// on top of the legacy "chatbot" leaf.
+// TestDeployOnlyRegistersDeployableKinds guards the rule described in
+// deploy/resources.go: only kinds flagged Deployable get a deploy command.
 func TestDeployOnlyRegistersDeployableKinds(t *testing.T) {
 	got := map[string]bool{}
 	for _, c := range deployCmd.Commands() {
 		got[strings.Fields(c.Use)[0]] = true
 	}
 
-	if !got["chatbot"] {
-		t.Error("expected legacy 'chatbot' deploy command to be registered")
+	if got["chatbot"] {
+		t.Error("the platform has no ChatBot broker; deploy chatbot must not be registered")
 	}
 
 	for _, k := range cmd.ResourceKinds {
@@ -78,7 +76,7 @@ func TestDeployOnlyRegistersDeployableKinds(t *testing.T) {
 	}
 }
 
-func TestDeployChatbotEndToEnd(t *testing.T) {
+func TestDeployLLMClientEndToEnd(t *testing.T) {
 	var gotPath, gotQuery string
 	srv := newMockAPIServer(t, func(w http.ResponseWriter, r *http.Request) {
 		gotPath = r.URL.Path
@@ -88,15 +86,15 @@ func TestDeployChatbotEndToEnd(t *testing.T) {
 	})
 	defer srv.Close()
 
-	cmd.RootCmd.SetArgs([]string{"deploy", "chatbot", "my-bot"})
+	cmd.RootCmd.SetArgs([]string{"deploy", "llmclient", "my-bot"})
 	out := captureStdout(t, func() {
 		if err := cmd.RootCmd.Execute(); err != nil {
 			t.Fatalf("Execute() error = %v", err)
 		}
 	})
 
-	if gotPath != "/api/v1/cli/deploy/chatbot/" {
-		t.Errorf("path = %q, want /api/v1/cli/deploy/chatbot/", gotPath)
+	if gotPath != "/api/v1/cli/deploy/llmclient/" {
+		t.Errorf("path = %q, want /api/v1/cli/deploy/llmclient/", gotPath)
 	}
 	if !strings.Contains(gotQuery, "name=my-bot") {
 		t.Errorf("query = %q, want it to contain name=my-bot", gotQuery)

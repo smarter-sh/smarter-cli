@@ -1,7 +1,7 @@
 ###############################################################################
 # Build a Docker Container of the Smarter Command-line Interface.
 ###############################################################################
-FROM golang:latest
+FROM golang:1.27
 
 LABEL maintainer="Lawrence McDaniel <lpm0073@gmail.com>"
 
