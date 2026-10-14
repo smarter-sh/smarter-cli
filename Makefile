@@ -1,12 +1,12 @@
 SHELL := /bin/bash
-include .env
-export
 
-
-ifneq ("$(wildcard .env)","")
-else
+# .env is gitignored, so a fresh checkout (CI included) seeds it from the
+# example before including it.
+ifeq ("$(wildcard .env)","")
     $(shell cp ./doc/example-dot-env .env)
 endif
+-include .env
+export
 
 .PHONY: analyze init pre-commit-init pre-commit-run help choco-pack choco-push contracts coverage
 
