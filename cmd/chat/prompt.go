@@ -43,11 +43,8 @@ Prompts from this machine share a session until --new_session starts another.`,
 			"new_session": fmt.Sprintf("%t", newSession),
 		}
 
-		fileContentsBytes, err := json.Marshal(map[string]string{"prompt": prompt})
-		if err != nil {
-			cmd.ErrorOutput(err)
-			return
-		}
+		// a map of strings always marshals
+		fileContentsBytes, _ := json.Marshal(map[string]string{"prompt": prompt})
 
 		// this request goes to /api/v1/cli/prompt/<str:name>/
 		bodyJson, err := APIRequest(fmt.Sprintf("%s/", name), kwargs, string(fileContentsBytes))

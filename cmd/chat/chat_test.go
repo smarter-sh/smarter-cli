@@ -68,6 +68,24 @@ func TestConsoleOutputPreservesAnAlreadySetFormat(t *testing.T) {
 	}
 }
 
+func TestConsoleOutputDefaultsToJSON(t *testing.T) {
+	// viper.IsSet reports a nil value as unset
+	withViperValue(t, "output_format", nil)
+
+	ConsoleOutput([]byte(`{"a":1}`))
+
+	if got := viper.GetString("output_format"); got != "json" {
+		t.Errorf("output_format = %q, want json when it wasn't set", got)
+	}
+}
+
+func TestConsoleOutputExitsOnMalformedResponse(t *testing.T) {
+	withViperValue(t, "output_format", "json")
+	if !exits(t, func() { ConsoleOutput([]byte(`not json`)) }) {
+		t.Error("ConsoleOutput did not exit on a response that isn't JSON")
+	}
+}
+
 func TestChatCmdRegisteredWithFlags(t *testing.T) {
 	if chatCmd.PersistentFlags().Lookup("llmclient") == nil {
 		t.Error("chatCmd is missing the --llmclient persistent flag")

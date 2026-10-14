@@ -36,3 +36,22 @@ func newMockAPIServer(t *testing.T, handler http.HandlerFunc) *httptest.Server {
 
 	return srv
 }
+
+// exits replaces cmd.ErrorOutput's exit with a panic for the duration of
+// the test, runs fn, and reports whether it exited.
+func exits(t *testing.T, fn func()) (exited bool) {
+	t.Helper()
+	type exit struct{}
+	cmd.SetExitFunc(func(int) { panic(exit{}) })
+	t.Cleanup(func() { cmd.SetExitFunc(nil) })
+	defer func() {
+		if r := recover(); r != nil {
+			if _, ok := r.(exit); !ok {
+				panic(r)
+			}
+			exited = true
+		}
+	}()
+	fn()
+	return false
+}

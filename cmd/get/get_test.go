@@ -164,3 +164,14 @@ func TestConsoleOutputExitsOnAnUnparsableBody(t *testing.T) {
 	}()
 	ConsoleOutput([]byte(`not json`))
 }
+
+func TestConsoleOutputDefaultsToTabular(t *testing.T) {
+	// viper.IsSet reports a nil value as unset
+	withViperValue(t, "output_format", nil)
+
+	captureStdout(t, func() { ConsoleOutput([]byte(`{"data":{}}`)) })
+
+	if got := viper.GetString("output_format"); got != "tabular" {
+		t.Errorf("output_format = %q, want tabular when it wasn't set", got)
+	}
+}

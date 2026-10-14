@@ -111,3 +111,10 @@ func TestJSONSchemaRegisteredOnRootCmd(t *testing.T) {
 	}
 	t.Error("json-schema command is not registered on RootCmd")
 }
+
+func TestConsoleOutputExitsOnMalformedResponse(t *testing.T) {
+	withViperValue(t, "output_format", "json")
+	if !exits(t, func() { ConsoleOutput([]byte(`not json`)) }) {
+		t.Error("ConsoleOutput did not exit on a response that isn't JSON")
+	}
+}
