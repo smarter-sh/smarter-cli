@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 
 
+## [0.4.2](https://github.com/smarter-sh/smarter-cli/compare/v0.4.1...v0.4.2) (2026-10-14)
+
+
+### Bug Fixes
+
+* **make:** create .env before including it so make works on a fresh checkout ([d6985a4](https://github.com/smarter-sh/smarter-cli/commit/d6985a41576c1905c627c3e5063035a67076f51a))
+
 ## [0.4.1](https://github.com/smarter-sh/smarter-cli/compare/v0.4.0...v0.4.1) (2026-10-14)
 
 
