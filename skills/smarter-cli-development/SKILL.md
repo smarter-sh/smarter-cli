@@ -76,7 +76,7 @@ cli api, `/api/v1/cli/`, whose brokers do the work (`doc/adr/001-scope.md`,
 | `scripts/sync-contracts.sh`               | Copies it from `../smarter` (`make contracts [SMARTER_REF=<tag>]`)                |
 | `scripts/bump_version.sh`                 | Release-time version stamping (semantic-release runs it)                          |
 | `debian/`, `chocolatey/`, `Dockerfile`    | Packaging for the apt PPA, Chocolatey and Docker Hub                              |
-| `.github/workflows/`                      | `test.yml`, semantic-release on `main`, the manual build-release workflows        |
+| `.github/workflows/`                      | `test.yml`, semantic-release on `main`, the manual build-release workflow         |
 | `doc/adr/`                                | The cli's architecture decision records                                           |
 | `skills/`                                 | These skills                                                                      |
 
@@ -189,7 +189,7 @@ Mention these when relevant, and fix them when asked:
 | Running the cli or curl against the local platform          | `smarter-api-testing`  |
 | gofmt, go vet, goimports, golangci-lint, pre-commit         | `smarter-code-quality` |
 | Writing a commit message                                    | `smarter-git-commits`  |
-| Versions, semantic-release, the build-release workflows     | `smarter-cli-release`  |
+| Versions, semantic-release, the build-release workflow      | `smarter-cli-release`  |
 | Monthly sync with the platform's kinds and routes, and deps | `monthly-maintenance`  |
 
 When a task leads into the platform (a route, a broker, the docs page), load

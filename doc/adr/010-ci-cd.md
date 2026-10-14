@@ -16,7 +16,7 @@ GitHub Actions in `.github/workflows/`:
 
 - `test.yml`: on pull requests and pushes to `main`, `alpha` and `beta`, checks formatting, runs `go vet` and golangci-lint, and runs the tests with `make coverage`, on Go 1.26 and 1.27 (ADR-019).
 - `pushMain.yml`: on a push to `main`, semantic-release (ADR-015) computes the version from the commit messages, updates `CHANGELOG.md`, `VERSION` and the files that carry the version, tags, and creates the GitHub release; it then pushes `main` to a `v<major>` branch.
-- `build-release-github.yml`, `build-release-dockerhub.yml`, `build-release-ubuntu-apt.yml`, `build-release-windows-chocolatey.yml`: build and publish each channel. They run **by hand** (`workflow_dispatch`), after the version is tagged. Each workflow's header lists the secrets it needs (`PAT`, `DOCKERHUB_TOKEN`, `GPG_PRIVATE_KEY`, ...) and how to rotate them.
+- `build-release.yml`: builds and publishes every channel (ADR-017). It runs **by hand** (`workflow_dispatch`), after the version is tagged: first the GitHub release and its binaries, then, in parallel, the Homebrew tap, the Ubuntu PPA, Chocolatey and Docker Hub, which wait for the release because the formula and `debian/rules` download its binaries. A boolean input per channel lets a failed channel be published again on its own. Its header lists the secrets it needs (`PAT`, `DOCKERHUB_TOKEN`, `GPG_PRIVATE_KEY`, ...) and how to rotate them.
 - `precommitVersionBumps.yml`: weekly `pre-commit autoupdate`, committed to `alpha`.
 - Dependabot opens monthly updates of Go modules, npm packages and actions; Mergify merges them into `alpha` (ADR-011).
 - Branches follow the platform: work lands on `alpha`, and `main` is released.

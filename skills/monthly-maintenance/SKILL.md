@@ -85,7 +85,7 @@ broken routes, or `test(contracts): ...` for a refresh that needed no change
 ## Part 2: Dependencies and toolchain
 
 1. **Go:** if a new Go minor was released, update `go-version` in
-   `.github/workflows/build-release-*.yml` and `default_language_version` in
+   `.github/workflows/build-release.yml` and `default_language_version` in
    `.pre-commit-config.yaml`, the matrix in `.github/workflows/test.yml`, and
    the Dockerfile's `golang:` tag together (ADR-019). When the Go team drops a
    release, raise `go.mod`'s `go` line to the older supported one, and test

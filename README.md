@@ -128,10 +128,7 @@ Alternatively, `make build` builds a local `./smarter` binary; run `make help` t
 
 The GitHub Actions workflows in [.github/workflows/](./.github/workflows/) publish semantically-versioned releases to [https://github.com/smarter-sh/smarter-cli/releases](https://github.com/smarter-sh/smarter-cli/releases), covering binaries for Windows, macOS, Linux and Docker:
 
-- [build-release-github.yml](./.github/workflows/build-release-github.yml) — GitHub Releases, and also publishes to Homebrew and Ubuntu APT
-- [build-release-dockerhub.yml](./.github/workflows/build-release-dockerhub.yml) — Docker Hub
-- [build-release-ubuntu-apt.yml](./.github/workflows/build-release-ubuntu-apt.yml) — Ubuntu APT / Launchpad PPA
-- [build-release-windows-chocolatey.yml](./.github/workflows/build-release-windows-chocolatey.yml) — Chocolatey
+- [build-release.yml](./.github/workflows/build-release.yml) — GitHub Releases, the Homebrew tap, Ubuntu APT / Launchpad PPA, Chocolatey and Docker Hub
 
 Semantic version numbers are controlled by npm package [semantic-release](https://www.npmjs.com/package/semantic-release) which itself is governed by these git [commit comment guidelines](./doc/SEMANTIC_VERSIONING.md).
 
@@ -140,8 +137,8 @@ Package versions for Go lang, NPM and GitHub Actions are monitored by [Dependabo
 ### Release
 
 A new version is cut automatically by semantic-release when commits land on `main` (see CI/CD above). To publish a
-release manually, run the corresponding GitHub Action from the Actions tab: `Build-Release GitHub`,
-`Build-Release DockerHub`, `Build-Release Chocolatey`, or `Build-Release Ubuntu APT`.
+release manually, run the `Build-Release` GitHub Action from the Actions tab. Its inputs choose the channels to
+publish to, so a channel that failed can be published again on its own.
 
 ### Cobra
 

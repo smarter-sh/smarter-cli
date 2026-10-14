@@ -49,7 +49,7 @@ applies to nearly every task.
 | `cmd/<verb>/`                                      | One package per verb: `get`, `describe`, `delete`, `deploy`, `undeploy`, `logs`, `manifest`, `jsonschema`, `chat` |
 | `contract_test.go`, `testdata/contracts/`          | The contract test, and the pinned copy of the platform's `openapi.json`                                           |
 | `scripts/`, `debian/`, `chocolatey/`, `Dockerfile` | Version stamping and packaging                                                                                    |
-| `.github/workflows/`                               | semantic-release on `main`; manual build-release workflows                                                        |
+| `.github/workflows/`                               | semantic-release on `main`; manual build-release workflow                                                         |
 | `doc/adr/`                                         | Architecture decision records                                                                                     |
 | `skills/`                                          | Agent Skills                                                                                                      |
 

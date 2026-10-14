@@ -12,13 +12,13 @@ The cli's users are on Windows, macOS and Linux, and in containers. Each platfor
 
 The cli is one statically linked Go binary per operating system, published to:
 
-| Channel                                 | Built by                                                                                             | Users install with                    |
-| --------------------------------------- | ---------------------------------------------------------------------------------------------------- | ------------------------------------- |
-| GitHub Releases                         | `build-release-github.yml`: Windows, macOS and Linux binaries                                        | download from the release page        |
-| Homebrew tap (`smarter-sh/tap`)         | `build-release-github.yml`: updates `Formula/smarter.rb`                                             | `brew install smarter`                |
-| Ubuntu PPA (`lpm0073/smarter-cli`)      | `build-release-ubuntu-apt.yml`: a signed source package; `debian/rules` downloads the release binary | `apt-get install smarter-cli`         |
-| Chocolatey                              | `build-release-windows-chocolatey.yml`, `chocolatey/smarter/`                                        | `choco install smarter`               |
-| Docker Hub (`mcdaniel0073/smarter-cli`) | `build-release-dockerhub.yml`, `Dockerfile`                                                          | `docker run mcdaniel0073/smarter-cli` |
+| Channel                                 | Built by `build-release.yml`, job                                                         | Users install with                    |
+| --------------------------------------- | ----------------------------------------------------------------------------------------- | ------------------------------------- |
+| GitHub Releases                         | `windows`, `mac_linux`: Windows, macOS and Linux binaries                                 | download from the release page        |
+| Homebrew tap (`smarter-sh/tap`)         | `homebrew`: updates `Formula/smarter.rb`                                                  | `brew install smarter`                |
+| Ubuntu PPA (`lpm0073/smarter-cli`)      | `ubuntu_apt`: a signed source package; `debian/rules` downloads the release binary        | `apt-get install smarter-cli`         |
+| Chocolatey                              | `chocolatey`, `chocolatey/smarter/`                                                       | `choco install smarter`               |
+| Docker Hub (`mcdaniel0073/smarter-cli`) | `dockerhub`, `Dockerfile`                                                                 | `docker run mcdaniel0073/smarter-cli` |
 
 Assets are named `smarter-<os>-<version>` (`smarter-windows-<version>.exe`), and the package files that carry a version are rewritten by `scripts/bump_version.sh` (ADR-015). The Docker image runs as a non-root user.
 

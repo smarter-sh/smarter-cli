@@ -1,6 +1,6 @@
 ---
 name: smarter-cli-release
-description: Use when a smarter-cli task touches versions or releases - semantic-release and release.config.js, VERSION, scripts/bump_version.sh, the build-release workflows (GitHub Releases, Homebrew tap, Ubuntu PPA, Chocolatey, Docker Hub), the Dockerfile, debian/ or chocolatey/ packaging, workflow secrets, or "why wasn't my change released". Explains how a commit becomes a release on five channels, what an agent may change and verify locally, and what it must never run.
+description: Use when a smarter-cli task touches versions or releases - semantic-release and release.config.js, VERSION, scripts/bump_version.sh, the build-release workflow (GitHub Releases, Homebrew tap, Ubuntu PPA, Chocolatey, Docker Hub), the Dockerfile, debian/ or chocolatey/ packaging, workflow secrets, or "why wasn't my change released". Explains how a commit becomes a release on five channels, what an agent may change and verify locally, and what it must never run.
 ---
 
 # Smarter CLI Releases
@@ -22,17 +22,23 @@ first.
    `chore(release): <version> [skip ci]`; tags `v<version>`; creates the
    GitHub release; and pushes `main` to `v<major>`. `alpha` and `beta` make
    prereleases.
-4. A maintainer then runs the build-release workflows **by hand**, in this
-   order, because the later ones download the GitHub release's binaries:
-   - `Build-Release GitHub` (`build-release-github.yml`): Windows, macOS and
-     Linux binaries, `smarter-<os>-<version>`, uploaded to the release; then the
-     Homebrew formula in `smarter-sh/homebrew-tap` is updated with the macOS
-     binary's url and sha256.
-   - `Build-Release Ubuntu APT`: a signed source package uploaded to the
-     Launchpad PPA, whose `debian/rules` downloads the Linux binary.
-   - `Build-Release Chocolatey` and `Build-Release DockerHub`.
+4. A maintainer then runs `Build-Release` (`build-release.yml`) **by hand**.
+   Its jobs run in order, because the later ones download the GitHub release's
+   binaries:
+   - `windows`, then `mac_linux`: Windows, macOS and Linux binaries,
+     `smarter-<os>-<version>`, uploaded to the GitHub release (`windows`
+     deletes and recreates it).
+   - Then, in parallel: `homebrew` updates the formula in
+     `smarter-sh/homebrew-tap` with the macOS binary's url and sha256;
+     `ubuntu_apt` uploads a signed source package to the Launchpad PPA, whose
+     `debian/rules` downloads the Linux binary; `chocolatey`; `dockerhub`.
 
-Each workflow's header comment lists the secrets it needs (`PAT`,
+   A boolean input per channel (`github`, `ubuntu_apt`, `chocolatey`,
+   `dockerhub`) lets a failed channel be published again on its own; the
+   downstream jobs use `!failure() && !cancelled()` so they still run when the
+   `github` jobs are skipped.
+
+The workflow's header comment lists the secrets it needs (`PAT`,
 `DOCKERHUB_TOKEN`, `GPG_PRIVATE_KEY`, `GPG_PASSPHRASE`, ...) and how to
 rotate them. Never print, echo or move a secret's value.
 
