@@ -191,6 +191,7 @@ Mention these when relevant, and fix them when asked:
 | Writing a commit message                                    | `smarter-git-commits`  |
 | Versions, semantic-release, the build-release workflow      | `smarter-cli-release`  |
 | Monthly sync with the platform's kinds and routes, and deps | `monthly-maintenance`  |
+| A platform contract change to follow now, between maintenances | `smarter-contract-sync` |
 
 When a task leads into the platform (a route, a broker, the docs page), load
 the platform's skills from `../smarter/skills/`, starting with

@@ -34,6 +34,7 @@ of task.
 | `smarter-git-commits`     | You've been asked to write a commit message.                                      |
 | `smarter-cli-release`     | You're touching versions, packaging or the build-release workflows.               |
 | `monthly-maintenance`     | It's time to sync the cli with the platform's kinds and routes, and update deps.  |
+| `smarter-contract-sync` | The platform's api contract changed, and this repository's copy must follow it now. |
 
 The skills bundle no scripts. The repository's own `scripts/sync-contracts.sh`
 (`make contracts`) refreshes the pinned copy of the platform's OpenAPI
