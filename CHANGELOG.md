@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 
 
+## [0.4.3](https://github.com/smarter-sh/smarter-cli/compare/v0.4.2...v0.4.3) (2026-10-15)
+
+
+### Bug Fixes
+
+* **contracts:** sync with smarter v0.25.1 and regenerate sam models ([bc74007](https://github.com/smarter-sh/smarter-cli/commit/bc740070605d14d5962c1e5fb3ceaca52e15641c))
+
 ## [0.4.2](https://github.com/smarter-sh/smarter-cli/compare/v0.4.1...v0.4.2) (2026-10-14)
 
 
