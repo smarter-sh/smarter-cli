@@ -5,6 +5,7 @@ Website: https://lawrencemcdaniel.com>
 package cmd
 
 import (
+	"fmt"
 	"log"
 	"strconv"
 	"strings"
@@ -44,6 +45,9 @@ type FlagSpec struct {
 	DefaultBool bool   // used when Kind == FlagBool
 	Required    bool
 	Choices     []string // optional: restrict a FlagString value to this set
+	// Deprecated, when set, keeps the flag accepted for old scripts but hidden,
+	// warns with this message when it is used, and never sends it to the API.
+	Deprecated string
 }
 
 // NameArgMode describes how a leaf command receives the resource's
@@ -63,7 +67,8 @@ const (
 // NameArgSpec configures the resource's identifying parameter.
 type NameArgSpec struct {
 	Mode      NameArgMode
-	Kwarg     string // kwargs key, e.g. "name", "username", "session_key"
+	Kwarg     string // flag and viper key, e.g. "name", "username"
+	Param     string // the API's query parameter, when it isn't Kwarg; the cli api reads "name"
 	Shorthand string // flag shorthand, only used when Mode == NameArgFlag
 	Usage     string
 	Required  bool // MarkFlagRequired, only used when Mode == NameArgFlag
@@ -101,13 +106,13 @@ func mustMarkRequired(c *cobra.Command, name string) {
 	}
 }
 
-func validateChoices(name, value string, choices []string) {
+func validateChoices(name, value string, choices []string) error {
 	for _, choice := range choices {
 		if value == choice {
-			return
+			return nil
 		}
 	}
-	log.Fatalf("Invalid value '%s' for flag '%s'. Allowed values are: %v", value, name, choices)
+	return fmt.Errorf("invalid value '%s' for flag '%s'. Allowed values are: %v", value, name, choices)
 }
 
 // RegisterResourceCmd builds a *cobra.Command from spec, registers its flags
@@ -122,21 +127,31 @@ func RegisterResourceCmd(parent *cobra.Command, spec ResourceSpec, request Reque
 		Run: func(c *cobra.Command, args []string) {
 			kwargs := map[string]string{}
 
+			param := spec.NameArg.Param
+			if param == "" {
+				param = spec.NameArg.Kwarg
+			}
 			switch spec.NameArg.Mode {
 			case NameArgPositional:
-				kwargs[spec.NameArg.Kwarg] = args[0]
+				kwargs[param] = args[0]
 			case NameArgFlag:
-				kwargs[spec.NameArg.Kwarg] = viper.GetString(spec.NameArg.Kwarg)
+				kwargs[param] = viper.GetString(spec.NameArg.Kwarg)
 			}
 
 			for _, f := range spec.Flags {
+				if f.Deprecated != "" {
+					continue
+				}
 				switch f.Kind {
 				case FlagBool:
 					kwargs[f.Name] = strconv.FormatBool(viper.GetBool(f.Name))
 				default:
 					val := viper.GetString(f.Name)
 					if len(f.Choices) > 0 && val != "" {
-						validateChoices(f.Name, val, f.Choices)
+						if err := validateChoices(f.Name, val, f.Choices); err != nil {
+							onErr(err)
+							return
+						}
 					}
 					kwargs[f.Name] = val
 				}
@@ -173,6 +188,11 @@ func RegisterResourceCmd(parent *cobra.Command, spec ResourceSpec, request Reque
 		mustBindPFlag(f.Name, leaf.Flags().Lookup(f.Name))
 		if f.Required {
 			mustMarkRequired(leaf, f.Name)
+		}
+		if f.Deprecated != "" {
+			if err := leaf.Flags().MarkDeprecated(f.Name, f.Deprecated); err != nil {
+				log.Fatalf("Error deprecating flag '%s': %v", f.Name, err)
+			}
 		}
 	}
 

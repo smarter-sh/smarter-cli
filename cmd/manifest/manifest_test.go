@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	"github.com/smarter-sh/smarter-cli/cmd"
+	"github.com/spf13/viper"
 )
 
 func captureStdout(t *testing.T, fn func()) string {
@@ -42,8 +43,8 @@ func TestAPIRequestRoutesUnderExampleManifestPrefix(t *testing.T) {
 	if _, err := APIRequest("plugin", map[string]string{}); err != nil {
 		t.Fatalf("APIRequest() error = %v", err)
 	}
-	if gotPath != "/api/v1/cli/example_manifest/plugin/" {
-		t.Errorf("path = %q, want /api/v1/cli/example_manifest/plugin/", gotPath)
+	if gotPath != "/api/v1/cli/example-manifest/plugin/" {
+		t.Errorf("path = %q, want /api/v1/cli/example-manifest/plugin/", gotPath)
 	}
 }
 
@@ -79,7 +80,7 @@ func TestManifestRegistersLegacyAndGeneratedKinds(t *testing.T) {
 		got[strings.Fields(c.Use)[0]] = true
 	}
 
-	for _, legacyName := range []string{"account", "chat", "chatbot", "plugin", "user"} {
+	for _, legacyName := range []string{"account", "plugin", "user"} {
 		if !got[legacyName] {
 			t.Errorf("expected legacy manifest command %q to be registered", legacyName)
 		}
@@ -90,7 +91,7 @@ func TestManifestRegistersLegacyAndGeneratedKinds(t *testing.T) {
 		}
 	}
 
-	wantCount := 5 + len(cmd.ResourceKinds)
+	wantCount := 3 + len(cmd.ResourceKinds)
 	if len(manifestCmd.Commands()) != wantCount {
 		t.Errorf("manifest has %d subcommands, want %d", len(manifestCmd.Commands()), wantCount)
 	}
@@ -113,11 +114,26 @@ func TestManifestPluginEndToEnd(t *testing.T) {
 		}
 	})
 
-	if gotPath != "/api/v1/cli/example_manifest/plugin/" {
-		t.Errorf("path = %q, want /api/v1/cli/example_manifest/plugin/", gotPath)
+	if gotPath != "/api/v1/cli/example-manifest/plugin/" {
+		t.Errorf("path = %q, want /api/v1/cli/example-manifest/plugin/", gotPath)
 	}
 	if !strings.Contains(out, "example") {
 		t.Errorf("output = %q, want it to contain the response body", out)
+	}
+}
+
+// TestConsoleOutputDefaultsToYAML checks that an example manifest is printed
+// as yaml when --output_format isn't given, so it can be saved and applied.
+func TestConsoleOutputDefaultsToYAML(t *testing.T) {
+	old := viper.Get("output_format")
+	t.Cleanup(func() { viper.Set("output_format", old) })
+	viper.Set("output_format", nil)
+
+	out := captureStdout(t, func() {
+		ConsoleOutput([]byte(`{"data":{"apiVersion":"smarter.sh/v1","kind":"Plugin"},"message":"ok"}`))
+	})
+	if !strings.Contains(out, "kind: Plugin") {
+		t.Errorf("output = %q, want the manifest as yaml", out)
 	}
 }
 
@@ -130,5 +146,12 @@ func TestManifestRegisteredOnRootCmd(t *testing.T) {
 	}
 	if !found {
 		t.Error("manifest command is not registered on RootCmd")
+	}
+}
+
+func TestConsoleOutputExitsOnMalformedResponse(t *testing.T) {
+	withViperValue(t, "output_format", "json")
+	if !exits(t, func() { ConsoleOutput([]byte(`not json`)) }) {
+		t.Error("ConsoleOutput did not exit on a response that isn't JSON")
 	}
 }

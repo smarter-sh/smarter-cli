@@ -6,6 +6,34 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 
 
+## [0.4.3](https://github.com/smarter-sh/smarter-cli/compare/v0.4.2...v0.4.3) (2026-10-15)
+
+
+### Bug Fixes
+
+* **contracts:** sync with smarter v0.25.1 and regenerate sam models ([bc74007](https://github.com/smarter-sh/smarter-cli/commit/bc740070605d14d5962c1e5fb3ceaca52e15641c))
+
+## [0.4.2](https://github.com/smarter-sh/smarter-cli/compare/v0.4.1...v0.4.2) (2026-10-14)
+
+
+### Bug Fixes
+
+* **make:** create .env before including it so make works on a fresh checkout ([d6985a4](https://github.com/smarter-sh/smarter-cli/commit/d6985a41576c1905c627c3e5063035a67076f51a))
+
+## [0.4.1](https://github.com/smarter-sh/smarter-cli/compare/v0.4.0...v0.4.1) (2026-10-14)
+
+
+### Bug Fixes
+
+* repair broken commands and check every command against the api ([e775d8c](https://github.com/smarter-sh/smarter-cli/commit/e775d8ca215dff4985bf4822c532e99c90e5af85))
+
+# [0.4.0](https://github.com/smarter-sh/smarter-cli/compare/v0.3.1...v0.4.0) (2026-10-02)
+
+
+### Features
+
+* add new v0.16 resources - budget, llmhostcompute, websearchplugin ([b65fcb5](https://github.com/smarter-sh/smarter-cli/commit/b65fcb53853d137591dcb047b158055606cbd945))
+
 ## [0.3.1](https://github.com/smarter-sh/smarter-cli/compare/v0.3.0...v0.3.1) (2026-09-09)
 
 

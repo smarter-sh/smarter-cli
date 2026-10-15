@@ -6,7 +6,6 @@ package chat
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/smarter-sh/smarter-cli/cmd"
 	"github.com/spf13/cobra"
@@ -14,38 +13,35 @@ import (
 
 var configCmd = &cobra.Command{
 	Use:   "config",
-	Short: "Retrieve the ReactJS app configuration for a ChatBot",
-	Long: `Retrieves the ReactJS app configuration for a ChatBot:
+	Short: "Retrieve the chat configuration of an LLMClient",
+	Long: `Retrieves the chat configuration of an LLMClient:
 
-smarter chat config --chatbot <chatbot> [--new_session]
+smarter chat config --llmclient <name> [--new_session]
 
-
-The Smarter API will return a dict of the configuration that is provided
-to the React chat application in the Smarter web console. This is the same
-dict that is returned by the /chatapp/<chatbot>/config/ endpoint.`,
+The Smarter API will return the configuration that it provides to the
+React chat application in the Smarter web console, including the
+session's history.`,
 	Run: func(c *cobra.Command, args []string) {
 
-		chatbot, _ := c.Flags().GetString("chatbot")
-		newSession, _ := c.Flags().GetBool("new_session")
-		uid := getUniqueID()
-
-		if chatbot == "" {
-			log.Fatalf("The 'chatbot' flag is required")
+		name, err := llmClientName(c)
+		if err != nil {
+			cmd.ErrorOutput(err)
+			return
 		}
+		newSession, _ := c.Flags().GetBool("new_session")
 
 		kwargs := map[string]string{
-			"uid":         uid,
+			"uid":         getUniqueID(),
 			"new_session": fmt.Sprintf("%t", newSession),
 		}
 
-		// this request goes to /api/v1/cli/chat/config/<str:chatbot>/<str:uid>
-		path := fmt.Sprintf("config/%s/", chatbot)
-		bodyJson, err := APIRequest(path, kwargs)
+		// this request goes to /api/v1/cli/prompt/config/<str:name>/
+		bodyJson, err := APIRequest(fmt.Sprintf("config/%s/", name), kwargs)
 		if err != nil {
 			cmd.ErrorOutput(err)
-		} else {
-			ConsoleOutput(bodyJson)
+			return
 		}
+		ConsoleOutput(bodyJson)
 
 	},
 }

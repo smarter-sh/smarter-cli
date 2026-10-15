@@ -1,16 +1,16 @@
 package cmd
 
 import (
+	"bytes"
 	"encoding/json"
 	"io"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"os"
-	"os/exec"
 	"strings"
 	"testing"
-
-	"github.com/spf13/viper"
+	"time"
 )
 
 func TestFetchAPIKey(t *testing.T) {
@@ -33,6 +33,24 @@ func TestFetchAPIKey(t *testing.T) {
 			t.Errorf("fetchAPIKey() = %q, want %q", got, "generic-key")
 		}
 	})
+}
+
+func TestFetchAPIKeyPrefersThePassedFlag(t *testing.T) {
+	withViperValue(t, "environment", "alpha")
+	withViperValue(t, "alpha.api_key", "alpha-key")
+	flag := RootCmd.PersistentFlags().Lookup("api_key")
+	if err := flag.Value.Set("flag-key"); err != nil {
+		t.Fatal(err)
+	}
+	flag.Changed = true
+	t.Cleanup(func() {
+		_ = flag.Value.Set("")
+		flag.Changed = false
+	})
+
+	if got := fetchAPIKey(); got != "flag-key" {
+		t.Errorf("fetchAPIKey() = %q, want --api_key's value", got)
+	}
 }
 
 func TestVerifyApiKey(t *testing.T) {
@@ -61,7 +79,7 @@ func TestGetAPIHost(t *testing.T) {
 		SetAPIHostOverride("http://example.invalid")
 		defer SetAPIHostOverride("")
 
-		if got := getAPIHost(); got != "http://example.invalid" {
+		if got, err := getAPIHost(); err != nil || got != "http://example.invalid" {
 			t.Errorf("getAPIHost() = %q, want override", got)
 		}
 	})
@@ -81,22 +99,19 @@ func TestGetAPIHost(t *testing.T) {
 			withViperValue(t, "environment", tc.environment)
 			withViperValue(t, "config.root_domain", "platform.smarter.sh")
 
-			if got := getAPIHost(); got != tc.want {
+			if got, err := getAPIHost(); err != nil || got != tc.want {
 				t.Errorf("getAPIHost() for %s = %q, want %q", tc.environment, got, tc.want)
 			}
 		})
 	}
 
-	t.Run("panics on an invalid environment", func(t *testing.T) {
+	t.Run("returns an error on an invalid environment", func(t *testing.T) {
 		withViperValue(t, "environment", "nonsense")
 		withViperValue(t, "config.root_domain", "platform.smarter.sh")
 
-		defer func() {
-			if recover() == nil {
-				t.Error("getAPIHost() did not panic on an invalid environment")
-			}
-		}()
-		getAPIHost()
+		if _, err := getAPIHost(); err == nil || !strings.Contains(err.Error(), "nonsense") {
+			t.Errorf("getAPIHost() error = %v, want one naming the invalid environment", err)
+		}
 	})
 }
 
@@ -171,35 +186,171 @@ func TestAPIRequestMissingApiKeyReturnsErrorWithoutExiting(t *testing.T) {
 	}
 }
 
-// TestAPIRequestNon200ExitsProcess verifies that a non-200 response from the
-// API causes the process to exit with status 1 via ErrorOutput. Since that
-// path calls os.Exit, it must be exercised in a subprocess rather than in
-// this test binary directly.
-func TestAPIRequestNon200ExitsProcess(t *testing.T) {
-	if os.Getenv("SMARTER_CLI_TEST_CRASHER") == "1" {
-		srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			w.WriteHeader(http.StatusInternalServerError)
-			_, _ = w.Write([]byte(`{"description":"boom","context":"test-context"}`))
-		}))
-		defer srv.Close()
+func TestAPIRequestNon200ReturnsThePlatformsError(t *testing.T) {
+	newMockAPIServer(t, func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusInternalServerError)
+		_, _ = w.Write([]byte(`{"description":"boom","context":"test-context","stacktrace":"trace-here"}`))
+	})
 
-		SetAPIHostOverride(srv.URL)
-		viper.Set("api_key", testAPIKey)
-		viper.Set("environment", "alpha")
-
-		_, _ = APIRequest("whoami", map[string]string{})
-		return
+	_, err := APIRequest("whoami", map[string]string{})
+	if err == nil {
+		t.Fatal("APIRequest() error = nil, want the platform's error")
 	}
-
-	cmd := exec.Command(os.Args[0], "-test.run=TestAPIRequestNon200ExitsProcess")
-	cmd.Env = append(os.Environ(), "SMARTER_CLI_TEST_CRASHER=1")
-	output, err := cmd.CombinedOutput()
-
-	if exitErr, ok := err.(*exec.ExitError); ok && !exitErr.Success() {
-		if !strings.Contains(string(output), "boom") {
-			t.Errorf("expected error output to mention the server's description, got: %s", output)
+	for _, want := range []string{"500", "boom", "test-context"} {
+		if !strings.Contains(err.Error(), want) {
+			t.Errorf("error = %q, want it to contain %q", err, want)
 		}
-		return
 	}
-	t.Fatalf("process exited with err=%v, want a non-zero exit status; output: %s", err, output)
+	if strings.Contains(err.Error(), "trace-here") {
+		t.Errorf("error = %q, want no stack trace without --verbose", err)
+	}
+
+	withViperValue(t, "verbose", true)
+	_, err = APIRequest("whoami", map[string]string{})
+	if err == nil || !strings.Contains(err.Error(), "trace-here") {
+		t.Errorf("error = %v, want the stack trace with --verbose", err)
+	}
+}
+
+func TestAPIRequestReadsTheJournalsErrorObject(t *testing.T) {
+	newMockAPIServer(t, func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusNotFound)
+		_, _ = w.Write([]byte(`{"api":"smarter.sh/v1","error":{"errorClass":"SAMBrokerErrorNotFound","description":"Guardrail x not found","context":"thing=Guardrail, command=describe","stacktrace":"trace-here"}}`))
+	})
+
+	_, err := APIRequest("describe/guardrail", map[string]string{"name": "x"})
+	if err == nil || !strings.Contains(err.Error(), "Guardrail x not found") || !strings.Contains(err.Error(), "command=describe") {
+		t.Errorf("error = %v, want the journal's description and context", err)
+	}
+
+	withViperValue(t, "verbose", true)
+	_, err = APIRequest("describe/guardrail", map[string]string{"name": "x"})
+	if err == nil || !strings.Contains(err.Error(), "SAMBrokerErrorNotFound") || !strings.Contains(err.Error(), "trace-here") {
+		t.Errorf("error = %v, want the error class and stack trace with --verbose", err)
+	}
+}
+
+func TestAPIRequestReadsDRFDetail(t *testing.T) {
+	newMockAPIServer(t, func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusUnauthorized)
+		_, _ = w.Write([]byte(`{"detail":"Invalid token."}`))
+	})
+	_, err := APIRequest("whoami", map[string]string{})
+	if err == nil || !strings.Contains(err.Error(), "Invalid token.") {
+		t.Errorf("error = %v, want DRF's detail", err)
+	}
+}
+
+func TestAPIRequestNonJSONErrorBodyIsQuoted(t *testing.T) {
+	newMockAPIServer(t, func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusBadGateway)
+		_, _ = w.Write([]byte("<html>" + strings.Repeat("x", 300) + "</html>"))
+	})
+
+	_, err := APIRequest("whoami", map[string]string{})
+	if err == nil || !strings.Contains(err.Error(), "502") || !strings.Contains(err.Error(), "<html>") {
+		t.Fatalf("error = %v, want the status and the start of the body", err)
+	}
+	if !strings.HasSuffix(err.Error(), "...") {
+		t.Errorf("error = %q, want a long body shortened", err)
+	}
+}
+
+func TestAPIRequestInvalidEnvironmentReturnsError(t *testing.T) {
+	withViperValue(t, "environment", "nonsense")
+	withViperValue(t, "nonsense.api_key", testAPIKey)
+
+	if _, err := APIRequest("whoami", map[string]string{}); err == nil {
+		t.Fatal("APIRequest() error = nil, want an error for an invalid environment")
+	}
+}
+
+func TestAPIRequestUnreachableHostReturnsError(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}))
+	url := srv.URL
+	srv.Close()
+	SetAPIHostOverride(url)
+	t.Cleanup(func() { SetAPIHostOverride("") })
+	withViperValue(t, "api_key", testAPIKey)
+
+	if _, err := APIRequest("whoami", map[string]string{}); err == nil {
+		t.Fatal("APIRequest() error = nil, want a connection error")
+	}
+}
+
+func TestAPIRequestTimesOut(t *testing.T) {
+	release := make(chan struct{})
+	newMockAPIServer(t, func(w http.ResponseWriter, r *http.Request) {
+		<-release
+	})
+	t.Cleanup(func() { close(release) })
+	withViperValue(t, "timeout", 50*time.Millisecond)
+
+	_, err := APIRequest("whoami", map[string]string{})
+	if err == nil {
+		t.Fatal("APIRequest() error = nil, want a timeout")
+	}
+}
+
+func TestRequestTimeoutDefault(t *testing.T) {
+	withViperValue(t, "timeout", time.Duration(0))
+	if got := requestTimeout(); got != DefaultTimeout {
+		t.Errorf("requestTimeout() = %v, want %v", got, DefaultTimeout)
+	}
+}
+
+func TestAPIRequestSendsIdentifyingHeadersNotKwargs(t *testing.T) {
+	var header http.Header
+	newMockAPIServer(t, func(w http.ResponseWriter, r *http.Request) {
+		header = r.Header.Clone()
+		_, _ = w.Write([]byte(`{}`))
+	})
+
+	if _, err := APIRequest("whoami", map[string]string{"name": "foo"}); err != nil {
+		t.Fatalf("APIRequest() error = %v", err)
+	}
+	if header.Get("X-Smarter-Client") != ClientName {
+		t.Errorf("X-Smarter-Client = %q, want %q", header.Get("X-Smarter-Client"), ClientName)
+	}
+	if !strings.HasPrefix(header.Get("User-Agent"), ClientName+"/") {
+		t.Errorf("User-Agent = %q", header.Get("User-Agent"))
+	}
+	if header.Get("name") != "" {
+		t.Error("kwargs must go in the query string only, not in headers")
+	}
+}
+
+func TestAPIRequestVerboseMasksTheKeyOnStderr(t *testing.T) {
+	newMockAPIServer(t, func(w http.ResponseWriter, r *http.Request) {
+		_, _ = w.Write([]byte(`{}`))
+	})
+	withViperValue(t, "verbose", true)
+
+	var logged bytes.Buffer
+	log.SetOutput(&logged)
+	t.Cleanup(func() { log.SetOutput(os.Stderr) })
+
+	stdout := captureStdout(t, func() {
+		if _, err := APIRequest("whoami", map[string]string{}); err != nil {
+			t.Fatalf("APIRequest() error = %v", err)
+		}
+	})
+	if stdout != "" {
+		t.Errorf("stdout = %q, want diagnostics on stderr only", stdout)
+	}
+	if strings.Contains(logged.String(), testAPIKey) {
+		t.Error("verbose output contains the full api key")
+	}
+	if !strings.Contains(logged.String(), maskSecret(testAPIKey)) {
+		t.Errorf("verbose output = %q, want the masked key", logged.String())
+	}
+}
+
+func TestMaskSecret(t *testing.T) {
+	if got := maskSecret("abc"); got != "****" {
+		t.Errorf("maskSecret(short) = %q", got)
+	}
+	if got := maskSecret("0123456789"); got != "****6789" {
+		t.Errorf("maskSecret() = %q", got)
+	}
 }

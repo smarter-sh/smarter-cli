@@ -5,41 +5,22 @@ Website: https://lawrencemcdaniel.com>
 package manifest
 
 import (
-	"encoding/json"
-	"log"
-
 	"github.com/smarter-sh/smarter-cli/cmd"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 func APIRequest(kind string, kwargs map[string]string) ([]byte, error) {
 
-	// en route to /api/v1/cli/manifest/<str:kind>/
-	return cmd.APIRequest("example_manifest/"+kind+"/", kwargs)
+	// en route to /api/v1/cli/example-manifest/<str:kind>/
+	return cmd.APIRequest("example-manifest/"+kind+"/", kwargs)
 
 }
-func ConsoleOutput(bodyJson []byte) {
-	jsonFlagValue := viper.GetBool("json")
-	yamlFlagValue := viper.GetBool("yaml")
-	if !jsonFlagValue && !yamlFlagValue {
-		viper.Set("yaml", true)
-	}
-	var data map[string]interface{}
-	err := json.Unmarshal(bodyJson, &data)
-	if err != nil {
-		log.Fatalf("Error occurred during unmarshalling. %v", err)
-	}
 
-	value, ok := data["data"]
-	if ok {
-		bodyJson, err = json.Marshal(value)
-		if err != nil {
-			log.Fatalf("Error occurred during marshalling. %v", err)
-		}
-	}
-	if err := cmd.ConsoleOutput(bodyJson); err != nil {
+// ConsoleOutput prints the example manifest itself, as yaml unless
+// --output_format says otherwise, so that it can be saved and applied.
+func ConsoleOutput(bodyJson []byte) {
+	if err := cmd.DataOutput(bodyJson, "yaml"); err != nil {
 		cmd.ErrorOutput(err)
 	}
 }
@@ -49,9 +30,9 @@ var manifestCmd = &cobra.Command{
 	Short: "Generate an example manifest for the resource kind",
 	Long: `Generate an example manifest for the resource kind. For example:
 
-	smarter manifest <kind> [flags] > my-plugin.yaml
+	smarter manifest <kind> [flags] > manifest.yaml
 
-This will generate an example manifest for the specified kind of resource and write it to my-plugin.yaml in the current working directory.`,
+This will generate an example manifest for the specified kind of resource and write it to manifest.yaml in the current working directory.`,
 }
 
 func init() {

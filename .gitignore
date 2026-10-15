@@ -68,3 +68,6 @@ config.json
 *.der
 *.p7b
 *.p7c
+
+
+*.code-workspace

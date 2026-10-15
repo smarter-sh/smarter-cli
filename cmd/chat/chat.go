@@ -5,6 +5,7 @@ Website: https://lawrencemcdaniel.com>
 package chat
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"net"
@@ -16,6 +17,7 @@ import (
 	"github.com/spf13/viper"
 )
 
+// APIRequest sends a chat request for the LLMClient named in slug.
 func APIRequest(slug string, kwargs map[string]string, fileContents ...string) ([]byte, error) {
 	var fileContent string
 	if len(fileContents) > 0 {
@@ -23,11 +25,12 @@ func APIRequest(slug string, kwargs map[string]string, fileContents ...string) (
 	}
 
 	// en route to either of:
-	// 		/api/v1/cli/chat/<str:chatbot>/<str:uid>
-	// 		/api/v1/cli/chat/config/<str:chatbot>/<str:uid>
-	return cmd.APIRequest(fmt.Sprintf("chat/%s", slug), kwargs, fileContent)
+	// 		/api/v1/cli/prompt/<str:name>/
+	// 		/api/v1/cli/prompt/config/<str:name>/
+	return cmd.APIRequest(fmt.Sprintf("prompt/%s", slug), kwargs, fileContent)
 
 }
+
 func ConsoleOutput(bodyJson []byte) {
 	if !viper.IsSet("output_format") {
 		viper.Set("output_format", "json")
@@ -36,23 +39,36 @@ func ConsoleOutput(bodyJson []byte) {
 		cmd.ErrorOutput(err)
 	}
 }
-func getUniqueID() string {
-	interfaces, err := net.Interfaces()
-	if err != nil {
-		log.Fatal(err)
-	}
 
+// llmClientName returns --llmclient, or the deprecated --chatbot.
+func llmClientName(c *cobra.Command) (string, error) {
+	name, _ := c.Flags().GetString("llmclient")
+	if name == "" {
+		name, _ = c.Flags().GetString("chatbot")
+	}
+	if name == "" {
+		return "", errors.New("the 'llmclient' flag is required")
+	}
+	return name, nil
+}
+
+// getUniqueID identifies this machine to the platform, which caches the chat
+// session under it: the hostname and the first hardware address. Either
+// part may be empty when the machine doesn't report it.
+func getUniqueID() string {
 	var macAddr string
-	for _, inter := range interfaces {
-		if inter.HardwareAddr != nil {
-			macAddr = inter.HardwareAddr.String()
-			break
+	if interfaces, err := net.Interfaces(); err == nil {
+		for _, inter := range interfaces {
+			if inter.HardwareAddr != nil {
+				macAddr = inter.HardwareAddr.String()
+				break
+			}
 		}
 	}
 
 	host, err := os.Hostname()
 	if err != nil {
-		log.Fatal(err)
+		host = "unknown-host"
 	}
 
 	// URL encode the host and macAddr
@@ -64,21 +80,26 @@ func getUniqueID() string {
 
 var chatCmd = &cobra.Command{
 	Use:   "chat [command] [flags]",
-	Short: "Chat with a deployed ChatBot",
-	Long: `Chat with a deployed ChatBot:
+	Short: "Chat with an LLMClient",
+	Long: `Chat with an LLMClient:
 
-smarter chat <command> [flags]
+smarter chat <command> --llmclient <name> [flags]
 
-The Smarter API will send the prompt to a deployed ChatBot and
+The Smarter API will send the prompt to the LLMClient and
 then echo its response to the console.`,
 }
 
 func init() {
 	cmd.RootCmd.AddCommand(chatCmd)
 
-	chatCmd.PersistentFlags().StringP("chatbot", "c", "", "the name of a deployed ChatBot")
-	if err := viper.BindPFlag("chatbot", chatCmd.PersistentFlags().Lookup("chatbot")); err != nil {
+	chatCmd.PersistentFlags().StringP("llmclient", "l", "", "the name of an LLMClient")
+	if err := viper.BindPFlag("llmclient", chatCmd.PersistentFlags().Lookup("llmclient")); err != nil {
 		log.Fatalf("Error binding flag: %v", err)
+	}
+
+	chatCmd.PersistentFlags().StringP("chatbot", "c", "", "the name of an LLMClient (deprecated: use --llmclient)")
+	if err := chatCmd.PersistentFlags().MarkDeprecated("chatbot", "use --llmclient"); err != nil {
+		log.Fatalf("Error deprecating flag: %v", err)
 	}
 
 	chatCmd.PersistentFlags().BoolP("new_session", "n", false, "start a new session")

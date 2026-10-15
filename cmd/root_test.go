@@ -42,38 +42,18 @@ func TestValidateOutputTogglesAcceptsValidFormats(t *testing.T) {
 	}
 }
 
-// TestValidateOutputTogglesExitsOnInvalidFormat verifies the log.Fatalf path
-// for an unrecognized output format. Runs in a subprocess since log.Fatalf
-// calls os.Exit.
-func TestValidateOutputTogglesExitsOnInvalidFormat(t *testing.T) {
-	if os.Getenv("SMARTER_CLI_TEST_CRASHER") == "1" {
-		viper.Set("output_format", "xml")
-		_ = validateOutputToggles()
-		return
-	}
-
-	cmd := exec.Command(os.Args[0], "-test.run=TestValidateOutputTogglesExitsOnInvalidFormat")
-	cmd.Env = append(os.Environ(), "SMARTER_CLI_TEST_CRASHER=1")
-	output, err := cmd.CombinedOutput()
-
-	exitErr, ok := err.(*exec.ExitError)
-	if !ok || exitErr.Success() {
-		t.Fatalf("process exited with err=%v, want non-zero status; output: %s", err, output)
-	}
-	if !strings.Contains(string(output), "Invalid output format") {
-		t.Errorf("expected output to explain the invalid format, got: %s", output)
+func TestValidateOutputTogglesRejectsInvalidFormat(t *testing.T) {
+	withViperValue(t, "output_format", "xml")
+	err := validateOutputToggles()
+	if err == nil || !strings.Contains(err.Error(), "invalid output format") {
+		t.Errorf("validateOutputToggles() = %v, want an error explaining the invalid format", err)
 	}
 }
 
 // TestInitConfigBootstrapsFreshHome exercises initConfig against a throwaway
 // $HOME that has no ~/.smarter directory yet, verifying it creates the
-// directory and a default config.yaml, and resolves environment/api_key from
-// it. This is a distinct scenario from TestMain's pre-seeded home (which
-// exists precisely so *other* tests' incidental Execute() calls don't hit
-// this bootstrap path).
-// TestInitConfigBootstrapsFreshHome exercises initConfig against a throwaway
-// $HOME that has no ~/.smarter directory yet, verifying it creates the
-// directory and writes a default config.yaml. This runs in its own
+// directory and writes a default config.yaml, owner-only, holding only the
+// configuration keys, without exiting for the missing api_key. This runs in its own
 // subprocess rather than in-process: viper is a global singleton that caches
 // the last successfully-read config file's values for the life of the
 // process, and a failed re-read (which is what happens here, since the file
@@ -91,11 +71,9 @@ func TestInitConfigBootstrapsFreshHome(t *testing.T) {
 		}
 		cfgFile = filepath.Join(freshHome, ".smarter", "config.yaml")
 		environment = ""
-		// Route around the log.Fatalf("No api_key found...") branch:
-		// initConfig only reaches that check if viper's api_key is still
-		// empty after reading the (freshly created, all-empty) config file.
-		viper.Set("api_key", "preset-key")
 
+		// No api_key anywhere: initConfig must not exit, so that
+		// "smarter configure" can run on a fresh install.
 		initConfig()
 
 		written, err := os.ReadFile(cfgFile)
@@ -110,6 +88,18 @@ func TestInitConfigBootstrapsFreshHome(t *testing.T) {
 		}
 		if !strings.Contains(content, "environment: prod") {
 			fmt.Println("BAD_ENVIRONMENT:", content)
+			os.Exit(1)
+		}
+		// Only configuration keys, not every flag that viper knows.
+		for _, junk := range []string{"chatbot:", "asc:", "today:", "filename:"} {
+			if strings.Contains(content, junk) {
+				fmt.Println("FLAG_WRITTEN:", junk, content)
+				os.Exit(1)
+			}
+		}
+		info, err := os.Stat(cfgFile)
+		if err != nil || info.Mode().Perm() != 0o600 {
+			fmt.Println("BAD_MODE:", info.Mode().Perm(), err)
 			os.Exit(1)
 		}
 		fmt.Println("OK")
@@ -128,5 +118,71 @@ func TestInitConfigBootstrapsFreshHome(t *testing.T) {
 	}
 	if !strings.Contains(string(out), "OK") {
 		t.Fatalf("subprocess did not report success, output:\n%s", out)
+	}
+}
+
+// useConfigFile points initConfig at path for the test, and afterwards
+// re-reads TestMain's fixture config, because viper keeps the last config it
+// read for the life of the process.
+func useConfigFile(t *testing.T, path string) {
+	t.Helper()
+	old := cfgFile
+	cfgFile = path
+	t.Cleanup(func() {
+		cfgFile = old
+		initConfig()
+	})
+}
+
+func TestInitConfigWritesAMissingConfigFile(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "smarter", "config.yaml")
+	useConfigFile(t, path)
+	withViperValue(t, "environment", "")
+	withViperValue(t, "verbose", true)
+
+	initConfig()
+
+	info, err := os.Stat(path)
+	if err != nil {
+		t.Fatalf("initConfig() didn't write %s: %v", path, err)
+	}
+	if info.Mode().Perm() != 0o600 {
+		t.Errorf("mode = %v, want 0600", info.Mode().Perm())
+	}
+	if got := viper.GetString("environment"); got == "" {
+		t.Error("initConfig() didn't resolve an environment")
+	}
+}
+
+func TestInitConfigReportsAnUnreadableConfigFile(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "config.yaml")
+	if err := os.WriteFile(path, []byte("config: [not: valid"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	useConfigFile(t, path)
+
+	initConfig()
+
+	body, _ := os.ReadFile(path)
+	if string(body) != "config: [not: valid" {
+		t.Errorf("initConfig() overwrote an unreadable config file: %q", body)
+	}
+}
+
+func TestExecuteRunsACommand(t *testing.T) {
+	RootCmd.SetArgs([]string{"version"})
+	out := captureStdout(t, func() { Execute("9.9.9") })
+	if !strings.Contains(out, "9.9.9") {
+		t.Errorf("output = %q, want the version", out)
+	}
+}
+
+func TestExecuteExitsOnAnUnknownCommand(t *testing.T) {
+	RootCmd.SetArgs([]string{"no-such-command"})
+	t.Cleanup(func() { RootCmd.SetArgs(nil) })
+	if !exits(t, func() {
+		_ = captureStdout(t, func() { Execute("9.9.9") })
+	}) {
+		t.Error("Execute() did not exit on an unknown command")
 	}
 }

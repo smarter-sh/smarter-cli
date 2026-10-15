@@ -1,0 +1,45 @@
+---
+#------------------------------------------------------------------------------
+# Vet, lint and run the unit tests on every supported Go version.
+#
+# The unit tests never reach a Smarter platform: httptest servers answer every
+# request. The contract test (contract_test.go) checks every command against
+# the platform's OpenAPI document pinned in testdata/contracts/openapi.json.
+#------------------------------------------------------------------------------
+name: Test
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, alpha, beta]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        go-version: ["1.26", "1.27"]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Set up Go
+        uses: actions/setup-go@v7
+        with:
+          go-version: ${{ matrix.go-version }}
+
+      - name: Check formatting
+        run: test -z "$(gofmt -l cmd main.go main_test.go contract_test.go)"
+
+      - name: Vet
+        run: go vet ./...
+
+      - name: Lint
+        uses: golangci/golangci-lint-action@v8
+        with:
+          version: v2.14.0
+
+      - name: Run the unit tests, and check coverage of at least 90% per package
+        run: make coverage

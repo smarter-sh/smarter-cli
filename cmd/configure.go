@@ -7,7 +7,6 @@ package cmd
 import (
 	"bufio"
 	"fmt"
-	"log"
 	"os"
 	"regexp"
 	"strings"
@@ -56,6 +55,8 @@ func validateOutputFormat(v string) error {
 	case "json", "yaml":
 		return nil
 	default:
+		// tabular isn't offered: only get responses have tables, and this
+		// value becomes the default of every command.
 		return fmt.Errorf("invalid output format. Output format should be either 'json' or 'yaml'")
 	}
 }
@@ -168,7 +169,7 @@ func promptField(reader *bufio.Reader, f configField) (string, error) {
 		}
 
 		if input != current {
-			viper.Set(f.key, input)
+			setField(f, input)
 			fmt.Printf("%s set to %s\n", f.label, f.display(input))
 		}
 		return input, nil
@@ -180,9 +181,18 @@ func applyField(f configField, value string) error {
 	if err := f.validate(value); err != nil {
 		return err
 	}
-	viper.Set(f.key, value)
+	setField(f, value)
 	fmt.Printf("%s set to %s\n", f.label, f.display(value))
 	return nil
+}
+
+// setField stores a configured value, and notes a configured output_format so
+// that writeConfigFile keeps it.
+func setField(f configField, value string) {
+	viper.Set(f.key, value)
+	if f.key == "output_format" {
+		outputFormatConfigured = true
+	}
 }
 
 var configureCmd = &cobra.Command{
@@ -203,20 +213,26 @@ Set your account_number, username, api_key and application options.`,
 					continue
 				}
 				if err := applyField(field, value); err != nil {
-					fmt.Println(err)
+					ErrorOutput(err)
+					return
 				}
 			}
 		} else {
 			reader := bufio.NewReader(os.Stdin)
 			for _, field := range fields {
 				if _, err := promptField(reader, field); err != nil {
-					log.Fatalf("configure: %v", err)
+					ErrorOutput(fmt.Errorf("configure: %w", err))
+					return
 				}
 			}
 		}
 
-		if err := viper.WriteConfig(); err != nil {
-			log.Fatalf("Error writing config: %v", err)
+		path, err := configFilePath()
+		if err == nil {
+			err = writeConfigFile(path)
+		}
+		if err != nil {
+			ErrorOutput(err)
 		}
 	},
 }

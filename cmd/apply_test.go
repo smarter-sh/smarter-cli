@@ -31,42 +31,82 @@ func TestReadManifestMissingFile(t *testing.T) {
 	}
 }
 
-func TestApplyCommandSendsManifestAndDryRunFlag(t *testing.T) {
+// TestApplyDryRunValidatesInsteadOfApplying checks that --dry-run never
+// reaches apply/: the platform's apply has no dry run, so the cli validates.
+func TestApplyDryRunValidatesInsteadOfApplying(t *testing.T) {
 	dir := t.TempDir()
 	path := filepath.Join(dir, "manifest.yaml")
 	if err := os.WriteFile(path, []byte("kind: Plugin\nname: foo\n"), 0644); err != nil {
 		t.Fatalf("WriteFile() error = %v", err)
 	}
 
-	var gotPath, gotQuery, gotBody string
-	srv := newMockAPIServer(t, func(w http.ResponseWriter, r *http.Request) {
-		gotPath = r.URL.Path
+	var gotPaths []string
+	var gotQuery, gotBody string
+	newMockAPIServer(t, func(w http.ResponseWriter, r *http.Request) {
+		gotPaths = append(gotPaths, r.URL.Path)
 		gotQuery = r.URL.RawQuery
 		b, _ := io.ReadAll(r.Body)
 		gotBody = string(b)
-		w.WriteHeader(http.StatusOK)
-		_, _ = w.Write([]byte(`{}`))
+		_, _ = w.Write([]byte(`{"data":{"valid":true,"errors":[]}}`))
 	})
-	defer srv.Close()
 
 	withViperValue(t, "filename", path)
 	withViperValue(t, "dry_run", true)
+	withViperValue(t, "output_format", nil)
 
 	out := captureStdout(t, func() {
 		applyCmd.Run(applyCmd, []string{})
 	})
 
-	if gotPath != "/api/v1/cli/apply/" {
-		t.Errorf("path = %q, want /api/v1/cli/apply/", gotPath)
+	if len(gotPaths) != 1 || gotPaths[0] != "/api/v1/cli/validate/" {
+		t.Errorf("paths = %v, want only /api/v1/cli/validate/", gotPaths)
 	}
-	if !strings.Contains(gotQuery, "dry_run=true") {
-		t.Errorf("query = %q, want it to contain dry_run=true", gotQuery)
+	if gotQuery != "" {
+		t.Errorf("query = %q, want none", gotQuery)
 	}
 	if gotBody != "kind: Plugin\nname: foo\n" {
 		t.Errorf("request body = %q, want the manifest contents", gotBody)
 	}
-	if !strings.Contains(out, "dry run") {
-		t.Errorf("output = %q, want it to mention the dry run", out)
+	if !strings.Contains(out, "manifest is valid.") || !strings.Contains(out, "nothing was applied") {
+		t.Errorf("output = %q, want the validation and the dry run's note", out)
+	}
+}
+
+func TestApplyDryRunExitsOnAnInvalidManifest(t *testing.T) {
+	dir := t.TempDir()
+	path := filepath.Join(dir, "manifest.yaml")
+	if err := os.WriteFile(path, []byte("kind: Plugin\n"), 0644); err != nil {
+		t.Fatal(err)
+	}
+	newMockAPIServer(t, func(w http.ResponseWriter, r *http.Request) {
+		_, _ = w.Write([]byte(`{"data":{"valid":false,"errors":[{"loc":["metadata"],"message":"missing","type":"x"}]}}`))
+	})
+	withViperValue(t, "filename", path)
+	withViperValue(t, "dry_run", true)
+	withViperValue(t, "output_format", nil)
+
+	if !exits(t, func() {
+		_ = captureStdout(t, func() { applyCmd.Run(applyCmd, []string{}) })
+	}) {
+		t.Error("apply --dry-run did not exit for an invalid manifest")
+	}
+}
+
+func TestApplyExitsOnAnAPIError(t *testing.T) {
+	dir := t.TempDir()
+	path := filepath.Join(dir, "manifest.yaml")
+	if err := os.WriteFile(path, []byte("kind: Plugin\n"), 0644); err != nil {
+		t.Fatal(err)
+	}
+	newMockAPIServer(t, func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusBadRequest)
+		_, _ = w.Write([]byte(`{"error":{"description":"bad manifest"}}`))
+	})
+	withViperValue(t, "filename", path)
+	withViperValue(t, "dry_run", false)
+
+	if !exits(t, func() { applyCmd.Run(applyCmd, []string{}) }) {
+		t.Error("apply did not exit on a 400")
 	}
 }
 

@@ -8,29 +8,28 @@ import (
 	"github.com/smarter-sh/smarter-cli/cmd"
 )
 
-// legacySpecs are resources whose Short/Long text pre-dates the v0.14
-// ResourceKind template and is preserved verbatim rather than regenerated.
+// legacySpecs are the kinds whose commands pre-date the ResourceKind template:
+// User, which takes a username. Only account admins may undeploy users.
 var legacySpecs = []cmd.ResourceSpec{
 	{
-		Use:   "chatbot <name>",
-		Short: "Undo a ChatBot deployment.",
-		Long: `Undo a ChatBot deployment. For example:
+		Use:   "user <username>",
+		Short: "Deactivate a user of your account",
+		Long: `Deactivates a user of your account, who can then no longer log in or use the api:
 
-smarter undeploy chatbot <name>
-
-This will reverse the effect of having deployed the ChatBot.`,
-		APIKind: "ChatBot",
-		NameArg: cmd.NameArgSpec{Mode: cmd.NameArgPositional, Kwarg: "name"},
+smarter undeploy user <username>`,
+		APIKind: "User",
+		NameArg: cmd.NameArgSpec{Mode: cmd.NameArgPositional, Kwarg: "username", Param: "name"},
 	},
 }
 
 func init() {
 	cmd.RegisterResources(undeployCmd, legacySpecs, APIRequest, cmd.AdaptOutput(ConsoleOutput), cmd.ErrorOutput)
 
-	// v0.14: only kinds flagged Deployable (e.g. Prompt, which replaces
-	// ChatBot as the deployable unit) get an "undeploy" leaf command. Pulled
-	// from the shared registry so its Use/APIKind/display text stays in
-	// lockstep with its describe/get/manifest counterparts.
+	// Only kinds flagged Deployable, whose platform broker implements deploy,
+	// get a leaf command. Pulled from the shared registry so its
+	// Use/APIKind/display text stays in lockstep with the other verbs. The
+	// ChatBot command was removed: the platform has no ChatBot broker since
+	// v0.14 (LLMClient replaced it).
 	var specs []cmd.ResourceSpec
 	for _, k := range cmd.ResourceKinds {
 		if k.Deployable {

@@ -1,14 +1,14 @@
 SHELL := /bin/bash
-include .env
-export
 
-
-ifneq ("$(wildcard .env)","")
-else
+# .env is gitignored, so a fresh checkout (CI included) seeds it from the
+# example before including it.
+ifeq ("$(wildcard .env)","")
     $(shell cp ./doc/example-dot-env .env)
 endif
+-include .env
+export
 
-.PHONY: analyze init pre-commit-init pre-commit-run help choco-pack choco-push
+.PHONY: analyze init pre-commit-init pre-commit-run help choco-pack choco-push contracts coverage
 
 # Default target executed when no arguments are given to make.
 all: help
@@ -21,6 +21,17 @@ lint:
 
 test:
 	go test -v ./...
+
+# Per-package coverage, failing below 90% in any package, as CI checks it.
+# The main package is exempt: main() runs only in the tests that build and run
+# the binary (main_test.go), which coverage can't see.
+coverage:
+	@go test -cover ./... | tee /dev/stderr | awk '/coverage:/ && $$2 != "github.com/smarter-sh/smarter-cli" { pct = $$5; sub("%", "", pct); if (pct + 0 < 90) { print "coverage below 90%: " $$2; failed = 1 } } END { exit failed }'
+
+# Copy the platform's OpenAPI document from ../smarter into testdata/contracts/.
+# Pin a release with: make contracts SMARTER_REF=v0.24.0
+contracts:
+	scripts/sync-contracts.sh ../smarter $(SMARTER_REF)
 
 run:
 	make build
@@ -37,7 +48,7 @@ choco-pack:
 	choco pack
 
 choco-push: choco-pack
-	choco push smarter.0.2.1.nupkg --source https://push.chocolatey.org/
+	choco push smarter.0.4.3.nupkg --source https://push.chocolatey.org/
 
 # initialize local development environment.
 # takes around 5 minutes to complete
@@ -73,6 +84,8 @@ help:
 	@echo 'init                   - Initialize local and Docker environments'
 	@echo 'lint            		  - run all code linters'
 	@echo 'test                   - run all tests'
+	@echo 'coverage               - run all tests with per-package coverage'
+	@echo 'contracts              - copy the platform OpenAPI document from ../smarter'
 	@echo 'run                    - run the main.go file'
 	@echo 'build                  - build the smarter cli'
 	@echo 'choco-pack             - package the smarter cli for chocolatey'

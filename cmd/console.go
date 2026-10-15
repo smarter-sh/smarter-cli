@@ -91,8 +91,8 @@ func TableOutput(bodyJson []byte) error {
 				values[i] = ""
 				continue
 			}
-			if title.Type == "DateTimeField" {
-				t, err := time.Parse(time.RFC3339, value.(string))
+			if text, isText := value.(string); isText && title.Type == "DateTimeField" {
+				t, err := time.Parse(time.RFC3339, text)
 				if err != nil {
 					return fmt.Errorf("failed parsing date: %w", err)
 				}
@@ -169,7 +169,42 @@ func ConsoleOutput(bodyJson []byte) error {
 	}
 }
 
+// DataOutput prints only the "data" member of a response, e.g. a manifest or
+// a JSON Schema, so that it can be saved to a file and used as is.
+// defaultFormat applies when --output_format wasn't given.
+func DataOutput(bodyJson []byte, defaultFormat string) error {
+	var body map[string]interface{}
+	if err := json.Unmarshal(bodyJson, &body); err != nil {
+		return fmt.Errorf("failed unmarshalling JSON: %w", err)
+	}
+	if data, ok := body["data"]; ok {
+		dataJson, err := json.Marshal(data)
+		if err != nil {
+			return fmt.Errorf("failed marshalling data: %w", err)
+		}
+		bodyJson = dataJson
+	}
+	if !viper.IsSet("output_format") {
+		viper.Set("output_format", defaultFormat)
+	}
+	return ConsoleOutput(bodyJson)
+}
+
+// exitFunc is os.Exit, replaced by tests that run commands in-process.
+var exitFunc = os.Exit
+
+// SetExitFunc replaces the function that ErrorOutput exits with. Pass nil to
+// restore os.Exit. For use by tests only.
+func SetExitFunc(f func(int)) {
+	if f == nil {
+		f = os.Exit
+	}
+	exitFunc = f
+}
+
+// ErrorOutput prints err to stderr and exits with status 1. Only a command's
+// Run calls it: see doc/adr/006-error-handling.md.
 func ErrorOutput(err error) {
 	fmt.Fprintf(os.Stderr, "\nError: %v\n", err)
-	os.Exit(1)
+	exitFunc(1)
 }

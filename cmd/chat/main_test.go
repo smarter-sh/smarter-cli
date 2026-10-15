@@ -4,10 +4,12 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/smarter-sh/smarter-cli/cmd"
 )
 
 // testAPIKey is a syntactically valid (64 hex char) placeholder API key.
-const testAPIKey = "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcd"
+const testAPIKey = "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
 
 const testConfigYAML = `config:
   account_number: "1234-5678-9012"
@@ -32,6 +34,12 @@ prod:
 // api_key - corrupting the developer's real home directory or crashing the
 // test binary.
 func TestMain(m *testing.M) {
+	// a developer's SMARTER_* variables must not change the tests' outcome.
+	for _, name := range cmd.SmarterEnvironmentVariables {
+		if err := os.Unsetenv(name); err != nil {
+			panic(err)
+		}
+	}
 	dir, err := os.MkdirTemp("", "smarter-cli-test-home")
 	if err != nil {
 		panic(err)

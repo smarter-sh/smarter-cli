@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/smarter-sh/smarter-cli/cmd"
+	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
@@ -20,7 +21,7 @@ func TestGetUniqueID(t *testing.T) {
 	}
 }
 
-func TestAPIRequestRoutesUnderChatPrefix(t *testing.T) {
+func TestAPIRequestRoutesUnderPromptPrefix(t *testing.T) {
 	var gotPath string
 	srv := newMockAPIServer(t, func(w http.ResponseWriter, r *http.Request) {
 		gotPath = r.URL.Path
@@ -32,8 +33,8 @@ func TestAPIRequestRoutesUnderChatPrefix(t *testing.T) {
 	if _, err := APIRequest("widget/", map[string]string{}); err != nil {
 		t.Fatalf("APIRequest() error = %v", err)
 	}
-	if gotPath != "/api/v1/cli/chat/widget/" {
-		t.Errorf("path = %q, want /api/v1/cli/chat/widget/", gotPath)
+	if gotPath != "/api/v1/cli/prompt/widget/" {
+		t.Errorf("path = %q, want /api/v1/cli/prompt/widget/", gotPath)
 	}
 }
 
@@ -67,9 +68,30 @@ func TestConsoleOutputPreservesAnAlreadySetFormat(t *testing.T) {
 	}
 }
 
+func TestConsoleOutputDefaultsToJSON(t *testing.T) {
+	// viper.IsSet reports a nil value as unset
+	withViperValue(t, "output_format", nil)
+
+	ConsoleOutput([]byte(`{"a":1}`))
+
+	if got := viper.GetString("output_format"); got != "json" {
+		t.Errorf("output_format = %q, want json when it wasn't set", got)
+	}
+}
+
+func TestConsoleOutputExitsOnMalformedResponse(t *testing.T) {
+	withViperValue(t, "output_format", "json")
+	if !exits(t, func() { ConsoleOutput([]byte(`not json`)) }) {
+		t.Error("ConsoleOutput did not exit on a response that isn't JSON")
+	}
+}
+
 func TestChatCmdRegisteredWithFlags(t *testing.T) {
-	if chatCmd.PersistentFlags().Lookup("chatbot") == nil {
-		t.Error("chatCmd is missing the --chatbot persistent flag")
+	if chatCmd.PersistentFlags().Lookup("llmclient") == nil {
+		t.Error("chatCmd is missing the --llmclient persistent flag")
+	}
+	if f := chatCmd.PersistentFlags().Lookup("chatbot"); f == nil || f.Deprecated == "" {
+		t.Error("chatCmd should keep --chatbot as a deprecated alias")
 	}
 	if chatCmd.PersistentFlags().Lookup("new_session") == nil {
 		t.Error("chatCmd is missing the --new_session persistent flag")
@@ -83,5 +105,83 @@ func TestChatCmdRegisteredWithFlags(t *testing.T) {
 	}
 	if !found {
 		t.Error("chat command is not registered on RootCmd")
+	}
+}
+
+// exits replaces cmd.ErrorOutput's exit with a panic for the duration of
+// the test, runs fn, and reports whether it exited.
+func exits(t *testing.T, fn func()) (exited bool) {
+	t.Helper()
+	type exit struct{}
+	cmd.SetExitFunc(func(int) { panic(exit{}) })
+	t.Cleanup(func() { cmd.SetExitFunc(nil) })
+	defer func() {
+		if r := recover(); r != nil {
+			if _, ok := r.(exit); !ok {
+				panic(r)
+			}
+			exited = true
+		}
+	}()
+	fn()
+	return false
+}
+
+// setFlags sets c's flags for the test, and restores their previous values.
+func setFlags(t *testing.T, c *cobra.Command, values map[string]string) {
+	t.Helper()
+	// merge the parent's persistent flags into c.Flags(), as Execute does
+	_ = c.InheritedFlags()
+	for name, value := range values {
+		f := c.Flags().Lookup(name)
+		old := f.Value.String()
+		if err := f.Value.Set(value); err != nil {
+			t.Fatal(err)
+		}
+		t.Cleanup(func() { _ = f.Value.Set(old) })
+	}
+}
+
+func TestLLMClientNamePrefersTheNewFlag(t *testing.T) {
+	setFlags(t, promptCmd, map[string]string{"llmclient": "new", "chatbot": "old"})
+	if name, err := llmClientName(promptCmd); err != nil || name != "new" {
+		t.Errorf("llmClientName() = %q, %v; want new", name, err)
+	}
+	setFlags(t, promptCmd, map[string]string{"llmclient": ""})
+	if name, err := llmClientName(promptCmd); err != nil || name != "old" {
+		t.Errorf("llmClientName() = %q, %v; want the deprecated alias's value", name, err)
+	}
+}
+
+func TestChatCommandsExitWithoutAnLLMClient(t *testing.T) {
+	setFlags(t, promptCmd, map[string]string{"llmclient": "", "chatbot": "", "prompt": "hi"})
+	if !exits(t, func() { promptCmd.Run(promptCmd, nil) }) {
+		t.Error("chat prompt without an LLMClient did not exit")
+	}
+	setFlags(t, configCmd, map[string]string{"llmclient": "", "chatbot": ""})
+	if !exits(t, func() { configCmd.Run(configCmd, nil) }) {
+		t.Error("chat config without an LLMClient did not exit")
+	}
+}
+
+func TestChatPromptExitsWithoutAPrompt(t *testing.T) {
+	setFlags(t, promptCmd, map[string]string{"llmclient": "x", "prompt": ""})
+	if !exits(t, func() { promptCmd.Run(promptCmd, nil) }) {
+		t.Error("chat prompt without a prompt did not exit")
+	}
+}
+
+func TestChatCommandsExitOnAnAPIError(t *testing.T) {
+	newMockAPIServer(t, func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusNotFound)
+		_, _ = w.Write([]byte(`{"description":"not found"}`))
+	})
+	setFlags(t, promptCmd, map[string]string{"llmclient": "x", "prompt": "hi"})
+	if !exits(t, func() { promptCmd.Run(promptCmd, nil) }) {
+		t.Error("chat prompt did not exit on a 404")
+	}
+	setFlags(t, configCmd, map[string]string{"llmclient": "x"})
+	if !exits(t, func() { configCmd.Run(configCmd, nil) }) {
+		t.Error("chat config did not exit on a 404")
 	}
 }

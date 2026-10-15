@@ -1,0 +1,509 @@
+###############################################################################
+# Build and release the `smarter` cli to every distribution channel (ADR-017)
+#
+#   GitHub Releases   https://github.com/smarter-sh/smarter-cli/releases
+#   Homebrew tap      https://github.com/smarter-sh/homebrew-tap
+#   Ubuntu PPA        https://launchpad.net/~lpm0073/+archive/ubuntu/smarter-cli
+#   Chocolatey        https://community.chocolatey.org/packages/smarter
+#   Docker Hub        https://hub.docker.com/r/mcdaniel0073/smarter-cli
+#
+# Run by hand (workflow_dispatch) after semantic-release has tagged the
+# version in the VERSION file. The jobs run in this order:
+#
+#   build -> windows -> mac_linux -> homebrew
+#                                 -> ubuntu_apt
+#                                 -> chocolatey
+#                                 -> dockerhub
+#
+# windows creates the GitHub release and uploads the Windows binary, and
+# mac_linux uploads the macOS and Linux binaries to it. The other channels
+# wait for the release to be complete, because the Homebrew formula and
+# debian/rules download its binaries. Each channel has an input, so a channel
+# that failed can be published again without republishing the others; the
+# GitHub release and the Homebrew tap go together.
+#
+# Required repo/org secrets
+# --------------------------
+#   PAT               A GitHub Personal Access Token used in place of the
+#                     default GITHUB_TOKEN because the github jobs reach
+#                     *outside* this repo: they create/delete the release and
+#                     upload its assets, and clone smarter-sh/homebrew-tap and
+#                     push an updated formula. Needs `repo` scope (or
+#                     Contents: Read/Write on both smarter-cli and
+#                     homebrew-tap for a fine-grained token).
+#   GPG_PRIVATE_KEY   ASCII-armored *private* key, imported at runtime by the
+#                     ubuntu_apt job's "Import GPG key" step and used (via its
+#                     fingerprint, hardcoded in the "Build source package"
+#                     step) to sign the .dsc/.changes files that debuild
+#                     produces.
+#   GPG_PASSPHRASE    The passphrase that protects GPG_PRIVATE_KEY. Used to
+#                     unlock the key in gpg-agent's loopback-pinentry cache so
+#                     debuild can sign non-interactively.
+#   CHOCO_API_KEY     The API key for the Chocolatey.org account that owns the
+#                     `smarter` package. Used by `choco push`.
+#   DOCKERHUB_USERNAME
+#                     Docker Hub account (mcdaniel0073) used to log in.
+#   DOCKERHUB_TOKEN   An access token for that account, used as the password
+#                     for `docker/login-action`.
+#
+# Rotating secrets (requires the gh CLI, authenticated; `gh secret set`
+# prompts for the value interactively)
+# ---------------------------------------------------------------------
+# PAT:
+#   1. Generate a new token at https://github.com/settings/tokens with `repo`
+#      scope (or a fine-grained token scoped to smarter-sh/smarter-cli and
+#      smarter-sh/homebrew-tap with Contents: Read and write).
+#   2. gh secret set PAT --repo lpm0073/smarter-cli
+#
+# GPG_PRIVATE_KEY and GPG_PASSPHRASE are NOT derived from anything else in
+# this repo — they come from a GPG keypair you generate locally and register
+# with Launchpad:
+#   1. Generate a new key (skip if reusing an existing one):
+#        gpg --full-generate-key
+#      Use the same name/email as DEBFULLNAME/DEBEMAIL below (Lawrence
+#      McDaniel / lpm0073@gmail.com) so the signature matches the changelog.
+#   2. Find its fingerprint (this is the value hardcoded after -k in the
+#      "Build source package" step, e.g. FB3400542F8EEE85986FA02258F2087CD4DA3ADD):
+#        gpg --list-secret-keys --keyid-format=long lpm0073@gmail.com
+#   3. Register the *public* key with Launchpad so it will accept uploads
+#      signed by it (Launchpad emails an encrypted nonce to confirm you hold
+#      the private key):
+#        gpg --armor --export <FINGERPRINT> > pubkey.asc
+#        # upload pubkey.asc at https://launchpad.net/~lpm0073/+editpgpkeys
+#        gpg --decrypt   # paste the confirmation email body when prompted
+#   4. Export the *private* key and push it + the passphrase to GitHub:
+#        gpg --armor --export-secret-keys <FINGERPRINT> \
+#          | gh secret set GPG_PRIVATE_KEY --repo lpm0073/smarter-cli
+#        gh secret set GPG_PASSPHRASE --repo lpm0073/smarter-cli
+#   5. Update the hardcoded fingerprint in the "Build source package" step
+#      below to match the new key.
+#
+# CHOCO_API_KEY:
+#   1. Sign in at https://community.chocolatey.org and generate/copy the API
+#      key from your account profile (https://community.chocolatey.org/account).
+#   2. gh secret set CHOCO_API_KEY --repo lpm0073/smarter-cli
+#
+# DOCKERHUB_TOKEN:
+#   1. Sign in to https://hub.docker.com as mcdaniel0073, then generate a new
+#      access token at Account Settings > Security > Access Tokens (Read &
+#      Write scope is sufficient).
+#   2. gh secret set DOCKERHUB_TOKEN --repo lpm0073/smarter-cli
+#   DOCKERHUB_USERNAME only needs to change if the publishing account
+#   changes; set it the same way with `gh secret set DOCKERHUB_USERNAME`.
+###############################################################################
+name: Build-Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      github:
+        description: GitHub Releases and the Homebrew tap
+        type: boolean
+        default: true
+      ubuntu_apt:
+        description: Ubuntu PPA
+        type: boolean
+        default: true
+      distribution:
+        # Launchpad builds only for an Ubuntu series it knows (e.g. noble,
+        # resolute); a Debian name such as "unstable" is rejected with
+        # "Unable to find distroseries". The cli is a static Go binary, so one
+        # series is enough: copy the built package to other series from the
+        # PPA's "Copy packages" page.
+        description: Ubuntu series to build for
+        required: true
+        default: noble
+      chocolatey:
+        description: Chocolatey
+        type: boolean
+        default: true
+      dockerhub:
+        description: Docker Hub
+        type: boolean
+        default: true
+
+env:
+  app_name: smarter
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v7
+
+    - name: Set up Go
+      uses: actions/setup-go@v7
+      with:
+        go-version: '1.27'
+
+    - name: Get dependencies
+      run: go get -v -t ./...
+
+    - name: Build
+      run: go build -v -o smarter main.go
+
+  #############################################################################
+  # GitHub Releases + Homebrew tap
+  #############################################################################
+  windows:
+    name: GitHub Release (Windows)
+    needs: build
+    if: ${{ inputs.github }}
+    runs-on: windows-latest
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v7
+      with:
+        token: ${{ secrets.PAT }}
+
+    - name: Set up Go
+      uses: actions/setup-go@v7
+      with:
+        go-version: '1.27'
+
+    - name: Get dependencies
+      run: go get -v -t ./...
+
+    - name: Get version
+      id: vars
+      shell: pwsh
+      run: echo "version=$(Get-Content -Path VERSION)" >> $env:GITHUB_OUTPUT
+
+    - name: Build
+      id: build
+      shell: pwsh
+      run: |
+        go build -v -ldflags "-X main.Version=${{ steps.vars.outputs.version }}" -o "./${{ env.app_name }}-windows-${{ steps.vars.outputs.version }}.exe"
+
+    - name: Delete existing release
+      continue-on-error: true
+      run: |
+        gh release delete v${{ steps.vars.outputs.version }} -y
+      env:
+        GH_TOKEN: ${{ secrets.PAT }}
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.PAT }}
+      with:
+        tag_name: v${{ steps.vars.outputs.version }}
+        release_name: Release v${{ steps.vars.outputs.version }}
+        draft: false
+        prerelease: false
+
+    - name: Upload Release Assets
+      id: upload-release-asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.PAT }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./${{ env.app_name }}-windows-${{ steps.vars.outputs.version }}.exe
+        asset_name: ${{ env.app_name }}-windows-${{ steps.vars.outputs.version }}.exe
+        asset_content_type: application/octet-stream
+
+  mac_linux:
+    name: GitHub Release (macOS/Linux)
+    needs: windows
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest]
+        go: ['1.27']
+
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v7
+      with:
+        token: ${{ secrets.PAT }}
+
+    - name: Set up Go
+      uses: actions/setup-go@v7
+      with:
+        go-version: ${{ matrix.go }}
+
+    - name: Get dependencies
+      run: go get -v -t ./...
+
+    - name: Get version
+      id: vars
+      run: echo "version=$(cat VERSION)" >> $GITHUB_OUTPUT
+
+    - name: Build
+      id: build
+      shell: bash
+      run: |
+        go build -v \
+        -ldflags "-X main.Version=${{ steps.vars.outputs.version }}" \
+        -o ./${{ env.app_name }}-${{ matrix.os }}-${{ steps.vars.outputs.version }}
+
+
+    - name: Get Release URL
+      id: get_upload_url
+      shell: bash
+      run: |
+        response=$(curl -s -H "Authorization: token $GITHUB_TOKEN" "https://api.github.com/repos/$GITHUB_REPOSITORY/releases/tags/v$VERSION")
+        upload_url=$(echo "$response" | jq -r .upload_url)
+        if [ -z "$upload_url" ]; then
+          echo "Failed to get upload URL"
+          exit 1
+        fi
+        echo "UPLOAD_URL=$upload_url" >> $GITHUB_ENV
+      env:
+        GITHUB_TOKEN: ${{ secrets.PAT }}
+        GITHUB_REPOSITORY: ${{ github.repository }}
+        VERSION: ${{ steps.vars.outputs.version }}
+
+    - name: Upload Release Assets
+      id: upload-release-asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.PAT }}
+        UPLOAD_URL: ${{ env.UPLOAD_URL }}
+      with:
+        upload_url: ${{ env.UPLOAD_URL }}
+        asset_path: ./${{ env.app_name }}-${{ matrix.os }}-${{ steps.vars.outputs.version }}
+        asset_name: ${{ env.app_name }}-${{ matrix.os }}-${{ steps.vars.outputs.version }}
+        asset_content_type: application/octet-stream
+
+  homebrew:
+    name: Homebrew Tap
+    needs: mac_linux
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Check out code
+      uses: actions/checkout@v7
+      with:
+        token: ${{ secrets.PAT }}
+
+    - name: Get version
+      id: vars
+      shell: bash
+      run: echo "version=$(cat VERSION)" >> $GITHUB_OUTPUT
+
+    - name: Update Homebrew Tap
+      run: |
+        git clone https://${{ secrets.PAT }}@github.com/smarter-sh/homebrew-tap.git
+        cd homebrew-tap/Formula
+
+        # Update the URL and SHA256 in the formula file
+        url="https://github.com/smarter-sh/smarter-cli/releases/download/v${{ steps.vars.outputs.version }}/smarter-macos-latest-${{ steps.vars.outputs.version }}"
+        sha256=$(curl -L -s $url | shasum -a 256 | cut -d " " -f 1)
+
+        # 1.) update the formula url
+        sed -i "s|url \".*\"|url \"$url\"|" smarter.rb
+
+        # 2.) update the formula sha256
+        sed -i "s|sha256 \".*\"|sha256 \"$sha256\"|" smarter.rb
+
+        # 3.) Update the bin.install line with the new version
+        sed -i "s|bin.install \"smarter-macos-latest-.*\" => \"smarter\"|bin.install \"smarter-macos-latest-${{ steps.vars.outputs.version }}\" => \"smarter\"|" smarter.rb
+
+        # Commit and push the changes
+        git config --global user.name "GitHub Actions"
+        git config --global user.email "actions@github.com"
+        git add smarter.rb
+        git commit -m "[CI/CD] release ${{ steps.vars.outputs.version }}"
+        git push
+
+  #############################################################################
+  # Ubuntu PPA
+  #############################################################################
+  ubuntu_apt:
+    name: Ubuntu APT
+    needs: mac_linux
+    # mac_linux is skipped, not failed, when the github input is false.
+    if: ${{ !failure() && !cancelled() && inputs.ubuntu_apt }}
+    runs-on: ubuntu-latest
+    env:
+      account: lpm0073
+      ppa: smarter-cli
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v7
+
+    - name: Install Debian packaging dependencies
+      run: |
+        sudo grep -rl "dl.google.com/linux/chrome" /etc/apt/sources.list.d/ 2>/dev/null \
+          | xargs -r sudo rm -f || true
+        sudo apt-get update
+        sudo apt-get install -y \
+          devscripts \
+          dput \
+          build-essential \
+          debhelper
+
+    - name: Import GPG key
+      shell: bash
+      run: |
+        echo "$GPG_PRIVATE_KEY" | gpg --batch --import
+        mkdir -p ~/.gnupg
+        echo "allow-loopback-pinentry" >> ~/.gnupg/gpg-agent.conf
+        gpgconf --kill gpg-agent
+        echo "priming gpg-agent passphrase cache" | gpg --batch --yes --pinentry-mode loopback --passphrase "$GPG_PASSPHRASE" --local-user lpm0073@gmail.com --clearsign > /dev/null
+      env:
+        GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+        GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+
+    - name: Update debian changelog
+      shell: bash
+      run: |
+        VERSION=$(cat VERSION)
+        export DEBEMAIL="lpm0073@gmail.com"
+        export DEBFULLNAME="Lawrence McDaniel"
+        dch --newversion "${VERSION}-1" --distribution "${{ inputs.distribution }}" --force-distribution "Release ${VERSION}"
+
+    - name: Create original source tarball
+      shell: bash
+      run: |
+        VERSION=$(cat VERSION)
+        cd ..
+        tar czf smarter-cli_${VERSION}.orig.tar.gz --exclude=debian --exclude=.git smarter-cli
+        cd smarter-cli
+
+    # see https://launchpad.net/~lpm0073
+    #
+    # debuild -k<KEYID> -S -sa
+    #   debuild   wraps dpkg-buildpackage + lintian to build the Debian source
+    #             package from the debian/ control files and the orig tarball
+    #             created in the "Create original source tarball" step above.
+    #   -k<KEYID> GPG key used to sign the resulting .dsc and .changes files.
+    #             KEYID here (FB3400542F8EEE85986FA02258F2087CD4DA3ADD) is the
+    #             fingerprint of the private key imported in the "Import GPG
+    #             key" step above from the GPG_PRIVATE_KEY secret.
+    #             It is hardcoded rather than derived because it must exactly
+    #             match the public key already registered against the
+    #             lpm0073 Launchpad account/PPA — Launchpad rejects uploads
+    #             signed by a key it doesn't recognize for that account.
+    #   -S        build a source-only package (no .deb binaries), which is
+    #             what Launchpad's PPA build farm expects to receive.
+    #   -sa       force-include the .orig.tar.gz in the upload; required so
+    #             the first upload of a given upstream version carries the
+    #             full source, not just a delta against a previous revision.
+    - name: Build source package
+      shell: bash
+      run: |
+        debuild -kFB3400542F8EEE85986FA02258F2087CD4DA3ADD -S -sa
+
+    - name: Get version
+      id: vars
+      shell: bash
+      run: echo "version=$(cat VERSION)" >> $GITHUB_OUTPUT
+
+    - name: Publish to PPA
+      shell: bash
+      run: |
+        dput ppa:${{ env.account }}/${{ env.ppa }} ../smarter-cli_${{ steps.vars.outputs.version }}-1_source.changes
+
+  #############################################################################
+  # Chocolatey
+  #############################################################################
+  chocolatey:
+    name: Chocolatey
+    needs: mac_linux
+    # mac_linux is skipped, not failed, when the github input is false.
+    if: ${{ !failure() && !cancelled() && inputs.chocolatey }}
+    runs-on: windows-latest
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v7
+
+    - name: Set up Go
+      uses: actions/setup-go@v7
+      with:
+        go-version: '1.27'
+
+    - name: Cache Go dependencies
+      uses: actions/cache@v6
+      with:
+        path: ~\go\pkg\mod
+        key: ${{ runner.os }}-go-${{ hashFiles('**\go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-
+
+    - name: Go Get dependencies
+      shell: pwsh
+      run: go get -v -t .\...
+
+    - name: Echo Build Path
+      shell: pwsh
+      run: |
+        echo ${{ github.workspace }}\chocolatey\smarter\build\windows\smarter.exe
+
+    - name: Go Build
+      shell: pwsh
+      run: |
+        go build -v -o ${{ github.workspace }}\chocolatey\smarter\build\windows\smarter.exe
+
+    - name: Echo Built Path
+      shell: pwsh
+      run: |
+        Get-ChildItem -Force -Recurse ${{ github.workspace }}\chocolatey\smarter\build\windows\ | Select-Object FullName, Length
+
+    - name: Get version
+      id: vars
+      shell: pwsh
+      run: echo "version=$(Get-Content -Path VERSION)" >> $env:GITHUB_OUTPUT
+
+    - name: Pack Chocolatey package
+      run: |
+        choco pack .\chocolatey\smarter\smarter.nuspec --version ${{ steps.vars.outputs.version }}
+      shell: pwsh
+
+    - name: Push Chocolatey package
+      shell: pwsh
+      run: |
+        choco push ${{ env.app_name }}.${{ steps.vars.outputs.version }}.nupkg --source https://push.chocolatey.org/ --api-key $env:CHOCO_API_KEY
+      env:
+        CHOCO_API_KEY: ${{ secrets.CHOCO_API_KEY }}
+
+  #############################################################################
+  # Docker Hub
+  #############################################################################
+  dockerhub:
+    name: Docker Hub
+    needs: mac_linux
+    # mac_linux is skipped, not failed, when the github input is false.
+    if: ${{ !failure() && !cancelled() && inputs.dockerhub }}
+    runs-on: ubuntu-latest
+    env:
+      container_name: smarter-cli
+      account: mcdaniel0073
+
+    steps:
+    - uses: actions/checkout@v7
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v4
+
+    - name: Login to DockerHub
+      uses: docker/login-action@v4
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    - name: Get version
+      id: vars
+      run: echo "version=$(cat VERSION)" >> $GITHUB_OUTPUT
+
+    - name: Build and push
+      id: docker_build
+      uses: docker/build-push-action@v7
+      with:
+        context: .
+        push: true
+        tags: |
+          ${{ env.account }}/${{ env.container_name }}:latest
+          ${{ env.account }}/${{ env.container_name }}:${{ github.sha }}
+          ${{ env.account }}/${{ env.container_name }}:v${{ steps.vars.outputs.version }}
+        cache-from: type=local,src=/tmp/.buildx-cache
+        cache-to: type=local,dest=/tmp/.buildx-cache
+
+    - name: Image digest
+      run: echo ${{ steps.docker_build.outputs.digest }}

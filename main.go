@@ -21,6 +21,7 @@ import (
 	_ "github.com/smarter-sh/smarter-cli/cmd/deploy"
 	_ "github.com/smarter-sh/smarter-cli/cmd/describe"
 	_ "github.com/smarter-sh/smarter-cli/cmd/get"
+	_ "github.com/smarter-sh/smarter-cli/cmd/jsonschema"
 	_ "github.com/smarter-sh/smarter-cli/cmd/logs"
 	_ "github.com/smarter-sh/smarter-cli/cmd/manifest"
 	_ "github.com/smarter-sh/smarter-cli/cmd/undeploy"

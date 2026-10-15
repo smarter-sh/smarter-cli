@@ -2,8 +2,6 @@ package cmd
 
 import (
 	"errors"
-	"os"
-	"os/exec"
 	"reflect"
 	"strings"
 	"testing"
@@ -161,28 +159,37 @@ func TestAdaptOutput(t *testing.T) {
 }
 
 func TestValidateChoicesAcceptsAllowedValue(t *testing.T) {
-	// Should not panic/exit for an allowed value.
-	validateChoices("class", "sql", []string{"static", "sql"})
+	if err := validateChoices("class", "sql", []string{"static", "sql"}); err != nil {
+		t.Errorf("validateChoices() = %v, want nil", err)
+	}
 }
 
-// TestValidateChoicesExitsOnDisallowedValue verifies validateChoices calls
-// log.Fatalf (which calls os.Exit) for a disallowed value. Run in a
-// subprocess since it terminates the process.
-func TestValidateChoicesExitsOnDisallowedValue(t *testing.T) {
-	if os.Getenv("SMARTER_CLI_TEST_CRASHER") == "1" {
-		validateChoices("class", "bogus", []string{"static", "sql"})
-		return
+func TestValidateChoicesRejectsDisallowedValue(t *testing.T) {
+	err := validateChoices("class", "bogus", []string{"static", "sql"})
+	if err == nil || !strings.Contains(err.Error(), "invalid value") {
+		t.Errorf("validateChoices() = %v, want an error explaining the invalid value", err)
 	}
+}
 
-	cmd := exec.Command(os.Args[0], "-test.run=TestValidateChoicesExitsOnDisallowedValue")
-	cmd.Env = append(os.Environ(), "SMARTER_CLI_TEST_CRASHER=1")
-	output, err := cmd.CombinedOutput()
+// TestRegisterResourceCmdReportsADisallowedChoice checks that a leaf command
+// passes an invalid flag choice to its error function, without a request.
+func TestRegisterResourceCmdReportsADisallowedChoice(t *testing.T) {
+	parent := &cobra.Command{Use: "parent"}
+	var gotErr error
+	requested := false
+	leaf := RegisterResourceCmd(parent, ResourceSpec{
+		Use:     "things",
+		APIKind: "Thing",
+		Flags:   []FlagSpec{{Name: "choicetest", Kind: FlagString, Choices: []string{"a", "b"}}},
+	}, func(string, map[string]string) ([]byte, error) {
+		requested = true
+		return nil, nil
+	}, func([]byte) {}, func(err error) { gotErr = err })
 
-	exitErr, ok := err.(*exec.ExitError)
-	if !ok || exitErr.Success() {
-		t.Fatalf("process exited with err=%v, want non-zero status; output: %s", err, output)
-	}
-	if !strings.Contains(string(output), "Invalid value") {
-		t.Errorf("expected output to explain the invalid value, got: %s", output)
+	withViperValue(t, "choicetest", "c")
+	leaf.Run(leaf, nil)
+
+	if gotErr == nil || requested {
+		t.Errorf("err = %v, requested = %v; want an error and no request", gotErr, requested)
 	}
 }

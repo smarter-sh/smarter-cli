@@ -27,17 +27,18 @@ func TestResourceKindsAreWellFormed(t *testing.T) {
 	}
 }
 
+// TestResourceKindsDeployableSubset pins the kinds whose platform broker
+// implements deploy, as the platform's resources command reports them (User,
+// also deployable, is a legacy spec). Prompt's broker raises "not
+// implemented", so Prompt is not among them.
 func TestResourceKindsDeployableSubset(t *testing.T) {
-	found := false
-	for _, k := range ResourceKinds {
-		if k.Deployable {
-			found = true
-			if k.Singular != "prompt" {
-				t.Errorf("unexpected deployable kind %q; deploy/undeploy tests assume only 'prompt' is deployable", k.Singular)
-			}
-		}
+	want := map[string]bool{
+		"apikey": true, "customdomain": true, "llmclient": true,
+		"llmhost": true, "llmhostcompute": true, "vectorstore": true,
 	}
-	if !found {
-		t.Error("expected at least one ResourceKind to be marked Deployable")
+	for _, k := range ResourceKinds {
+		if k.Deployable != want[k.Singular] {
+			t.Errorf("ResourceKind %q has Deployable = %v, want %v", k.Singular, k.Deployable, want[k.Singular])
+		}
 	}
 }

@@ -27,7 +27,7 @@ var deleteCmd = &cobra.Command{
 	Short: "Permanently delete a Smarter resource",
 	Long: `Permanently delete a Smarter resource:
 
-smarter delete <kind> <name> --dry-run
+smarter delete <kind> <name>
 
 The Smarter API will permanently delete the resource.`,
 }
