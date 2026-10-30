@@ -1,6 +1,15 @@
 # Smarter Command-line Interface
 
-[![Slack](https://img.shields.io/badge/Slack-The%20Smarter%20Project-4A154B?logo=slack&logoColor=white)](https://join.slack.com/t/thesmarterproject/shared_invite/zt-4f0t6v46q-e2c5Of4hS4fBr_XwfQARCw)
+![Build Status](https://github.com/smarter-sh/smarter-cli/actions/workflows/build-release.yml/badge.svg?branch=main)
+![Test Status](https://github.com/smarter-sh/smarter-cli/actions/workflows/test.yml/badge.svg?branch=main)
+[![Latest Release](https://img.shields.io/github/v/release/smarter-sh/smarter-cli?label=release)](https://github.com/smarter-sh/smarter-cli/releases)
+[![Go Version](https://img.shields.io/github/go-mod/go-version/smarter-sh/smarter-cli?logo=go)](https://github.com/smarter-sh/smarter-cli/blob/main/go.mod)
+[![Docs](https://img.shields.io/badge/Read%20the%20Docs-smarter.sh-blue?logo=readthedocs)](https://docs.smarter.sh/en/latest/smarter-framework/smarter-cli.html)
+[![Website](https://img.shields.io/badge/official%20web%20site-smarter.sh-blue?logo=google-chrome)](https://smarter.sh/cli/)
+[![Docker Pulls](https://img.shields.io/docker/pulls/mcdaniel0073/smarter-cli.svg?logo=docker&label=DockerHub)](https://hub.docker.com/r/mcdaniel0073/smarter-cli)
+[![Chocolatey](https://img.shields.io/chocolatey/v/smarter?logo=chocolatey&label=Chocolatey)](https://community.chocolatey.org/packages/smarter)
+[![License: GNU AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
+[![Slack](https://img.shields.io/badge/Slack-The%20Smarter%20Project-4A154B?logo=slack&logoColor=white)](https://join.slack.com/t/thesmarterproject/shared_invite/zt-4f0t6v46q-e2c5Of4hS4fBr_XwfQARCw)<br>
 
 The Smarter command-line interface for working with Smarter resources. For example, with it you can create Smarter plugins, skills and guardrails, add
 these to a ChatBot, deploy the ChatBot to a custom URL, interact with it from the command line, view chat log data, and manage your Smarter account. Runs on Windows, macOS, Linux and Docker.
