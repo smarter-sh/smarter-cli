@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 
 
+# [0.5.0](https://github.com/smarter-sh/smarter-cli/compare/v0.4.3...v0.5.0) (2026-10-30)
+
+
+### Features
+
+* **get:** add a repeatable --annotation selector flag ([dfeaccb](https://github.com/smarter-sh/smarter-cli/commit/dfeaccbc0fdc7f116261327044e274b59adf4500))
+
 ## [0.4.3](https://github.com/smarter-sh/smarter-cli/compare/v0.4.2...v0.4.3) (2026-10-15)
 
 
