@@ -1,5 +1,7 @@
 # Smarter Command-line Interface
 
+[![Slack](https://img.shields.io/badge/Slack-The%20Smarter%20Project-4A154B?logo=slack&logoColor=white)](https://join.slack.com/t/thesmarterproject/shared_invite/zt-4f0t6v46q-e2c5Of4hS4fBr_XwfQARCw)
+
 The Smarter command-line interface for working with Smarter resources. For example, with it you can create Smarter plugins, skills and guardrails, add
 these to a ChatBot, deploy the ChatBot to a custom URL, interact with it from the command line, view chat log data, and manage your Smarter account. Runs on Windows, macOS, Linux and Docker.
 
