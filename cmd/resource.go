@@ -125,6 +125,17 @@ func RegisterResourceCmd(parent *cobra.Command, spec ResourceSpec, request Reque
 		Short: spec.Short,
 		Long:  spec.Long,
 		Run: func(c *cobra.Command, args []string) {
+			// Every kind's leaf binds the same viper keys (e.g. "name"), and
+			// the last binding wins, so the running leaf binds its own flags
+			// again before reading them. Without it, get secrets --name x
+			// read another kind's unset --name, and sent name= (empty).
+			if spec.NameArg.Mode == NameArgFlag {
+				mustBindPFlag(spec.NameArg.Kwarg, c.Flags().Lookup(spec.NameArg.Kwarg))
+			}
+			for _, f := range spec.Flags {
+				mustBindPFlag(f.Name, c.Flags().Lookup(f.Name))
+			}
+
 			kwargs := map[string]string{}
 
 			param := spec.NameArg.Param

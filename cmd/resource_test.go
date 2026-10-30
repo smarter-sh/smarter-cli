@@ -193,3 +193,28 @@ func TestRegisterResourceCmdReportsADisallowedChoice(t *testing.T) {
 		t.Errorf("err = %v, requested = %v; want an error and no request", gotErr, requested)
 	}
 }
+
+// TestRegisterResourceCmdReadsItsOwnFlags checks that two leaves whose flags
+// share a viper key each send their own value: the later leaf's binding used
+// to win, so the earlier one sent its flag empty.
+func TestRegisterResourceCmdReadsItsOwnFlags(t *testing.T) {
+	parent := &cobra.Command{Use: "parent"}
+	fr := &fakeRequest{response: []byte(`{}`)}
+	for _, use := range []string{"widgets", "gadgets"} {
+		RegisterResourceCmd(parent, ResourceSpec{
+			Use:     use,
+			APIKind: use,
+			NameArg: NameArgSpec{Mode: NameArgFlag, Kwarg: "shared_name", Param: "name", Shorthand: "n"},
+			Flags:   []FlagSpec{{Name: "shared_flag", Kind: FlagString}},
+		}, fr.Request, func(b []byte) {}, func(err error) { t.Fatalf("onErr: %v", err) })
+	}
+
+	parent.SetArgs([]string{"widgets", "-n", "my-widget", "--shared_flag", "x"})
+	if err := parent.Execute(); err != nil {
+		t.Fatalf("Execute() error = %v", err)
+	}
+	want := map[string]string{"name": "my-widget", "shared_flag": "x"}
+	if !reflect.DeepEqual(fr.calledKwargs, want) {
+		t.Errorf("kwargs = %v, want %v", fr.calledKwargs, want)
+	}
+}

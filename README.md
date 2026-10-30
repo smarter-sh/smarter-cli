@@ -59,6 +59,15 @@ Flags override the file, and so do the environment variables that the SDKs share
 
 Run `smarter <command> --help` for details and flags on any command.
 
+`get` narrows a list by the resources' annotations with `--annotation`, one
+requirement per flag, in the syntax of Kubernetes label selectors: `key`,
+`!key`, `key=value` or `key!=value` (which also matches resources without the
+key). A resource must match every requirement:
+
+```console
+smarter get llmclients --annotation acme.com/crm-account-id=A-10042 --annotation '!acme.com/archived'
+```
+
 ## Installation
 
 ### GitHub Releases

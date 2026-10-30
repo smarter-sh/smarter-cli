@@ -63,7 +63,12 @@ func (k ResourceKind) GetSpec() ResourceSpec {
 smarter get %s [flags]
 
 The Smarter API will return a list of %s in the specified format,
-or a manifest for a specific %s.`, k.DisplayPlural, k.Plural, k.DisplayPlural, k.Display),
+or a manifest for a specific %s.
+
+Narrow the list by annotation with --annotation, one requirement per flag:
+key, !key, key=value or key!=value (see smarter get --help).
+
+smarter get %s --annotation acme.com/crm-account-id=A-10042`, k.DisplayPlural, k.Plural, k.DisplayPlural, k.Display, k.Plural),
 		APIKind: k.APIKind,
 		NameArg: NameArgSpec{Mode: NameArgFlag, Kwarg: "name", Shorthand: "n", Usage: fmt.Sprintf("Name of the %s", k.Display)},
 	}

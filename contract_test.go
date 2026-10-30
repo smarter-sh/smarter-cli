@@ -178,7 +178,13 @@ func leaves(c *cobra.Command) []*cobra.Command {
 // cobra keeps flag values between Execute calls in one process.
 func resetFlags(c *cobra.Command) {
 	reset := func(f *pflag.Flag) {
-		_ = f.Value.Set(f.DefValue)
+		// Set appends to a slice flag, and its DefValue reads "[]", so a
+		// slice flag (every one has an empty default) is emptied instead.
+		if slice, ok := f.Value.(pflag.SliceValue); ok {
+			_ = slice.Replace(nil)
+		} else {
+			_ = f.Value.Set(f.DefValue)
+		}
 		f.Changed = false
 	}
 	c.Flags().VisitAll(reset)
