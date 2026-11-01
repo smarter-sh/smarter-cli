@@ -80,6 +80,9 @@ func TestGetSpec(t *testing.T) {
 	if !strings.Contains(spec.Short, "Widgets") {
 		t.Errorf("Short = %q, want the plural display name", spec.Short)
 	}
+	if !strings.Contains(spec.Long, "smarter get widgets --annotation ") {
+		t.Errorf("Long = %q, want an example of the annotation selector", spec.Long)
+	}
 }
 
 func TestDeploySpec(t *testing.T) {

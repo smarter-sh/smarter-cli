@@ -2,9 +2,9 @@
 
 See [Conventional Commits](https://www.conventionalcommits.org/)
 
-The [release.yml](.github/workflows/release.yml), [checkPullRequest.yml](.github/workflows/checkPullRequest.yml) and [testRelease.yml](.github/workflows/testRelease.yml) Github Action Workflows in this repo are designed to act on the commit comment rules that follow.
+The [pushMain.yml](../.github/workflows/pushMain.yml) workflow runs [semantic-release](https://semantic-release.gitbook.io/), configured in [release.config.js](../release.config.js), on every push to `main`. semantic-release reads the commit messages since the last tag and chooses the next version from them: `fix` and `perf` make a patch release, `feat` makes a minor release, and a `BREAKING CHANGE:` footer makes a major release. The other types make no release. It then updates `CHANGELOG.md` and `VERSION`, tags the release and publishes it on GitHub. The commitlint `commit-msg` hook in [.pre-commit-config.yaml](../.pre-commit-config.yaml) rejects a message that doesn't follow the format below. See [ADR-015](adr/015-versioning.md).
 
-As an open-source maintainer, squash feature branches onto master and write a standardized commit message while doing so. The commit message should be structured as follows:
+Work lands on `alpha` first, and reaches `main` through a pull request. Each commit message should be structured as follows:
 
 > `<type>`: This represents the type of change made in the commit. Common types include feat (for a new feature), fix (for a bug fix), chore (for routine tasks like updating dependencies), docs (for documentation changes), style (for code style changes), refactor (for refactoring existing code), test (for adding or updating tests), and perf (for performance improvements).
 >

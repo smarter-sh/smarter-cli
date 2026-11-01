@@ -8,6 +8,8 @@ updates:
       - "automated pr"
     schedule:
       interval: "monthly"
+    # alpha, where work lands first: Mergify merges the update there (.mergify.yml)
+    target-branch: "alpha"
     assignees:
       - "lpm0073"
     reviewers:
@@ -19,6 +21,8 @@ updates:
       - "automated pr"
     schedule:
       interval: "monthly"
+    # alpha, where work lands first: Mergify merges the update there (.mergify.yml)
+    target-branch: "alpha"
     assignees:
       - "lpm0073"
     reviewers:
@@ -31,6 +35,8 @@ updates:
       - "automated pr"
     schedule:
       interval: "monthly"
+    # alpha, where work lands first: Mergify merges the update there (.mergify.yml)
+    target-branch: "alpha"
     assignees:
       - "lpm0073"
     reviewers:

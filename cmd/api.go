@@ -163,6 +163,16 @@ var sleep = time.Sleep
 // response. Any other outcome is returned as an error, for the command to
 // report with ErrorOutput: see doc/adr/006-error-handling.md and 008-http-transport.md.
 func APIRequest(slug string, kwargs map[string]string, fileContents ...string) ([]byte, error) {
+	params := url.Values{}
+	for key, value := range kwargs {
+		params.Add(key, value)
+	}
+	return APIRequestWithParams(slug, params, fileContents...)
+}
+
+// APIRequestWithParams is APIRequest for a query string whose parameters may
+// repeat, e.g. get's annotation selector, one requirement per parameter.
+func APIRequestWithParams(slug string, params url.Values, fileContents ...string) ([]byte, error) {
 	verbose := viper.GetBool("verbose")
 
 	if err := verifyApiKey(); err != nil {
@@ -184,10 +194,6 @@ func APIRequest(slug string, kwargs map[string]string, fileContents ...string) (
 		textData = fileContents[0]
 	}
 
-	params := url.Values{}
-	for key, value := range kwargs {
-		params.Add(key, value)
-	}
 	reqURL := urlOrig
 	if len(params) > 0 {
 		reqURL += "?" + params.Encode()
