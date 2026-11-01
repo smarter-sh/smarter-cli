@@ -328,7 +328,30 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v7
 
+    # Launchpad accepts each upstream version's orig.tar.gz only once, and the
+    # tarball built below is never byte-identical between runs (tar and gzip
+    # record timestamps). So re-running this job for a version the PPA
+    # already has always ends in a "different contents" rejection email.
+    # Ask Launchpad's public API first, and skip the rest of the job if any
+    # revision of this version (in any state, deleted ones included) exists.
+    - name: Check whether the PPA already has this version
+      id: ppa
+      shell: bash
+      run: |
+        set -euo pipefail
+        VERSION=$(cat VERSION)
+        url="https://api.launchpad.net/1.0/~${{ env.account }}/+archive/ubuntu/${{ env.ppa }}?ws.op=getPublishedSources&source_name=smarter-cli&exact_match=true&ws.size=300"
+        count=$(curl -fsSL --retry 3 "$url" \
+          | jq --arg v "$VERSION" '[.entries[] | select(.source_package_version | startswith($v + "-"))] | length')
+        if [ "$count" -gt 0 ]; then
+          echo "::notice::smarter-cli ${VERSION} is already in ppa:${{ env.account }}/${{ env.ppa }}; skipping the upload."
+          echo "exists=true" >> "$GITHUB_OUTPUT"
+        else
+          echo "exists=false" >> "$GITHUB_OUTPUT"
+        fi
+
     - name: Install Debian packaging dependencies
+      if: steps.ppa.outputs.exists == 'false'
       run: |
         sudo grep -rl "dl.google.com/linux/chrome" /etc/apt/sources.list.d/ 2>/dev/null \
           | xargs -r sudo rm -f || true
@@ -340,6 +363,7 @@ jobs:
           debhelper
 
     - name: Import GPG key
+      if: steps.ppa.outputs.exists == 'false'
       shell: bash
       run: |
         echo "$GPG_PRIVATE_KEY" | gpg --batch --import
@@ -352,6 +376,7 @@ jobs:
         GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
 
     - name: Update debian changelog
+      if: steps.ppa.outputs.exists == 'false'
       shell: bash
       run: |
         VERSION=$(cat VERSION)
@@ -360,6 +385,7 @@ jobs:
         dch --newversion "${VERSION}-1" --distribution "${{ inputs.distribution }}" --force-distribution "Release ${VERSION}"
 
     - name: Create original source tarball
+      if: steps.ppa.outputs.exists == 'false'
       shell: bash
       run: |
         VERSION=$(cat VERSION)
@@ -387,16 +413,19 @@ jobs:
     #             the first upload of a given upstream version carries the
     #             full source, not just a delta against a previous revision.
     - name: Build source package
+      if: steps.ppa.outputs.exists == 'false'
       shell: bash
       run: |
         debuild -kFB3400542F8EEE85986FA02258F2087CD4DA3ADD -S -sa
 
     - name: Get version
+      if: steps.ppa.outputs.exists == 'false'
       id: vars
       shell: bash
       run: echo "version=$(cat VERSION)" >> $GITHUB_OUTPUT
 
     - name: Publish to PPA
+      if: steps.ppa.outputs.exists == 'false'
       shell: bash
       run: |
         dput ppa:${{ env.account }}/${{ env.ppa }} ../smarter-cli_${{ steps.vars.outputs.version }}-1_source.changes
