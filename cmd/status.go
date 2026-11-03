@@ -10,12 +10,12 @@ import (
 
 var statusCmd = &cobra.Command{
 	Use:   "status",
-	Short: "Retrieve real-time status of the Smarter Platform",
-	Long: `Retrieve real-time status of the Smarter Platform:
+	Short: "Retrieve real-time status of the Smarter installation",
+	Long: `Retrieve real-time status of the Smarter installation:
 
 smarter status [flags]
 
-The Smarter API will return the current status of the Smarter Platform,
+The Smarter API will return the current status of the Smarter installation,
 including the status of all services and resources by region.`,
 	Run: func(cmd *cobra.Command, args []string) {
 

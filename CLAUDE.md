@@ -2,8 +2,8 @@
 
 Guidance for Claude Code (and other coding agents) working in this repository.
 
-smarter-cli is the Smarter platform's command-line interface: the `smarter`
-binary, written in Go on cobra and viper. It is to the Smarter platform
+smarter-cli is the Smarter Project's command-line interface: the `smarter`
+binary, written in Go on cobra and viper. It is to the Smarter Project
 ([smarter-sh/smarter](https://github.com/smarter-sh/smarter), usually checked
 out beside this repository as `../smarter`) what `kubectl` is to Kubernetes: a
 verb-noun cli (`smarter get llmclients`, `smarter apply -f manifest.yaml`) that

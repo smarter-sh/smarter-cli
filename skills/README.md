@@ -10,7 +10,7 @@ needs it. Each one contains a `SKILL.md` file, and sometimes `references/` and
 released and committed. They are developer tooling, like the `Makefile` and
 `.pre-commit-config.yaml`, and the cli never loads them.
 
-They are adapted from the Smarter platform's skills, in
+They are adapted from the Smarter Project's skills, in
 [smarter-sh/smarter/skills](https://github.com/smarter-sh/smarter/tree/main/skills),
 and the Go SDK's, in
 [smarter-sh/smarter-golang/skills](https://github.com/smarter-sh/smarter-golang/tree/main/skills),

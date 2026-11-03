@@ -1,6 +1,6 @@
 ---
 name: smarter-api-testing
-description: Use when you need to run the smarter cli, or curl, against a real Smarter platform by hand from the smarter-cli side - e.g. to see a route's real response before changing a command, to confirm a fix end to end, or to reproduce a user's bug. Explains why only the local platform, the throwaway api key, the throwaway $HOME and config.yaml, the cli's routes, what never to run, and how to clean up.
+description: Use when you need to run the smarter cli, or curl, against a real Smarter installation by hand from the smarter-cli side - e.g. to see a route's real response before changing a command, to confirm a fix end to end, or to reproduce a user's bug. Explains why only the local platform, the throwaway api key, the throwaway $HOME and config.yaml, the cli's routes, what never to run, and how to clean up.
 ---
 
 # Running the CLI Against the Local Platform

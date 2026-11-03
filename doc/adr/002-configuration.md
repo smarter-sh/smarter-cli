@@ -8,7 +8,7 @@ The SDKs' ADR-002 ([Python](https://github.com/smarter-sh/smarter-python/blob/ma
 
 ## Context
 
-A user works with several Smarter platforms: a local one, the `alpha`, `beta` and `next` pre-release platforms, and production, each with its own api key. A self-hosted installation has its own root domain. Commands must work without retyping credentials, and scripts must be able to override everything.
+A user works with several Smarter installations: a local one, the `alpha`, `beta` and `next` pre-release platforms, and production, each with its own api key. A self-hosted installation has its own root domain. Commands must work without retyping credentials, and scripts must be able to override everything.
 
 ## Decision
 

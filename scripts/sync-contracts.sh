@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Copy the Smarter platform's published OpenAPI document into the cli's test data.
+# Copy the Smarter Project's published OpenAPI document into the cli's test data.
 #
 # The platform commits its api's OpenAPI document, generated from its Pydantic
 # models. The cli's contract test (contract_test.go) runs every command against

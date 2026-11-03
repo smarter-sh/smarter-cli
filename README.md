@@ -188,7 +188,7 @@ make coverage      # per-package coverage; fails below 90%, as CI does
 make contracts     # refresh testdata/contracts/openapi.json from a checkout of the platform at ../smarter
 ```
 
-The tests never reach a Smarter platform. The contract test runs every command against a mock platform, and checks its requests against a pinned copy of the platform's OpenAPI document.
+The tests never reach a Smarter installation. The contract test runs every command against a mock platform, and checks its requests against a pinned copy of the platform's OpenAPI document.
 
 ### Design decisions and agent skills
 

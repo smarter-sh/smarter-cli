@@ -2,7 +2,7 @@
 #------------------------------------------------------------------------------
 # Vet, lint and run the unit tests on every supported Go version.
 #
-# The unit tests never reach a Smarter platform: httptest servers answer every
+# The unit tests never reach a Smarter installation: httptest servers answer every
 # request. The contract test (contract_test.go) checks every command against
 # the platform's OpenAPI document pinned in testdata/contracts/openapi.json.
 #------------------------------------------------------------------------------

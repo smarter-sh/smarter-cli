@@ -241,7 +241,7 @@ func init() {
 	RootCmd.AddCommand(configureCmd)
 
 	// Flags
-	configureCmd.Flags().StringP("root_domain", "r", "", "Smarter platform root domain (e.g. platform.smarter.sh)")
+	configureCmd.Flags().StringP("root_domain", "r", "", "Smarter installation root domain (e.g. platform.smarter.sh)")
 	configureCmd.Flags().StringP("account_number", "a", "", "Smarter account number")
 	configureCmd.Flags().StringP("api_key", "k", "", "Smarter cli secret key (64-character hash)")
 	configureCmd.Flags().StringP("username", "u", "", "username (how you login to the Smarter web console)")

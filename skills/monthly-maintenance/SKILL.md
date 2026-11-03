@@ -1,6 +1,6 @@
 ---
 name: monthly-maintenance
-description: Use when asked to do smarter-cli's monthly maintenance, or either half of it - (1) bring the cli back in sync with the Smarter platform by refreshing its pinned copy of the platform's OpenAPI document (make contracts), reading its diff and the platform's commits since the cli's last release, fixing what the contract test reports (new kinds, renamed or new /cli/ routes), checking which kinds' brokers deploy, and changing commands, tests and docs as needed, and (2) update the cli's Go modules, Go toolchain, npm release tooling and pre-commit hooks, retest, and, if the tests pass, write the git commits.
+description: Use when asked to do smarter-cli's monthly maintenance, or either half of it - (1) bring the cli back in sync with the Smarter Project by refreshing its pinned copy of the platform's OpenAPI document (make contracts), reading its diff and the platform's commits since the cli's last release, fixing what the contract test reports (new kinds, renamed or new /cli/ routes), checking which kinds' brokers deploy, and changing commands, tests and docs as needed, and (2) update the cli's Go modules, Go toolchain, npm release tooling and pre-commit hooks, retest, and, if the tests pass, write the git commits.
 ---
 
 # smarter-cli Monthly Maintenance

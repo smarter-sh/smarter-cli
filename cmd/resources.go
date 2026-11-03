@@ -10,8 +10,8 @@ import (
 
 var resourcesCmd = &cobra.Command{
 	Use:   "resources",
-	Short: "List the resource kinds of the Smarter Platform",
-	Long: `List the resource kinds of the Smarter Platform:
+	Short: "List the resource kinds of the Smarter installation",
+	Long: `List the resource kinds of the Smarter installation:
 
 smarter resources [flags]
 

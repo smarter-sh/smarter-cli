@@ -1,11 +1,11 @@
 ---
 name: smarter-cli-development
-description: Start here for any change to the smarter-cli repository, the Smarter platform's command-line interface (the `smarter` binary, Go, cobra and viper). Gives the non-negotiable rules, the cli's architecture (cmd.APIRequest and the /api/v1/cli/ routes, the ResourceKinds registry and ResourceSpec, one package per verb, the ~/.smarter/config.yaml contract shared with the SDKs, the output formats), how to add a resource kind, a verb or a flag, the pinned OpenAPI document and the contract test that keep the cli in step with the platform, and an index of the narrower skills to load for each kind of work.
+description: Start here for any change to the smarter-cli repository, the Smarter Project's command-line interface (the `smarter` binary, Go, cobra and viper). Gives the non-negotiable rules, the cli's architecture (cmd.APIRequest and the /api/v1/cli/ routes, the ResourceKinds registry and ResourceSpec, one package per verb, the ~/.smarter/config.yaml contract shared with the SDKs, the output formats), how to add a resource kind, a verb or a flag, the pinned OpenAPI document and the contract test that keep the cli in step with the platform, and an index of the narrower skills to load for each kind of work.
 ---
 
 # Smarter CLI Development
 
-`smarter` is to the Smarter platform what `kubectl` is to Kubernetes: a
+`smarter` is to the Smarter Project what `kubectl` is to Kubernetes: a
 verb-noun command line (`smarter <verb> <kind> [name] [flags]`) for applying,
 reading, deleting and deploying the resources that SAM manifests declare. The
 platform is [smarter-sh/smarter](https://github.com/smarter-sh/smarter),
