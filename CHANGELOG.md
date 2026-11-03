@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 
 
+## [0.5.1](https://github.com/smarter-sh/smarter-cli/compare/v0.5.0...v0.5.1) (2026-11-03)
+
+
+### Bug Fixes
+
+* call it the Smarter Project, or a Smarter installation ([e2307f7](https://github.com/smarter-sh/smarter-cli/commit/e2307f71506237ebd9748f2d810550f460fd97db))
+
 # [0.5.0](https://github.com/smarter-sh/smarter-cli/compare/v0.4.3...v0.5.0) (2026-10-30)
 
 
