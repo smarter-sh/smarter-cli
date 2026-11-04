@@ -4,18 +4,22 @@ on:
     types: [opened]
   pull_request:
     types: [opened]
+permissions:
+  contents: read
 jobs:
   run:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     permissions:
-      issues: write
-      pull-requests: write
+      contents: read
+      issues: write # assigns new issues
+      pull-requests: write # assigns new pull requests
     steps:
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Setup Node.js environment
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: "24.10"
 
@@ -23,7 +27,7 @@ jobs:
         run: npm install
 
       - name: "Auto-assign issue"
-        uses: pozil/auto-assign-issue@v4
+        uses: pozil/auto-assign-issue@d6e511896e5f1d2408e74db74416647d8ff80c8c # v4.1.0
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           assignees: lpm0073
