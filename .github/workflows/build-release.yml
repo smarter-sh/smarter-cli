@@ -122,6 +122,9 @@ on:
         type: boolean
         default: true
 
+permissions:
+  contents: read
+
 env:
   app_name: smarter
 
@@ -129,12 +132,13 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
     - name: Check out code
-      uses: actions/checkout@v7
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
     - name: Set up Go
-      uses: actions/setup-go@v7
+      uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
       with:
         go-version: '1.27'
 
@@ -152,14 +156,15 @@ jobs:
     needs: build
     if: ${{ inputs.github }}
     runs-on: windows-latest
+    timeout-minutes: 5
     steps:
     - name: Check out code
-      uses: actions/checkout@v7
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       with:
         token: ${{ secrets.PAT }}
 
     - name: Set up Go
-      uses: actions/setup-go@v7
+      uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
       with:
         go-version: '1.27'
 
@@ -186,7 +191,7 @@ jobs:
 
     - name: Create Release
       id: create_release
-      uses: actions/create-release@v1
+      uses: actions/create-release@0cb9c9b65d5d1901c1f53e5e66eaf4afd303e70e # v1.1.4
       env:
         GITHUB_TOKEN: ${{ secrets.PAT }}
       with:
@@ -197,7 +202,7 @@ jobs:
 
     - name: Upload Release Assets
       id: upload-release-asset
-      uses: actions/upload-release-asset@v1
+      uses: actions/upload-release-asset@e8f9f06c4b078e705bd2ea027f0926603fc9b4d5 # v1.0.2
       env:
         GITHUB_TOKEN: ${{ secrets.PAT }}
       with:
@@ -210,6 +215,7 @@ jobs:
     name: GitHub Release (macOS/Linux)
     needs: windows
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 5
     strategy:
       matrix:
         os: [macos-latest, ubuntu-latest]
@@ -217,12 +223,12 @@ jobs:
 
     steps:
     - name: Check out code
-      uses: actions/checkout@v7
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       with:
         token: ${{ secrets.PAT }}
 
     - name: Set up Go
-      uses: actions/setup-go@v7
+      uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
       with:
         go-version: ${{ matrix.go }}
 
@@ -260,7 +266,7 @@ jobs:
 
     - name: Upload Release Assets
       id: upload-release-asset
-      uses: actions/upload-release-asset@v1
+      uses: actions/upload-release-asset@e8f9f06c4b078e705bd2ea027f0926603fc9b4d5 # v1.0.2
       env:
         GITHUB_TOKEN: ${{ secrets.PAT }}
         UPLOAD_URL: ${{ env.UPLOAD_URL }}
@@ -274,10 +280,11 @@ jobs:
     name: Homebrew Tap
     needs: mac_linux
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
 
     - name: Check out code
-      uses: actions/checkout@v7
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       with:
         token: ${{ secrets.PAT }}
 
@@ -320,13 +327,14 @@ jobs:
     # mac_linux is skipped, not failed, when the github input is false.
     if: ${{ !failure() && !cancelled() && inputs.ubuntu_apt }}
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     env:
       account: lpm0073
       ppa: smarter-cli
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v7
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
     # Launchpad accepts each upstream version's orig.tar.gz only once, and the
     # tarball built below is never byte-identical between runs (tar and gzip
@@ -439,17 +447,18 @@ jobs:
     # mac_linux is skipped, not failed, when the github input is false.
     if: ${{ !failure() && !cancelled() && inputs.chocolatey }}
     runs-on: windows-latest
+    timeout-minutes: 5
     steps:
     - name: Check out code
-      uses: actions/checkout@v7
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
     - name: Set up Go
-      uses: actions/setup-go@v7
+      uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
       with:
         go-version: '1.27'
 
     - name: Cache Go dependencies
-      uses: actions/cache@v6
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       with:
         path: ~\go\pkg\mod
         key: ${{ runner.os }}-go-${{ hashFiles('**\go.sum') }}
@@ -501,18 +510,19 @@ jobs:
     # mac_linux is skipped, not failed, when the github input is false.
     if: ${{ !failure() && !cancelled() && inputs.dockerhub }}
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     env:
       container_name: smarter-cli
       account: mcdaniel0073
 
     steps:
-    - uses: actions/checkout@v7
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
     - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v4
+      uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
 
     - name: Login to DockerHub
-      uses: docker/login-action@v4
+      uses: docker/login-action@81c6f93d4bc991e510b342a00b419b3bb4efc5c6 # v4.7.0
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
@@ -523,7 +533,7 @@ jobs:
 
     - name: Build and push
       id: docker_build
-      uses: docker/build-push-action@v7
+      uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
       with:
         context: .
         push: true
