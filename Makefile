@@ -23,10 +23,13 @@ test:
 	go test -v ./...
 
 # Per-package coverage, failing below 90% in any package, as CI checks it.
+# -v lists every test, so that the nightly Repository Tests job can count them;
+# only the "ok" lines carry a package's coverage. pipefail: a failing test must
+# fail the target, not just awk's verdict on coverage.
 # The main package is exempt: main() runs only in the tests that build and run
 # the binary (main_test.go), which coverage can't see.
 coverage:
-	@go test -cover ./... | tee /dev/stderr | awk '/coverage:/ && $$2 != "github.com/smarter-sh/smarter-cli" { pct = $$5; sub("%", "", pct); if (pct + 0 < 90) { print "coverage below 90%: " $$2; failed = 1 } } END { exit failed }'
+	@set -o pipefail; go test -v -cover ./... | tee /dev/stderr | awk '/^ok/ && /coverage:/ && $$2 != "github.com/smarter-sh/smarter-cli" { pct = $$5; sub("%", "", pct); if (pct + 0 < 90) { print "coverage below 90%: " $$2; failed = 1 } } END { exit failed }'
 
 # Copy the platform's OpenAPI document from ../smarter into testdata/contracts/.
 # Pin a release with: make contracts SMARTER_REF=v0.24.0
