@@ -8,7 +8,7 @@ description: Use when you need to run the smarter cli, or curl, against a real S
 The unit tests use a mock server (`smarter-cli-testing`), so they can't tell
 whether the platform really serves a route or returns the shape the cli
 formats. Check that against the **local** platform in `../smarter`, whose dev
-server is `http://localhost:9357` (the `smarter-app` container), and which the
+server is `http://localhost:9357` (the `smarter-api` container), and which the
 cli reaches with `--environment local`.
 
 Start it with `make run` in `../smarter` if
@@ -21,7 +21,7 @@ the user's own `~/.smarter/config.yaml`.
 ## 1. Create a throwaway key
 
 ```console
-docker exec smarter-app bash -c 'cd /home/smarter_user/smarter && python manage.py shell -c "
+docker exec smarter-api bash -c 'cd /home/smarter_user/smarter && python manage.py shell -c "
 from smarter.lib.drf.models import SmarterAuthToken
 from smarter.apps.account.utils import smarter_cached_objects as s
 from smarter.apps.account.models import UserProfile
@@ -98,7 +98,7 @@ the local platform. Prefer `apply --dry-run`.
 Delete what you applied (`smarter delete ...`, or the web console), then the key:
 
 ```console
-docker exec smarter-app bash -c 'cd /home/smarter_user/smarter && python manage.py shell -c "
+docker exec smarter-api bash -c 'cd /home/smarter_user/smarter && python manage.py shell -c "
 from smarter.lib.drf.models import SmarterAuthToken
 print(SmarterAuthToken.objects.filter(name=\"cli_probe\", description=\"DELETE ME\").delete())
 "' 2>/dev/null
