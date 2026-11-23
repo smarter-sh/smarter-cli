@@ -5,15 +5,21 @@ Website: https://lawrencemcdaniel.com>
 package cmd
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
 	"log"
 	"math/rand/v2"
+	"mime"
+	"mime/multipart"
 	"net/http"
 	"net/http/httputil"
+	"net/textproto"
 	"net/url"
+	"os"
 	"path"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
@@ -173,6 +179,82 @@ func APIRequest(slug string, kwargs map[string]string, fileContents ...string) (
 // APIRequestWithParams is APIRequest for a query string whose parameters may
 // repeat, e.g. get's annotation selector, one requirement per parameter.
 func APIRequestWithParams(slug string, params url.Values, fileContents ...string) ([]byte, error) {
+	var textData string
+	if len(fileContents) > 0 {
+		textData = fileContents[0]
+	}
+	return sendWithRetries(slug, params, []byte(textData), "application/json")
+}
+
+// MultipartForm is the multipart/form-data body of a request that uploads
+// files, e.g. the documents command's.
+type MultipartForm struct {
+	// Files are the paths of the files to upload, each sent in FileField,
+	// under its base name.
+	Files []string
+	// FileField is the form field of the files, e.g. "files".
+	FileField string
+	// Fields are the form's text fields, e.g. "url". Empty values are not sent.
+	Fields map[string]string
+}
+
+// Encode reads the form's files and returns its body and content type. A file
+// is read once, before the first attempt, so that a retry sends it again.
+func (f MultipartForm) Encode() ([]byte, string, error) {
+	var body bytes.Buffer
+	writer := multipart.NewWriter(&body)
+	for _, file := range f.Files {
+		content, err := os.ReadFile(file) //nolint:gosec // G304: the user's own file, named on the command line
+		if err != nil {
+			return nil, "", fmt.Errorf("could not read %s: %w", file, err)
+		}
+		name := filepath.Base(file)
+		contentType := mime.TypeByExtension(filepath.Ext(name))
+		if contentType == "" {
+			contentType = "application/octet-stream"
+		}
+		header := textproto.MIMEHeader{}
+		header.Set("Content-Disposition", fmt.Sprintf(`form-data; name=%q; filename=%q`, f.FileField, name))
+		header.Set("Content-Type", contentType)
+		part, err := writer.CreatePart(header)
+		if err != nil {
+			return nil, "", err
+		}
+		if _, err := part.Write(content); err != nil {
+			return nil, "", err
+		}
+	}
+	for key, value := range f.Fields {
+		if value == "" {
+			continue
+		}
+		if err := writer.WriteField(key, value); err != nil {
+			return nil, "", err
+		}
+	}
+	if err := writer.Close(); err != nil {
+		return nil, "", err
+	}
+	return body.Bytes(), writer.FormDataContentType(), nil
+}
+
+// APIRequestMultipart is APIRequest with a multipart/form-data body, e.g.
+// files to upload. Like every request, it is retried on transient failures.
+func APIRequestMultipart(slug string, kwargs map[string]string, form MultipartForm) ([]byte, error) {
+	params := url.Values{}
+	for key, value := range kwargs {
+		params.Add(key, value)
+	}
+	body, contentType, err := form.Encode()
+	if err != nil {
+		return nil, err
+	}
+	return sendWithRetries(slug, params, body, contentType)
+}
+
+// sendWithRetries POSTs body to the cli api's slug, with params as the query
+// string, retrying transient failures, and returns the body of a 200 response.
+func sendWithRetries(slug string, params url.Values, body []byte, contentType string) ([]byte, error) {
 	verbose := viper.GetBool("verbose")
 
 	if err := verifyApiKey(); err != nil {
@@ -189,11 +271,6 @@ func APIRequestWithParams(slug string, params url.Values, fileContents ...string
 		urlOrig += "/"
 	}
 
-	var textData string
-	if len(fileContents) > 0 {
-		textData = fileContents[0]
-	}
-
 	reqURL := urlOrig
 	if len(params) > 0 {
 		reqURL += "?" + params.Encode()
@@ -206,7 +283,7 @@ func APIRequestWithParams(slug string, params url.Values, fileContents ...string
 	var resp *http.Response
 	var bodyBytes []byte
 	for attempt := 0; ; attempt++ {
-		resp, bodyBytes, err = sendRequest(client, reqURL, textData, apiKey, verbose)
+		resp, bodyBytes, err = sendRequest(client, reqURL, body, contentType, apiKey, verbose)
 		if err != nil {
 			if attempt < retries {
 				delay := retryDelay(attempt, nil)
@@ -235,9 +312,11 @@ func APIRequestWithParams(slug string, params url.Values, fileContents ...string
 	return bodyBytes, nil
 }
 
-// sendRequest sends one attempt of a request, and reads its response.
-func sendRequest(client *http.Client, reqURL, body, apiKey string, verbose bool) (*http.Response, []byte, error) {
-	req, err := http.NewRequest(http.MethodPost, reqURL, strings.NewReader(body))
+// sendRequest sends one attempt of a request, and reads its response. With
+// --verbose it logs the request, and its body only when it is json: an
+// upload's files are never logged.
+func sendRequest(client *http.Client, reqURL string, body []byte, contentType, apiKey string, verbose bool) (*http.Response, []byte, error) {
+	req, err := http.NewRequest(http.MethodPost, reqURL, bytes.NewReader(body))
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed creating the request: %w", err)
 	}
@@ -245,11 +324,12 @@ func sendRequest(client *http.Client, reqURL, body, apiKey string, verbose bool)
 	// see https://jazzband.github.io/django-rest-knox/auth/
 	req.Header.Set("User-Agent", ClientName+"/"+Version)
 	req.Header.Set("X-Smarter-Client", ClientName)
-	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Content-Type", contentType)
 	req.Header.Set("Authorization", "Token "+apiKey)
 
 	if verbose {
-		if reqDump, err := httputil.DumpRequestOut(req, true); err == nil {
+		dumpBody := contentType == "application/json"
+		if reqDump, err := httputil.DumpRequestOut(req, dumpBody); err == nil {
 			log.Printf("Request: %s", strings.ReplaceAll(string(reqDump), apiKey, maskSecret(apiKey)))
 		}
 	}

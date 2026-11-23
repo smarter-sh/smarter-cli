@@ -354,3 +354,66 @@ func TestMaskSecret(t *testing.T) {
 		t.Errorf("maskSecret() = %q", got)
 	}
 }
+
+func TestMultipartFormEncode(t *testing.T) {
+	dir := t.TempDir()
+	notes := dir + "/notes.unknownext"
+	if err := os.WriteFile(notes, []byte("notes"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	form := MultipartForm{Files: []string{notes}, FileField: "files", Fields: map[string]string{"url": "", "text": "hi"}}
+	body, contentType, err := form.Encode()
+	if err != nil {
+		t.Fatalf("Encode() error = %v", err)
+	}
+	if !strings.HasPrefix(contentType, "multipart/form-data; boundary=") {
+		t.Errorf("content type = %q, want multipart/form-data", contentType)
+	}
+	text := string(body)
+	if !strings.Contains(text, `name="files"; filename="notes.unknownext"`) ||
+		!strings.Contains(text, "Content-Type: application/octet-stream") {
+		t.Errorf("body = %q, want the file, as application/octet-stream", text)
+	}
+	if !strings.Contains(text, `name="text"`) || strings.Contains(text, `name="url"`) {
+		t.Errorf("body = %q, want text and no empty url", text)
+	}
+
+	if _, _, err := (MultipartForm{Files: []string{dir + "/missing.md"}, FileField: "files"}).Encode(); err == nil ||
+		!strings.Contains(err.Error(), "could not read") {
+		t.Errorf("Encode() error = %v, want could not read", err)
+	}
+	if _, err := APIRequestMultipart("documents/vectorstore/", nil, MultipartForm{Files: []string{dir + "/missing.md"}}); err == nil {
+		t.Error("APIRequestMultipart() error = nil, want could not read")
+	}
+}
+
+func TestAPIRequestMultipartNeverLogsTheFiles(t *testing.T) {
+	var contentType string
+	newMockAPIServer(t, func(w http.ResponseWriter, r *http.Request) {
+		contentType = r.Header.Get("Content-Type")
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte(`{}`))
+	})
+	withViperValue(t, "verbose", true)
+	var logged bytes.Buffer
+	log.SetOutput(&logged)
+	t.Cleanup(func() { log.SetOutput(os.Stderr) })
+
+	file := t.TempDir() + "/secret-plan.md"
+	if err := os.WriteFile(file, []byte("the private contents"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	form := MultipartForm{Files: []string{file}, FileField: "files"}
+	if _, err := APIRequestMultipart("documents/vectorstore/", map[string]string{"name": "x"}, form); err != nil {
+		t.Fatalf("APIRequestMultipart() error = %v", err)
+	}
+	if !strings.HasPrefix(contentType, "multipart/form-data") {
+		t.Errorf("content type = %q, want multipart/form-data", contentType)
+	}
+	if strings.Contains(logged.String(), "the private contents") {
+		t.Errorf("the verbose log has the file's contents: %q", logged.String())
+	}
+	if !strings.Contains(logged.String(), "POST") {
+		t.Errorf("log = %q, want the request", logged.String())
+	}
+}

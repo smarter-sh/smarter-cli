@@ -62,6 +62,7 @@ Flags override the file, and so do the environment variables that the SDKs share
 | `undeploy`    | Undo a deployment                                                                         |
 | `chat`        | Prompt an LLMClient (`smarter chat prompt --llmclient <name>`)                            |
 | `logs`        | View a resource's logs                                                                    |
+| `documents`   | List, add or remove a Vectorstore's documents (`smarter documents vectorstore <name>`)    |
 | `manifest`    | Generate an example manifest for a resource kind                                          |
 | `json-schema` | Retrieve the JSON Schema of a resource kind's manifest                                    |
 | `resources`   | List the resource kinds of the platform                                                   |
