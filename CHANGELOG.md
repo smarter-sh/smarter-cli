@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 
 
+# [0.6.0](https://github.com/smarter-sh/smarter-cli/compare/v0.5.1...v0.6.0) (2026-11-23)
+
+
+### Features
+
+* **documents:** list, add and remove a Vectorstore's documents ([c272f83](https://github.com/smarter-sh/smarter-cli/commit/c272f835c07cdf353734cf23f4d9c0937e2beeac))
+
 ## [0.5.1](https://github.com/smarter-sh/smarter-cli/compare/v0.5.0...v0.5.1) (2026-11-03)
 
 
